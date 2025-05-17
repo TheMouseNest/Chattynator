@@ -45,6 +45,7 @@ function addonTable.ChatFrameMixin:OnLoad()
   self.ScrollBox:Init(view)
   self.ScrollBox:SetHyperlinkPropagateToParent(true)
   self.ScrollBox:GetScrollTarget():SetHyperlinkPropagateToParent(true)
+  self.ScrollBox:GetScrollTarget():SetPropagateMouseClicks(true)
 end
 
 function addonTable.ChatFrameMixin:AddMessage(text, r, g, b, id)

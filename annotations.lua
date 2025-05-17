@@ -1,0 +1,2 @@
+---@meta
+ChatanatorHyperlinkHandler = CreateFrame("Frame")

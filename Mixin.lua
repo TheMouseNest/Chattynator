@@ -7,7 +7,9 @@ addonTable.ChatFrameMixin = {}
 function addonTable.ChatFrameMixin:OnLoad()
   self:SetHyperlinkPropagateToParent(true)
 
+  self.filterFunc = nil
   self.messages = {}
+  self.filteredMessages = self.messages
   self.font = "GameFontNormal"
 
   self.sizingFontString = self:CreateFontString(nil, "BACKGROUND", self.font)
@@ -22,7 +24,7 @@ function addonTable.ChatFrameMixin:OnLoad()
   self.ScrollBox = CreateFrame("Frame", nil, self, "WowScrollBoxList")
   local view = CreateScrollBoxListLinearView()
   view:SetElementExtentCalculator(function(index)
-    return self.messages[index].height
+    return self.filteredMessages[index].height
   end)
   view:SetElementInitializer("Frame", function(frame, data)
     if not frame.initialized then
@@ -59,6 +61,10 @@ function addonTable.ChatFrameMixin:OnLoad()
   end)
 end
 
+function addonTable.ChatFrameMixin:SetFilter(func)
+  self.filterFunc = func
+end
+
 function addonTable.ChatFrameMixin:SetIncomingType(eventType)
   self.incomingType = eventType
 end
@@ -69,7 +75,7 @@ function addonTable.ChatFrameMixin:AddMessage(text, r, g, b, id)
     color = CreateColor(r or 1, g or 1, b or 1),
     timestamp = time(),
     id = id,
-    type = self.incomingType,
+    typeInfo = self.incomingType or {type = "MANUAL", source = "UNKNOWN"},
   }
   self.incomingType = nil
   if data.font ~= self.font or data.width ~= self:GetWidth() then
@@ -84,7 +90,12 @@ end
 
 function addonTable.ChatFrameMixin:Render()
   self:SetScript("OnUpdate", nil)
-  self.ScrollBox:SetDataProvider(CreateDataProvider(self.messages), true)
+  if self.filterFunc then
+    self.filteredMessages = tFilter(self.messages, self.filterFunc, true)
+  else
+    self.filteredMessages = self.messages
+  end
+  self.ScrollBox:SetDataProvider(CreateDataProvider(self.filteredMessages), true)
   if not self.scrolling then
     self.ScrollBox:ScrollToEnd()
   end

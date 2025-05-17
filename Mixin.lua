@@ -39,20 +39,27 @@ function addonTable.ChatFrameMixin:OnLoad()
     end
     frame.Timestamp:SetText(date("%X", data.timestamp))
     frame.DisplayString:SetText(data.text)
-    frame.DisplayString:SetTextColor(data.r or 1, data.g or 1, data.b or 1)
+    frame.DisplayString:SetTextColor(data.color.r, data.color.g, data.color.b)
   end)
   self.ScrollBox:SetAllPoints(self)
+  self.ScrollBox:SetInterpolateScroll(true)
   self.ScrollBox:Init(view)
   self.ScrollBox:SetHyperlinkPropagateToParent(true)
   self.ScrollBox:GetScrollTarget():SetHyperlinkPropagateToParent(true)
   self.ScrollBox:GetScrollTarget():SetPropagateMouseClicks(true)
+  self.ScrollBox:SetPanExtent(50)
+
+  -- Preserve location when scrolling up
+  hooksecurefunc(self.ScrollBox, "scrollInternal", function()
+    self.scrolling = self.ScrollBox:GetScrollPercentage() ~= 1
+  end)
 end
 
 function addonTable.ChatFrameMixin:AddMessage(text, r, g, b, id)
   local data = {
     text = text,
-    color = CreateColor(r, g, b),
-    timestamp = GetTime(),
+    color = CreateColor(r or 1, g or 1, b or 1),
+    timestamp = time(),
     id = id,
   }
   if data.font ~= self.font or data.width ~= self:GetWidth() then
@@ -62,10 +69,13 @@ function addonTable.ChatFrameMixin:AddMessage(text, r, g, b, id)
     data.height = (self.sizingFontString:GetLineHeight() + self.sizingFontString:GetSpacing()) * self.sizingFontString:GetNumLines()
   end
   table.insert(self.messages, data)
-  self:Render()
+  self:SetScript("OnUpdate", self.Render)
 end
 
 function addonTable.ChatFrameMixin:Render()
-  self.ScrollBox:SetDataProvider(CreateDataProvider(self.messages))
-  self.ScrollBox:ScrollToEnd()
+  self:SetScript("OnUpdate", nil)
+  self.ScrollBox:SetDataProvider(CreateDataProvider(self.messages), true)
+  if not self.scrolling then
+    self.ScrollBox:ScrollToEnd()
+  end
 end

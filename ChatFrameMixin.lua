@@ -62,34 +62,37 @@ function addonTable.ChatFrameMixin:OnLoad()
 
   self:RegisterForChat()
   self:RepositionEditBox()
+
+  self:SetScript("OnEvent", self.OnEvent)
 end
 
 function addonTable.ChatFrameMixin:RegisterForChat()
-  self:RegisterEvent("PLAYER_ENTERING_WORLD");
-  self:RegisterEvent("SETTINGS_LOADED");
-  --self:RegisterEvent("UPDATE_CHAT_COLOR");
-  self:RegisterEvent("UPDATE_CHAT_WINDOWS");
-  self:RegisterEvent("CHANNEL_UI_UPDATE");
-  self:RegisterEvent("CHANNEL_LEFT");
-  self:RegisterEvent("CHAT_MSG_CHANNEL");
-  self:RegisterEvent("CHAT_MSG_COMMUNITIES_CHANNEL");
-  self:RegisterEvent("CLUB_REMOVED");
-  self:RegisterEvent("UPDATE_INSTANCE_INFO");
-  --self:RegisterEvent("UPDATE_CHAT_COLOR_NAME_BY_CLASS");
-  self:RegisterEvent("CHAT_SERVER_DISCONNECTED");
-  self:RegisterEvent("CHAT_SERVER_RECONNECTED");
-  self:RegisterEvent("BN_CONNECTED");
-  self:RegisterEvent("BN_DISCONNECTED");
-  self:RegisterEvent("PLAYER_REPORT_SUBMITTED");
-  self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
-  self:RegisterEvent("ALTERNATIVE_DEFAULT_LANGUAGE_CHANGED");
-  self:RegisterEvent("NEWCOMER_GRADUATION");
-  self:RegisterEvent("CHAT_REGIONAL_STATUS_CHANGED");
-  self:RegisterEvent("CHAT_REGIONAL_SEND_FAILED");
-  self:RegisterEvent("NOTIFY_CHAT_SUPPRESSED");
+  self:RegisterEvent("PLAYER_ENTERING_WORLD")
+  self:RegisterEvent("SETTINGS_LOADED")
+  --self:RegisterEvent("UPDATE_CHAT_COLOR")
+  self:RegisterEvent("UPDATE_CHAT_WINDOWS")
+  self:RegisterEvent("CHANNEL_UI_UPDATE")
+  self:RegisterEvent("CHANNEL_LEFT")
+  self:RegisterEvent("CHAT_MSG_CHANNEL")
+  self:RegisterEvent("CHAT_MSG_COMMUNITIES_CHANNEL")
+  self:RegisterEvent("CLUB_REMOVED")
+  self:RegisterEvent("UPDATE_INSTANCE_INFO")
+  --self:RegisterEvent("UPDATE_CHAT_COLOR_NAME_BY_CLASS")
+  self:RegisterEvent("CHAT_SERVER_DISCONNECTED")
+  self:RegisterEvent("CHAT_SERVER_RECONNECTED")
+  self:RegisterEvent("BN_CONNECTED")
+  self:RegisterEvent("BN_DISCONNECTED")
+  self:RegisterEvent("PLAYER_REPORT_SUBMITTED")
+  self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT")
+  self:RegisterEvent("ALTERNATIVE_DEFAULT_LANGUAGE_CHANGED")
+  self:RegisterEvent("NEWCOMER_GRADUATION")
+  self:RegisterEvent("CHAT_REGIONAL_STATUS_CHANGED")
+  self:RegisterEvent("CHAT_REGIONAL_SEND_FAILED")
+  self:RegisterEvent("NOTIFY_CHAT_SUPPRESSED")
 
-  self.channelList = {}
-  self.zoneChannelList = {}
+  self.channels = {}
+  self.pendingJoins = {}
+  self.pendingLeaves = {}
 
   for type, values in pairs(ChatTypeGroup) do
     if type ~= "TRADESKILLS" then
@@ -127,44 +130,62 @@ function addonTable.ChatFrameMixin:RegisterForChat()
     self:AddMessage(...)
   end)
 
-  hooksecurefunc(SlashCmdList, "JOIN", function()
-    local channel = DEFAULT_CHAT_FRAME.channelList[#DEFAULT_CHAT_FRAME.channelList]
-    if tIndexOf(self.channelList, channel) == nil then
-      table.insert(self.channelList, channel)
-    end
+  hooksecurefunc(SlashCmdList, "JOIN", function(msg)
+    local name = gsub(msg, "%s*([^%s]+).*", "%1");
+    local id, fullName = GetChannelName(name)
+    table.insert(self.pendingJoins, {name = fullName or name, id = id, time = time()})
   end)
 
-  local env = {
-    FlashTabIfNotShown = function() end,
-    GetChatTimestampFormat = function() return nil end,
-    FCFManager_ShouldSuppressMessage = function() return false end,
-    ChatFrame_CheckAddChannel = function(_, _, channelID)
-      return true or ChatFrame_AddChannel(self, C_ChatInfo.GetChannelShortcutForChannelID(channelID)) ~= nil
-    end,
-  }
-  self.editBox = ChatFrame1EditBox
-
-  setmetatable(env, {__index = _G, __newindex = _G})
-  setfenv(ChatFrame_MessageEventHandler, env)
-  self:SetScript("OnEvent", function(_, eventType, ...)
-    if eventType == "UPDATE_CHAT_WINDOWS" or eventType == "CHANNEL_UI_UPDATE" or eventType == "CHANNEL_LEFT" then
-      self:UpdateChannels()
-    else
-      self:SetIncomingType({type = eventType, source = select(2, ...)})
-      ChatFrame_OnEvent(self, eventType, ...)
-    end
+  hooksecurefunc(SlashCmdList, "LEAVE", function(msg)
+    local name = strmatch(msg, "%s*([^%s]+)");
+    local id, fullName = GetChannelName(name)
+    table.insert(self.pendingLeaves, {name = fullName, id = id, time = time()})
   end)
 end
 
 function addonTable.ChatFrameMixin:UpdateChannels()
-  self.channelList = {} -- Used to generate channel messages in Blizzard handlers
-  self.zoneChannelList = {} -- Not used in anything relevant to us, so we don't fill it
+  self.channels = {} -- Used to generate channel messages in Blizzard handlers
   local channelDetails = {GetChannelList()}
   if #channelDetails > 0 then
     for i = 1, #channelDetails, 3 do
-      local name = channelDetails[i + 1]
-      table.insert(self.channelList, name)
+      local partialName = channelDetails[i + 1]
+      local id, fullName = GetChannelName(partialName)
+      table.insert(self.channels, {name = fullName, id = id})
     end
+  end
+end
+
+function addonTable.ChatFrameMixin:OnEvent(eventType, ...)
+  if #self.pendingJoins > 0 or #self.pendingLeaves > 0 then
+    local currentTime = time()
+    while self.pendingJoins[1] and currentTime - self.pendingJoins[1].time > 5 do
+      table.remove(self.pendingJoins, 1)
+    end
+    while self.pendingLeaves[1] and currentTime - self.pendingLeaves[1].time > 5 do
+      table.remove(self.pendingLeaves, 1)
+    end
+  end
+  local currentTime = time()
+  if ChatFrame_SystemEventHandler(eventType, ...) then
+    return
+  elseif eventType == "UPDATE_CHAT_WINDOWS" or eventType == "CHANNEL_UI_UPDATE" or eventType == "CHANNEL_LEFT" then
+    self:UpdateChannels()
+  elseif eventType == "PLAYER_ENTERING_WORLD" then
+		self.defaultLanguage = GetDefaultLanguage()
+		self.alternativeDefaultLanguage = GetAlternativeDefaultLanguage()
+  elseif eventType == "NEUTRAL_FACTION_SELECT_RESULT" then
+		self.defaultLanguage = GetDefaultLanguage()
+		self.alternativeDefaultLanguage = GetAlternativeDefaultLanguage()
+  elseif eventType == "ALTERNATIVE_DEFAULT_LANGUAGE_CHANGED" then
+		self.alternativeDefaultLanguage = GetAlternativeDefaultLanguage()
+  elseif eventType:sub(1, 8) == "CHAT_MSG" then
+    addonTable.ProcessChatEvent(self, eventType, ...)
+	elseif eventType == "VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED" then
+		local _, isNowTranscribing = ...
+		if ( not self.isTranscribing and isNowTranscribing ) then
+			ChatFrame_DisplaySystemMessage(self, SPEECH_TO_TEXT_STARTED)
+		end
+		self.isTranscribing = isNowTranscribing
   end
 end
 

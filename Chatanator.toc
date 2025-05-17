@@ -18,5 +18,6 @@
 
 HyperlinkHandler.xml
 ChatFrameMixin.lua
+ProcessChatEvent.lua
 Main.lua
 API.lua

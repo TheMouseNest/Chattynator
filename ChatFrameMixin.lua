@@ -114,7 +114,8 @@ function addonTable.ChatFrameMixin:RegisterForChat()
   end)
 
   hooksecurefunc(DEFAULT_CHAT_FRAME, "AddMessage", function(_, ...)
-    if debugstack():find("ChatFrame_OnEvent") then
+    local fullTrace = debugstack()
+    if fullTrace:find("ChatFrame_OnEvent") then
       return
     end
     local trace = debugstack(3, 1, 0)
@@ -126,14 +127,23 @@ function addonTable.ChatFrameMixin:RegisterForChat()
     self:AddMessage(...)
   end)
 
+  hooksecurefunc(SlashCmdList, "JOIN", function()
+    local channel = DEFAULT_CHAT_FRAME.channelList[#DEFAULT_CHAT_FRAME.channelList]
+    if tIndexOf(self.channelList, channel) == nil then
+      table.insert(self.channelList, channel)
+    end
+  end)
+
   local env = {
+    FlashTabIfNotShown = function() end,
     GetChatTimestampFormat = function() return nil end,
     FCFManager_ShouldSuppressMessage = function() return false end,
     ChatFrame_CheckAddChannel = function(_, _, channelID)
-      return ChatFrame_AddChannel(self, C_ChatInfo.GetChannelShortcutForChannelID(channelID)) ~= nil
+      return true or ChatFrame_AddChannel(self, C_ChatInfo.GetChannelShortcutForChannelID(channelID)) ~= nil
     end,
-    ChatEdit_UpdateNewcomerEditBoxHint = function() end,
   }
+  self.editBox = ChatFrame1EditBox
+
   setmetatable(env, {__index = _G, __newindex = _G})
   setfenv(ChatFrame_MessageEventHandler, env)
   self:SetScript("OnEvent", function(_, eventType, ...)
@@ -147,16 +157,8 @@ function addonTable.ChatFrameMixin:RegisterForChat()
 end
 
 function addonTable.ChatFrameMixin:UpdateChannels()
-  self.channelList = {}
-  self.zoneChannelList = {}
-  for index = 1, GetNumDisplayChannels() do
-    local _, isHeader, _, id, _, _, category = GetChannelDisplayInfo(index)
-    if not isHeader then
-      if category == "CHANNEL_CATEGORY_WORLD" then
-        table.insert(self.zoneChannelList, id)
-      end
-    end
-  end
+  self.channelList = {} -- Used to generate channel messages in Blizzard handlers
+  self.zoneChannelList = {} -- Not used in anything relevant to us, so we don't fill it
   local channelDetails = {GetChannelList()}
   if #channelDetails > 0 then
     for i = 1, #channelDetails, 3 do

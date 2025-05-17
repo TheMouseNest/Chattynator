@@ -19,3 +19,4 @@
 HyperlinkHandler.xml
 Mixin.lua
 Main.lua
+API.lua

@@ -1,7 +1,20 @@
 ---@class addonTableChatanator
 local addonTable = select(2, ...)
 
+ChatanatorHyperlinkHandler:SetScript("OnHyperlinkEnter", function(_, hyperlink)
+  if hyperlink:match("battlepet:") or hyperlink:match("item:") then
+    GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR_RIGHT")
+    GameTooltip:SetHyperlink(hyperlink)
+    GameTooltip:Show()
+  end
+end)
+
+ChatanatorHyperlinkHandler:SetScript("OnHyperlinkLeave", function(_, hyperlink)
+  GameTooltip:Hide()
+end)
+
 local ChatFrame = CreateFrame("Frame", nil, ChatanatorHyperlinkHandler)
+addonTable.ChatFrame = ChatFrame
 Mixin(ChatFrame, addonTable.ChatFrameMixin)
 ChatFrame:SetScript("OnHyperlinkClick", function() print("frame") end)
 ChatFrame:OnLoad()
@@ -39,6 +52,60 @@ ChatFrame:RegisterEvent("CHAT_REGIONAL_STATUS_CHANGED");
 ChatFrame:RegisterEvent("CHAT_REGIONAL_SEND_FAILED");
 ChatFrame:RegisterEvent("NOTIFY_CHAT_SUPPRESSED");
 
+local resetButton = CreateFrame("Button", nil, ChatFrame, "UIPanelButtonTemplate")
+resetButton:SetText("Reset")
+resetButton:SetScript("OnClick", function()
+  ChatFrame:SetFilter(nil)
+  ChatFrame:Render()
+end)
+
+local sayButton = CreateFrame("Button", nil, ChatFrame, "UIPanelButtonTemplate")
+sayButton:SetText("Say")
+sayButton:SetScript("OnClick", function()
+  ChatFrame:SetFilter(function(data) return data.typeInfo.type == "CHAT_MSG_SAY" end)
+  ChatFrame:Render()
+end)
+
+local guildButton = CreateFrame("Button", nil, ChatFrame, "UIPanelButtonTemplate")
+guildButton:SetText("Guild")
+guildButton:SetScript("OnClick", function()
+  ChatFrame:SetFilter(function(data) return tIndexOf({"CHAT_MSG_GUILD", "GUILD_MOTD", "CHAT_MSG_OFFICER", "CHAT_MSG_GUILD_ACHIEVEMENT", "CHAT_MSG_GUILD_ITEM_LOOTED"}, data.typeInfo.type) ~= nil end)
+  ChatFrame:Render()
+end)
+
+local systemButton = CreateFrame("Button", nil, ChatFrame, "UIPanelButtonTemplate")
+systemButton:SetText("System")
+systemButton:SetScript("OnClick", function()
+  ChatFrame:SetFilter(function(data) return data.typeInfo.type == "RAW" and data.typeInfo.source == "SYSTEM" end)
+  ChatFrame:Render()
+end)
+
+local tradeskillsButton = CreateFrame("Button", nil, ChatFrame, "UIPanelButtonTemplate")
+tradeskillsButton:SetText("Tradeskills")
+tradeskillsButton:SetScript("OnClick", function()
+  ChatFrame:SetFilter(function(data) return data.typeInfo.type == "CHAT_MSG_TRADESKILLS" end)
+  ChatFrame:Render()
+end)
+
+local addonButton = CreateFrame("Button", nil, ChatFrame, "UIPanelButtonTemplate")
+addonButton:SetText("Addon")
+addonButton:SetScript("OnClick", function()
+  ChatFrame:SetFilter(function(data) return data.typeInfo.type == "RAW" and data.typeInfo.source == "ADDON" end)
+  ChatFrame:Render()
+end)
+
+local buttons = { resetButton, sayButton, guildButton, systemButton, tradeskillsButton, addonButton}
+local lastButton = nil
+for _, b in ipairs(buttons) do
+  if lastButton == nil then
+    b:SetPoint("BOTTOMLEFT", ChatFrame, "TOPLEFT")
+  else
+    b:SetPoint("LEFT", lastButton, "RIGHT", 10, 0)
+  end
+  b:SetWidth(80)
+  lastButton = b
+end
+
 for _, values in pairs(ChatTypeGroup) do
   for _, event in ipairs(values) do
     ChatFrame:RegisterEvent(event)
@@ -50,8 +117,11 @@ hooksecurefunc(DEFAULT_CHAT_FRAME, "AddMessage", function(_, ...)
     return
   end
   local trace = debugstack(3, 1, 0)
+  if trace:find("Interface/AddOns/Chatanator") then
+    return
+  end
   local isBlizzard = trace:find("Interface/AddOns/Blizzard_") ~= nil and trace:find("PrintHandler") == nil
-  ChatFrame:SetIncomingType({type = "raw", source = isBlizzard and "SYSTEM" or "ADDON"})
+  ChatFrame:SetIncomingType({type = "RAW", source = isBlizzard and "SYSTEM" or "ADDON"})
   ChatFrame:AddMessage(...)
 end)
 
@@ -64,5 +134,5 @@ ChatFrame:SetScript("OnEvent", function(_, eventType, ...)
 end)
 
 ChatFrame1EditBox:ClearAllPoints()
-ChatFrame1EditBox:SetPoint("TOPLEFT", ChatFrame, "BOTTOMLEFT", 80, 0)
+ChatFrame1EditBox:SetPoint("TOPLEFT", ChatFrame, "BOTTOMLEFT")
 ChatFrame1EditBox:SetPoint("TOPRIGHT", ChatFrame, "BOTTOMRIGHT")

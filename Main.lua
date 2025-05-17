@@ -51,7 +51,7 @@ hooksecurefunc(DEFAULT_CHAT_FRAME, "AddMessage", function(_, ...)
   end
   local trace = debugstack(3, 1, 0)
   local isBlizzard = trace:find("Interface/AddOns/Blizzard_") ~= nil and trace:find("PrintHandler") == nil
-  ChatFrame:SetIncomingType({type = isBlizzard and "SYSTEM" or "ADDON"})
+  ChatFrame:SetIncomingType({type = "raw", source = isBlizzard and "SYSTEM" or "ADDON"})
   ChatFrame:AddMessage(...)
 end)
 

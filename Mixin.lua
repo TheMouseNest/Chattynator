@@ -59,6 +59,73 @@ function addonTable.ChatFrameMixin:OnLoad()
   hooksecurefunc(self.ScrollBox, "scrollInternal", function()
     self.scrolling = self.ScrollBox:GetScrollPercentage() ~= 1
   end)
+
+  self:RegisterForChat()
+  self:RepositionEditBox()
+end
+
+function addonTable.ChatFrameMixin:RegisterForChat()
+  self:RegisterEvent("PLAYER_ENTERING_WORLD");
+  self:RegisterEvent("SETTINGS_LOADED");
+  --self:RegisterEvent("UPDATE_CHAT_COLOR");
+  --self:RegisterEvent("UPDATE_CHAT_WINDOWS");
+  self:RegisterEvent("CHAT_MSG_CHANNEL");
+  self:RegisterEvent("CHAT_MSG_COMMUNITIES_CHANNEL");
+  self:RegisterEvent("CLUB_REMOVED");
+  self:RegisterEvent("UPDATE_INSTANCE_INFO");
+  --self:RegisterEvent("UPDATE_CHAT_COLOR_NAME_BY_CLASS");
+  self:RegisterEvent("CHAT_SERVER_DISCONNECTED");
+  self:RegisterEvent("CHAT_SERVER_RECONNECTED");
+  self:RegisterEvent("BN_CONNECTED");
+  self:RegisterEvent("BN_DISCONNECTED");
+  self:RegisterEvent("PLAYER_REPORT_SUBMITTED");
+  self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
+  self:RegisterEvent("ALTERNATIVE_DEFAULT_LANGUAGE_CHANGED");
+  self:RegisterEvent("NEWCOMER_GRADUATION");
+  self:RegisterEvent("CHAT_REGIONAL_STATUS_CHANGED");
+  self:RegisterEvent("CHAT_REGIONAL_SEND_FAILED");
+  self:RegisterEvent("NOTIFY_CHAT_SUPPRESSED");
+
+  self.channelList = {}
+  local channelDetails = {GetChannelList()}
+  if #channelDetails > 0 then
+    for i = 2, #channelDetails, 3 do
+      table.insert(self.channelList, channelDetails[i])
+    end
+  end
+
+  for _, values in pairs(ChatTypeGroup) do
+    for _, event in ipairs(values) do
+      self:RegisterEvent(event)
+    end
+  end
+
+  hooksecurefunc(DEFAULT_CHAT_FRAME, "AddMessage", function(_, ...)
+    if debugstack():find("ChatFrame_OnEvent") then
+      return
+    end
+    local trace = debugstack(3, 1, 0)
+    if trace:find("Interface/AddOns/Chatanator") then
+      return
+    end
+    local isBlizzard = trace:find("Interface/AddOns/Blizzard_") ~= nil and trace:find("PrintHandler") == nil
+    self:SetIncomingType({type = "RAW", source = isBlizzard and "SYSTEM" or "ADDON"})
+    self:AddMessage(...)
+  end)
+
+  local env = {GetChatTimestampFormat = function() return nil end, FCFManager_ShouldSuppressMessage = function() return false end}
+  setmetatable(env, {__index = _G, __newindex = _G})
+  setfenv(ChatFrame_MessageEventHandler, env)
+  self:SetScript("OnEvent", function(_, eventType, ...)
+    self:SetIncomingType({type = eventType, source = select(2, ...)})
+    ChatFrame_OnEvent(self, eventType, ...)
+  end)
+end
+
+function addonTable.ChatFrameMixin:RepositionEditBox()
+  ChatFrame1EditBox:ClearAllPoints()
+  ChatFrame1EditBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT")
+  ChatFrame1EditBox:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT")
 end
 
 function addonTable.ChatFrameMixin:SetFilter(func)

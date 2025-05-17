@@ -11,7 +11,11 @@ function addonTable.ChatFrameMixin:OnLoad()
   self.font = "GameFontNormal"
 
   self.sizingFontString = self:CreateFontString(nil, "BACKGROUND", self.font)
-  self.sizingFontString:SetPoint("TOPLEFT", 80, 0)
+
+  self.sizingFontString:SetText("00:00:00")
+  self.inset = self.sizingFontString:GetUnboundedStringWidth() + 20
+
+  self.sizingFontString:SetPoint("TOPLEFT", self.inset, 0)
   self.sizingFontString:SetPoint("TOPRIGHT", -10, 0)
   self.sizingFontString:Hide()
 
@@ -25,7 +29,7 @@ function addonTable.ChatFrameMixin:OnLoad()
       frame.initialized = true
       frame:SetHyperlinkPropagateToParent(true)
       frame.DisplayString = frame:CreateFontString(nil, "ARTWORK", self.font)
-      frame.DisplayString:SetPoint("TOPLEFT", 80, 0)
+      frame.DisplayString:SetPoint("TOPLEFT", self.inset, 0)
       frame.DisplayString:SetPoint("RIGHT", -10, 0)
       frame.DisplayString:SetJustifyH("LEFT")
       frame.Timestamp = frame:CreateFontString(nil, "ARTWORK", self.font)
@@ -55,13 +59,19 @@ function addonTable.ChatFrameMixin:OnLoad()
   end)
 end
 
+function addonTable.ChatFrameMixin:SetIncomingType(eventType)
+  self.incomingType = eventType
+end
+
 function addonTable.ChatFrameMixin:AddMessage(text, r, g, b, id)
   local data = {
     text = text,
     color = CreateColor(r or 1, g or 1, b or 1),
     timestamp = time(),
     id = id,
+    type = self.incomingType,
   }
+  self.incomingType = nil
   if data.font ~= self.font or data.width ~= self:GetWidth() then
     data.font = self.font
     data.width = self:GetWidth()

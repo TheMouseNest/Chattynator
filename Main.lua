@@ -45,4 +45,12 @@ for type, values in pairs(ChatTypeGroup) do
   end
 end
 
+hooksecurefunc("print", function(...)
+  ChatFrame:AddMessage(string.join(" ", tostringall(...)))
+end)
+
 ChatFrame:SetScript("OnEvent", ChatFrame_OnEvent)
+
+ChatFrame1EditBox:ClearAllPoints()
+ChatFrame1EditBox:SetPoint("TOPLEFT", ChatFrame, "BOTTOMLEFT", 80, 0)
+ChatFrame1EditBox:SetPoint("TOPRIGHT", ChatFrame, "BOTTOMRIGHT")

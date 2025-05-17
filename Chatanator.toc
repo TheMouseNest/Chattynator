@@ -17,6 +17,6 @@
 ## Category-zhTW: 對話
 
 HyperlinkHandler.xml
-Mixin.lua
+ChatFrameMixin.lua
 Main.lua
 API.lua

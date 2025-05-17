@@ -87,10 +87,16 @@ function addonTable.ChatFrameMixin:RegisterForChat()
   self:RegisterEvent("NOTIFY_CHAT_SUPPRESSED");
 
   self.channelList = {}
+  self.zoneChannelList = {}
   local channelDetails = {GetChannelList()}
   if #channelDetails > 0 then
-    for i = 2, #channelDetails, 3 do
-      table.insert(self.channelList, channelDetails[i])
+    for i = 1, #channelDetails, 3 do
+      local name = channelDetails[i + 1]
+      table.insert(self.channelList, name)
+      local category = select(7, GetChannelDisplayInfo(channelDetails[1]))
+      if category == "CHANNEL_CATEGORY_WORLD" then
+        table.insert(self.zoneChannelList, name)
+      end
     end
   end
 

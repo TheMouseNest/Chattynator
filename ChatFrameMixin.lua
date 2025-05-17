@@ -163,7 +163,9 @@ function addonTable.ChatFrameMixin:UpdateChannels()
   if #channelDetails > 0 then
     for i = 1, #channelDetails, 3 do
       local name = channelDetails[i + 1]
-      table.insert(self.channelList, name)
+      local id, fullName = GetChannelName(name)
+      table.insert(self.channelList, fullName)
+      table.insert(self.zoneChannelList, id)
     end
   end
 end

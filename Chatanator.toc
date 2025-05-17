@@ -16,5 +16,6 @@
 ## Category-zhCN: 聊天
 ## Category-zhTW: 對話
 
-ChatFrame.xml
+HyperlinkHandler.xml
+Mixin.lua
 Main.lua

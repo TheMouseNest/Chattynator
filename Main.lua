@@ -45,11 +45,29 @@ for type, values in pairs(ChatTypeGroup) do
   end
 end
 
-hooksecurefunc("print", function(...)
+--[[hooksecurefunc("print", function(...)
+  ChatFrame:SetIncomingType("print")
   ChatFrame:AddMessage(string.join(" ", tostringall(...)))
 end)
+DevTools_AddMessageHandler(function(text)
+  ChatFrame:SetIncomingType("DevTools_Dump")
+  ChatFrame:AddMessage(text)
+end)]]
+hooksecurefunc(DEFAULT_CHAT_FRAME, "AddMessage", function(_, ...)
+  if debugstack():find("ChatFrame_OnEvent") then
+    return
+  end
+  ChatFrame:SetIncomingType("raw")
+  ChatFrame:AddMessage(...)
+end)
 
-ChatFrame:SetScript("OnEvent", ChatFrame_OnEvent)
+local env = {GetChatTimestampFormat = function() return nil end}
+setmetatable(env, {__index = _G, __newindex = _G})
+setfenv(ChatFrame_MessageEventHandler, env)
+ChatFrame:SetScript("OnEvent", function(_, eventType, ...)
+  ChatFrame:SetIncomingType(eventType)
+  ChatFrame_OnEvent(ChatFrame, eventType, ...)
+end)
 
 ChatFrame1EditBox:ClearAllPoints()
 ChatFrame1EditBox:SetPoint("TOPLEFT", ChatFrame, "BOTTOMLEFT", 80, 0)

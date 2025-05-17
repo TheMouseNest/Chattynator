@@ -8,7 +8,7 @@ ChatFrame:OnLoad()
 ChatFrame:SetPoint("CENTER", UIParent)
 ChatFrame:SetSize(500, 500)
 ChatFrame:AddMessage("Testing: |cffffd000|Htrade:Player-1307-0AA53392:25229:755|h[Jewelcrafting]|h|r")
-ChatFrame:AddMessage("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.", r, g, b, id)
+ChatFrame:AddMessage("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
 ChatFrame:AddMessage("You receive loot: |cnIQ0:|Hitem:30821::::::::80:268:::::::::|h[Envenomed Scorpid Stinger]|h|r")
 ChatFrame:AddMessage("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam convallis, nulla ac aliquet cursus, neque est tincidunt nunc, ac accumsan arcu lectus quis urna. Sed scelerisque dui tincidunt, aliquam tellus vulputate, tempor tortor. Sed ultrices mauris lacinia ex porttitor, ac laoreet lectus consequat. In vitae lorem vehicula elit consectetur ullamcorper. Donec tincidunt dui sed leo consequat tempor. Nulla sed purus at ante pharetra lobortis at id turpis. Duis accumsan erat sit amet magna rhoncus venenatis. Interdum et malesuada fames ac ante ipsum primis in faucibus. Maecenas non dui turpis. Aenean consequat erat neque, eu maximus tortor ornare eu. Nulla mollis tortor ligula, eget lacinia velit ornare quis.")
 ChatFrame:AddMessage("Cras imperdiet, est vitae ullamcorper convallis, metus nisl eleifend tellus, id viverra neque eros non dui. Maecenas aliquam quam id quam lacinia vestibulum. Sed ac erat sapien. Ut auctor nisi sit amet orci ultricies, non hendrerit est volutpat. Pellentesque ullamcorper neque massa, non interdum justo suscipit in. Nunc aliquam, augue eget condimentum mattis, nulla turpis laoreet purus, ac hendrerit dolor enim sit amet nibh. Sed nec ante porta, venenatis quam a, egestas diam. Morbi ac tempus metus. Ut ullamcorper eleifend arcu nec commodo. Aliquam nec malesuada tellus. Nulla vel leo non sapien pellentesque vehicula. Vivamus eget pharetra risus. Vestibulum malesuada lectus dignissim felis gravida rutrum. Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
@@ -39,25 +39,19 @@ ChatFrame:RegisterEvent("CHAT_REGIONAL_STATUS_CHANGED");
 ChatFrame:RegisterEvent("CHAT_REGIONAL_SEND_FAILED");
 ChatFrame:RegisterEvent("NOTIFY_CHAT_SUPPRESSED");
 
-for type, values in pairs(ChatTypeGroup) do
+for _, values in pairs(ChatTypeGroup) do
   for _, event in ipairs(values) do
     ChatFrame:RegisterEvent(event)
   end
 end
 
---[[hooksecurefunc("print", function(...)
-  ChatFrame:SetIncomingType("print")
-  ChatFrame:AddMessage(string.join(" ", tostringall(...)))
-end)
-DevTools_AddMessageHandler(function(text)
-  ChatFrame:SetIncomingType("DevTools_Dump")
-  ChatFrame:AddMessage(text)
-end)]]
 hooksecurefunc(DEFAULT_CHAT_FRAME, "AddMessage", function(_, ...)
   if debugstack():find("ChatFrame_OnEvent") then
     return
   end
-  ChatFrame:SetIncomingType("raw")
+  local trace = debugstack(3, 1, 0)
+  local isBlizzard = trace:find("Interface/AddOns/Blizzard_") ~= nil and trace:find("PrintHandler") == nil
+  ChatFrame:SetIncomingType({type = isBlizzard and "SYSTEM" or "ADDON"})
   ChatFrame:AddMessage(...)
 end)
 
@@ -65,7 +59,7 @@ local env = {GetChatTimestampFormat = function() return nil end}
 setmetatable(env, {__index = _G, __newindex = _G})
 setfenv(ChatFrame_MessageEventHandler, env)
 ChatFrame:SetScript("OnEvent", function(_, eventType, ...)
-  ChatFrame:SetIncomingType(eventType)
+  ChatFrame:SetIncomingType({type = eventType, source = select(2, ...)})
   ChatFrame_OnEvent(ChatFrame, eventType, ...)
 end)
 

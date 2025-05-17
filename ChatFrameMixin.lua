@@ -68,7 +68,9 @@ function addonTable.ChatFrameMixin:RegisterForChat()
   self:RegisterEvent("PLAYER_ENTERING_WORLD");
   self:RegisterEvent("SETTINGS_LOADED");
   --self:RegisterEvent("UPDATE_CHAT_COLOR");
-  --self:RegisterEvent("UPDATE_CHAT_WINDOWS");
+  self:RegisterEvent("UPDATE_CHAT_WINDOWS");
+  self:RegisterEvent("CHANNEL_UI_UPDATE");
+  self:RegisterEvent("CHANNEL_LEFT");
   self:RegisterEvent("CHAT_MSG_CHANNEL");
   self:RegisterEvent("CHAT_MSG_COMMUNITIES_CHANNEL");
   self:RegisterEvent("CLUB_REMOVED");
@@ -88,17 +90,6 @@ function addonTable.ChatFrameMixin:RegisterForChat()
 
   self.channelList = {}
   self.zoneChannelList = {}
-  local channelDetails = {GetChannelList()}
-  if #channelDetails > 0 then
-    for i = 1, #channelDetails, 3 do
-      local name = channelDetails[i + 1]
-      table.insert(self.channelList, name)
-      local category = select(7, GetChannelDisplayInfo(channelDetails[1]))
-      if category == "CHANNEL_CATEGORY_WORLD" then
-        table.insert(self.zoneChannelList, name)
-      end
-    end
-  end
 
   for type, values in pairs(ChatTypeGroup) do
     if type ~= "TRADESKILLS" then
@@ -135,13 +126,44 @@ function addonTable.ChatFrameMixin:RegisterForChat()
     self:AddMessage(...)
   end)
 
-  local env = {GetChatTimestampFormat = function() return nil end, FCFManager_ShouldSuppressMessage = function() return false end}
+  local env = {
+    GetChatTimestampFormat = function() return nil end,
+    FCFManager_ShouldSuppressMessage = function() return false end,
+    ChatFrame_CheckAddChannel = function(_, _, channelID)
+      return ChatFrame_AddChannel(self, C_ChatInfo.GetChannelShortcutForChannelID(channelID)) ~= nil
+    end,
+    ChatEdit_UpdateNewcomerEditBoxHint = function() end,
+  }
   setmetatable(env, {__index = _G, __newindex = _G})
   setfenv(ChatFrame_MessageEventHandler, env)
   self:SetScript("OnEvent", function(_, eventType, ...)
-    self:SetIncomingType({type = eventType, source = select(2, ...)})
-    ChatFrame_OnEvent(self, eventType, ...)
+    if eventType == "UPDATE_CHAT_WINDOWS" or eventType == "CHANNEL_UI_UPDATE" or eventType == "CHANNEL_LEFT" then
+      self:UpdateChannels()
+    else
+      self:SetIncomingType({type = eventType, source = select(2, ...)})
+      ChatFrame_OnEvent(self, eventType, ...)
+    end
   end)
+end
+
+function addonTable.ChatFrameMixin:UpdateChannels()
+  self.channelList = {}
+  self.zoneChannelList = {}
+  for index = 1, GetNumDisplayChannels() do
+    local _, isHeader, _, id, _, _, category = GetChannelDisplayInfo(index)
+    if not isHeader then
+      if category == "CHANNEL_CATEGORY_WORLD" then
+        table.insert(self.zoneChannelList, id)
+      end
+    end
+  end
+  local channelDetails = {GetChannelList()}
+  if #channelDetails > 0 then
+    for i = 1, #channelDetails, 3 do
+      local name = channelDetails[i + 1]
+      table.insert(self.channelList, name)
+    end
+  end
 end
 
 function addonTable.ChatFrameMixin:RepositionEditBox()

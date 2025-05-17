@@ -31,27 +31,6 @@ ChatFrame:AddMessage("Sed consectetur leo nunc, at euismod nisi semper at. Morbi
 
 ChatFrame:Show()
 
-ChatFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
-ChatFrame:RegisterEvent("SETTINGS_LOADED");
---ChatFrame:RegisterEvent("UPDATE_CHAT_COLOR");
---ChatFrame:RegisterEvent("UPDATE_CHAT_WINDOWS");
-ChatFrame:RegisterEvent("CHAT_MSG_CHANNEL");
-ChatFrame:RegisterEvent("CHAT_MSG_COMMUNITIES_CHANNEL");
-ChatFrame:RegisterEvent("CLUB_REMOVED");
-ChatFrame:RegisterEvent("UPDATE_INSTANCE_INFO");
---ChatFrame:RegisterEvent("UPDATE_CHAT_COLOR_NAME_BY_CLASS");
-ChatFrame:RegisterEvent("CHAT_SERVER_DISCONNECTED");
-ChatFrame:RegisterEvent("CHAT_SERVER_RECONNECTED");
-ChatFrame:RegisterEvent("BN_CONNECTED");
-ChatFrame:RegisterEvent("BN_DISCONNECTED");
-ChatFrame:RegisterEvent("PLAYER_REPORT_SUBMITTED");
-ChatFrame:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
-ChatFrame:RegisterEvent("ALTERNATIVE_DEFAULT_LANGUAGE_CHANGED");
-ChatFrame:RegisterEvent("NEWCOMER_GRADUATION");
-ChatFrame:RegisterEvent("CHAT_REGIONAL_STATUS_CHANGED");
-ChatFrame:RegisterEvent("CHAT_REGIONAL_SEND_FAILED");
-ChatFrame:RegisterEvent("NOTIFY_CHAT_SUPPRESSED");
-
 local resetButton = CreateFrame("Button", nil, ChatFrame, "UIPanelButtonTemplate")
 resetButton:SetText("Reset")
 resetButton:SetScript("OnClick", function()
@@ -105,34 +84,3 @@ for _, b in ipairs(buttons) do
   b:SetWidth(80)
   lastButton = b
 end
-
-for _, values in pairs(ChatTypeGroup) do
-  for _, event in ipairs(values) do
-    ChatFrame:RegisterEvent(event)
-  end
-end
-
-hooksecurefunc(DEFAULT_CHAT_FRAME, "AddMessage", function(_, ...)
-  if debugstack():find("ChatFrame_OnEvent") then
-    return
-  end
-  local trace = debugstack(3, 1, 0)
-  if trace:find("Interface/AddOns/Chatanator") then
-    return
-  end
-  local isBlizzard = trace:find("Interface/AddOns/Blizzard_") ~= nil and trace:find("PrintHandler") == nil
-  ChatFrame:SetIncomingType({type = "RAW", source = isBlizzard and "SYSTEM" or "ADDON"})
-  ChatFrame:AddMessage(...)
-end)
-
-local env = {GetChatTimestampFormat = function() return nil end}
-setmetatable(env, {__index = _G, __newindex = _G})
-setfenv(ChatFrame_MessageEventHandler, env)
-ChatFrame:SetScript("OnEvent", function(_, eventType, ...)
-  ChatFrame:SetIncomingType({type = eventType, source = select(2, ...)})
-  ChatFrame_OnEvent(ChatFrame, eventType, ...)
-end)
-
-ChatFrame1EditBox:ClearAllPoints()
-ChatFrame1EditBox:SetPoint("TOPLEFT", ChatFrame, "BOTTOMLEFT")
-ChatFrame1EditBox:SetPoint("TOPRIGHT", ChatFrame, "BOTTOMRIGHT")

@@ -10,7 +10,7 @@ function addonTable.ChatFrameMixin:OnLoad()
   self.filterFunc = nil
   self.messages = {}
   self.filteredMessages = self.messages
-  self.font = "GameFontNormal"
+  self.font = "ChatFontNormal"
 
   self.sizingFontString = self:CreateFontString(nil, "BACKGROUND", self.font)
 
@@ -100,9 +100,11 @@ function addonTable.ChatFrameMixin:RegisterForChat()
     end
   end
 
-  for _, values in pairs(ChatTypeGroup) do
-    for _, event in ipairs(values) do
-      self:RegisterEvent(event)
+  for type, values in pairs(ChatTypeGroup) do
+    if type ~= "TRADESKILLS" then
+      for _, event in ipairs(values) do
+        self:RegisterEvent(event)
+      end
     end
   end
 

@@ -108,6 +108,20 @@ function addonTable.ChatFrameMixin:RegisterForChat()
     end
   end
 
+  hooksecurefunc(C_ChatInfo, "UncensorChatLine", function(lineID)
+    local found = false
+    for _, message in ipairs(self.messages) do
+      if message.id == lineID then
+        found = true
+        message.text = message.Formatter(C_ChatInfo.GetChatLineText(lineID))
+        break
+      end
+    end
+    if found then
+      self:Render()
+    end
+  end)
+
   hooksecurefunc(DEFAULT_CHAT_FRAME, "AddMessage", function(_, ...)
     if debugstack():find("ChatFrame_OnEvent") then
       return
@@ -144,12 +158,13 @@ function addonTable.ChatFrameMixin:SetIncomingType(eventType)
   self.incomingType = eventType
 end
 
-function addonTable.ChatFrameMixin:AddMessage(text, r, g, b, id)
+function addonTable.ChatFrameMixin:AddMessage(text, r, g, b, id, _, _, _, _, Formatter)
   local data = {
     text = text,
     color = CreateColor(r or 1, g or 1, b or 1),
     timestamp = time(),
     id = id,
+    formatter = Formatter, -- Stored in case we have to uncensor a message
     typeInfo = self.incomingType or {type = "MANUAL", source = "UNKNOWN"},
   }
   self.incomingType = nil

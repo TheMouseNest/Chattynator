@@ -76,6 +76,14 @@ function addonTable.ChatFrameMixin:OnLoad()
     self.scrolling = self.ScrollBox:GetScrollPercentage() ~= 1
   end)
 
+  self.background = self:CreateTexture(nil, "BACKGROUND")
+  self.background:SetTexture("Interface/AddOns/Chatanator/Assets/ChatTabMiddle")
+  self.background:SetTexCoord(0, 1, 1, 0)
+  self.background:SetPoint("TOPLEFT", 0, 5)
+  self.background:SetPoint("BOTTOMRIGHT", 0, -5)
+  self.background:SetVertexColor(0.1, 0.1, 0.1)
+  self.background:SetAlpha(0.8)
+
   self:RegisterForChat()
   self:RepositionEditBox()
 end

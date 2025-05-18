@@ -6,6 +6,7 @@ addonTable.ChatFrameMixin = {}
 
 function addonTable.ChatFrameMixin:OnLoad()
   self:SetHyperlinkPropagateToParent(true)
+  self:SetMovable(true)
 
   self.filterFunc = nil
   self.messages = {}

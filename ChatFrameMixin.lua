@@ -53,6 +53,7 @@ function addonTable.ChatFrameMixin:OnLoad()
   self.ScrollBox:SetHyperlinkPropagateToParent(true)
   self.ScrollBox:GetScrollTarget():SetHyperlinkPropagateToParent(true)
   self.ScrollBox:GetScrollTarget():SetPropagateMouseClicks(true)
+  self.ScrollBox:GetScrollTarget():SetPropagateMouseMotion(true)
   self.ScrollBox:SetPanExtent(50)
 
   -- Preserve location when scrolling up
@@ -92,7 +93,7 @@ function addonTable.ChatFrameMixin:RegisterForChat()
   self.zoneChannelList = {}
 
   for type, values in pairs(ChatTypeGroup) do
-    if type ~= "TRADESKILLS" then
+    if type ~= "TRADESKILLS" --[[and type ~= "COMBAT_MISC_INFO"]] then
       for _, event in ipairs(values) do
         self:RegisterEvent(event)
       end

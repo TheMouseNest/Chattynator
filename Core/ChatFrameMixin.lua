@@ -38,11 +38,23 @@ function addonTable.ChatFrameMixin:OnLoad()
       frame.Timestamp:SetPoint("TOPLEFT", 10, 0)
       frame.Timestamp:SetJustifyH("LEFT")
       frame.Timestamp:SetTextColor(0.5, 0.5, 0.5)
+      frame:SetScript("OnEnter", function()
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetText("Type: " .. frame.data.typeInfo.type)
+        GameTooltip:AddLine("Source: " .. tostring(frame.data.typeInfo.source))
+        GameTooltip:Show()
+      end)
+      frame:SetScript("OnLeave", function()
+        GameTooltip:Hide()
+      end)
+      frame:SetPropagateMouseClicks(true)
+      frame:SetPropagateMouseMotion(true)
     end
     if data.font ~= self.font or data.width ~= self:GetWidth() then
       self.sizingFontString:SetText(data.text)
       data.height = self.sizingFontString:GetLineHeight() * self.sizingFontString:GetNumLines()
     end
+    frame.data = data
     frame.Timestamp:SetText(date("%X", data.timestamp))
     frame.DisplayString:SetText(data.text)
     frame.DisplayString:SetTextColor(data.color.r, data.color.g, data.color.b)
@@ -124,7 +136,7 @@ function addonTable.ChatFrameMixin:RegisterForChat()
       return
     end
     local isBlizzard = trace:find("Interface/AddOns/Blizzard_") ~= nil and trace:find("PrintHandler") == nil
-    self:SetIncomingType({type = "RAW", source = isBlizzard and "SYSTEM" or "ADDON"})
+    self:SetIncomingType({type = isBlizzard and "SYSTEM" or "ADDON", event = "RAW"})
     self:AddMessage(...)
   end)
 
@@ -151,7 +163,7 @@ function addonTable.ChatFrameMixin:RegisterForChat()
     if eventType == "UPDATE_CHAT_WINDOWS" or eventType == "CHANNEL_UI_UPDATE" or eventType == "CHANNEL_LEFT" then
       self:UpdateChannels()
     else
-      self:SetIncomingType({type = eventType, source = select(2, ...)})
+      self:SetIncomingType({type = ChatTypeGroupInverted[eventType], event = eventType, source = select(2, ...)})
       ChatFrame_OnEvent(self, eventType, ...)
     end
   end)
@@ -192,7 +204,7 @@ function addonTable.ChatFrameMixin:AddMessage(text, r, g, b, id, _, _, _, _, For
     timestamp = time(),
     id = id,
     formatter = Formatter, -- Stored in case we have to uncensor a message
-    typeInfo = self.incomingType or {type = "MANUAL", source = "UNKNOWN"},
+    typeInfo = self.incomingType or {type = "ADDON", event = "RAW", source = "CHATANATOR"},
   }
   self.incomingType = nil
   if data.font ~= self.font or data.width ~= self:GetWidth() then

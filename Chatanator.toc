@@ -3,6 +3,8 @@
 ## Version: @project-version@
 ## Author: plusmouse
 ## IconTexture: Interface\AddOns\Chatanator\Assets\icon.tga
+## SavedVariables: CHATANATOR_CONFIG
+## SavedVariablesPerCharacter: CHATANATOR_PROFILE
 
 ## Category-enUS: Chat
 ## Category-deDE: Chat
@@ -16,7 +18,16 @@
 ## Category-zhCN: 聊天
 ## Category-zhTW: 對話
 
-HyperlinkHandler.xml
-ChatFrameMixin.lua
-Main.lua
-API.lua
+Locales.lua
+
+Core/Objects.lua
+Core/Locales.lua
+Core/Constants.lua
+Core/Config.lua
+Core/Utilities.lua
+Core/HyperlinkHandler.xml
+Core/ChatFrameMixin.lua
+Core/Tabs.lua
+Core/Initialize.lua
+Core/SlashCmd.lua
+Core/API.lua

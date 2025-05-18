@@ -42,7 +42,9 @@ function addonTable.ChatFrameMixin:OnLoad()
       frame:SetScript("OnEnter", function()
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
         GameTooltip:SetText("Type: " .. frame.data.typeInfo.type)
+        GameTooltip:AddLine("Event: " .. frame.data.typeInfo.event)
         GameTooltip:AddLine("Source: " .. tostring(frame.data.typeInfo.source))
+        GameTooltip:AddLine("Color: " .. frame.data.color:GenerateHexColorNoAlpha())
         GameTooltip:Show()
       end)
       frame:SetScript("OnLeave", function()
@@ -105,12 +107,8 @@ function addonTable.ChatFrameMixin:RegisterForChat()
   self.channelList = {}
   self.zoneChannelList = {}
 
-  for type, values in pairs(ChatTypeGroup) do
-    if type ~= "TRADESKILLS" --[[and type ~= "COMBAT_MISC_INFO"]] then
-      for _, event in ipairs(values) do
-        self:RegisterEvent(event)
-      end
-    end
+  for event in pairs(ChatTypeGroupInverted) do
+    self:RegisterEvent(event)
   end
 
   hooksecurefunc(C_ChatInfo, "UncensorChatLine", function(lineID)
@@ -137,7 +135,7 @@ function addonTable.ChatFrameMixin:RegisterForChat()
       return
     end
     local isBlizzard = trace:find("Interface/AddOns/Blizzard_") ~= nil and trace:find("PrintHandler") == nil
-    self:SetIncomingType({type = isBlizzard and "SYSTEM" or "ADDON", event = "RAW"})
+    self:SetIncomingType({type = isBlizzard and "SYSTEM" or "ADDON", event = "NONE"})
     self:AddMessage(...)
   end)
 
@@ -205,7 +203,7 @@ function addonTable.ChatFrameMixin:AddMessage(text, r, g, b, id, _, _, _, _, For
     timestamp = time(),
     id = id,
     formatter = Formatter, -- Stored in case we have to uncensor a message
-    typeInfo = self.incomingType or {type = "ADDON", event = "RAW", source = "CHATANATOR"},
+    typeInfo = self.incomingType or {type = "ADDON", event = "NONE", source = "CHATANATOR"},
   }
   self.incomingType = nil
   if data.font ~= self.font or data.width ~= self:GetWidth() then

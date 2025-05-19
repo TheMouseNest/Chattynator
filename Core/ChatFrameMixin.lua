@@ -10,6 +10,10 @@ function addonTable.ChatFrameMixin:OnLoad()
   self:SetHyperlinkPropagateToParent(true)
   self:SetMovable(true)
   self:SetResizable(true)
+  self:SetClampedToScreen(true)
+
+  self:SetPoint(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].position))
+  self:SetSize(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].size))
 
   self.filterFunc = nil
   self.filteredMessages = addonTable.Messages.messages
@@ -21,7 +25,7 @@ function addonTable.ChatFrameMixin:OnLoad()
   end)
   local oldWidth = 0
   self:SetScript("OnSizeChanged", function(_, width, _)
-    width = math.floor(width - addonTable.Messages.inset - rightInset)
+    width = math.floor(self.ScrollBox:GetWidth() - addonTable.Messages.inset - rightInset)
     addonTable.Messages:RegisterWidth(width)
     addonTable.Messages:UnregisterWidth(oldWidth)
     oldWidth = width
@@ -40,7 +44,7 @@ function addonTable.ChatFrameMixin:OnLoad()
       frame.DisplayString:SetNonSpaceWrap(true)
       frame.DisplayString:SetWordWrap(true)
       frame.Timestamp = frame:CreateFontString(nil, "ARTWORK", addonTable.Messages.font)
-      frame.Timestamp:SetPoint("TOPLEFT", 10, 0)
+      frame.Timestamp:SetPoint("TOPLEFT", 0, 0)
       frame.Timestamp:SetJustifyH("LEFT")
       frame.Timestamp:SetTextColor(0.5, 0.5, 0.5)
       frame:SetScript("OnEnter", function()
@@ -64,7 +68,8 @@ function addonTable.ChatFrameMixin:OnLoad()
     frame.DisplayString:SetText(data.text)
     frame.DisplayString:SetTextColor(data.color.r, data.color.g, data.color.b)
   end)
-  self.ScrollBox:SetAllPoints(self)
+  self.ScrollBox:SetPoint("TOPLEFT", 32, -27)
+  self.ScrollBox:SetPoint("BOTTOMRIGHT", 0, 32)
   self.ScrollBox:SetInterpolateScroll(true)
   self.ScrollBox:Init(view)
   self.ScrollBox:SetHyperlinkPropagateToParent(true)
@@ -81,19 +86,21 @@ function addonTable.ChatFrameMixin:OnLoad()
   self.background = self:CreateTexture(nil, "BACKGROUND")
   self.background:SetTexture("Interface/AddOns/Chatanator/Assets/ChatTabMiddle")
   self.background:SetTexCoord(0, 1, 1, 0)
-  self.background:SetPoint("TOPLEFT", 0, 5)
-  self.background:SetPoint("BOTTOMRIGHT", 0, -5)
+  self.background:SetPoint("TOP", self.ScrollBox, 0, 5)
+  self.background:SetPoint("LEFT")
+  self.background:SetPoint("BOTTOMRIGHT", self.ScrollBox, 0, -5)
   self.background:SetAlpha(0.8)
 
   self.resizeWidget = CreateFrame("Button", nil, self)
   self.resizeWidget:SetSize(25, 27.5)
-  self.resizeWidget:SetPoint("BOTTOMRIGHT", -5,  0)
+  self.resizeWidget:SetPoint("BOTTOMRIGHT", self.ScrollBox, -5,  0)
   self.resizeWidget:RegisterForDrag("LeftButton")
   self.resizeWidget:SetScript("OnDragStart", function()
     self:StartSizing("BOTTOMRIGHT")
   end)
   self.resizeWidget:SetScript("OnDragStop", function()
     self:StopMovingOrSizing()
+    self:SaveSize()
   end)
   local tex = self.resizeWidget:CreateTexture(nil, "ARTWORK")
   tex:SetTexture("Interface/AddOns/Chatanator/Assets/resize.png")
@@ -110,10 +117,35 @@ function addonTable.ChatFrameMixin:OnLoad()
   addonTable.CallbackRegistry:RegisterCallback("Render", self.Render, self)
 end
 
+function addonTable.ChatFrameMixin:SavePosition()
+  local point1, anchorFrame, point2, x, y = self:GetPoint(1)
+  local anchorFrameName = anchorFrame and anchorFrame:GetName() or "UIParent"
+  addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].position = {point1, anchorFrameName, point2, x, y}
+end
+
+function addonTable.ChatFrameMixin:SaveSize()
+  local x, y = self:GetSize()
+  addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].size = {x, y}
+end
+
 function addonTable.ChatFrameMixin:RepositionEditBox()
+  ChatFrame1EditBox:SetParent(self)
   ChatFrame1EditBox:ClearAllPoints()
-  ChatFrame1EditBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT")
-  ChatFrame1EditBox:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT")
+  ChatFrame1EditBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, 32)
+  ChatFrame1EditBox:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, 32)
+
+  QuickJoinToastButton:SetParent(self)
+  QuickJoinToastButton:ClearAllPoints()
+  QuickJoinToastButton:SetPoint("RIGHT", self.ScrollBox, "LEFT", 1, 0)
+  QuickJoinToastButton:SetPoint("BOTTOM", self, "TOP", 0, -22)
+
+  ChatFrameChannelButton:SetParent(self)
+  ChatFrameChannelButton:ClearAllPoints()
+  ChatFrameChannelButton:SetPoint("TOPRIGHT", self.ScrollBox, "TOPLEFT", -3, -20)
+
+  ChatFrameMenuButton:SetParent(self)
+  ChatFrameMenuButton:ClearAllPoints()
+  ChatFrameMenuButton:SetPoint("BOTTOMRIGHT", self.ScrollBox, "BOTTOMLEFT", 0, -5)
 end
 
 function addonTable.ChatFrameMixin:SetFilter(func)

@@ -4,30 +4,36 @@ addonTable.Config = {}
 
 local settings = {
   ROWS_LIMIT = {key = "rows_limit", default = 200},
-  TABS = {key = "tabs", default = {
+  WINDOWS = {key = "windows", default = {
     {
-      name = "GENERAL",
-      groups = {
-        ["TRADESKILLS"] = false,
-        ["COMBAT_MISC_INFO"] = false,
-        ["COMBAT_XP_GAIN"] = false,
-        ["PET_BATTLE_COMBAT_LOG"] = false,
-        ["PET_INFO"] = false,
-        ["OPENING"] = false,
-        ["VOICE_TEXT"] = false,
+      position = {"BOTTOMLEFT", "UIParent", "BOTTOMLEFT", 0, 40},
+      size = {460, 205},
+      tabs = {
+        {
+          name = "GENERAL",
+          groups = {
+            ["TRADESKILLS"] = false,
+            ["COMBAT_MISC_INFO"] = false,
+            ["COMBAT_XP_GAIN"] = false,
+            ["PET_BATTLE_COMBAT_LOG"] = false,
+            ["PET_INFO"] = false,
+            ["OPENING"] = false,
+            ["VOICE_TEXT"] = false,
+          },
+          invert = true,
+          channels = {}, backgroundColor = "1A1A1A", tabColor = "111111",
+        },
+        {
+          name = "GUILD",
+          groups = {
+            ["GUILD"] = true,
+            ["OFFICER"] = true,
+            ["GUILD_ACHIEVEMENT"] = true,
+          },
+          channels = {}, backgroundColor = "999999", tabColor = "309944",
+        },
       },
-      invert = true,
-      channels = {}, backgroundColor = "1A1A1A", tabColor = "111111",
     },
-    {
-      name = "GUILD",
-      groups = {
-        ["GUILD"] = true,
-        ["OFFICER"] = true,
-        ["GUILD_ACHIEVEMENT"] = true,
-      },
-      channels = {}, backgroundColor = "999999", tabColor = "309944",
-    }
   }},
 }
 

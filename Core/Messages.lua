@@ -13,7 +13,7 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   self.sizingFontString:SetText("00:00:00")
   self.sizingFontString:SetNonSpaceWrap(true)
   self.sizingFontString:SetWordWrap(true)
-  self.inset = self.sizingFontString:GetUnboundedStringWidth() + 20
+  self.inset = self.sizingFontString:GetUnboundedStringWidth() + 10
 
   self.sizingFontString:Hide()
 

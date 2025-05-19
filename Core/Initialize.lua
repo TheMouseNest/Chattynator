@@ -6,13 +6,15 @@ addonTable.CallbackRegistry:OnLoad()
 addonTable.CallbackRegistry:GenerateCallbackEvents(addonTable.Constants.Events)
 
 function addonTable.Core.MigrateSettings()
-  for _, tab in ipairs(addonTable.Config.Get(addonTable.Config.Options.TABS)) do
-    if tab.events then
-      tab.groups = tab.events
-      tab.events = nil
-    end
-  end
 end
+
+local hidden = CreateFrame("Frame")
+hidden:Hide()
+addonTable.hiddenFrame = hidden
+
+local offscreen = CreateFrame("Frame")
+offscreen:SetPoint("TOPLEFT", UIParent, "TOPRIGHT")
+addonTable.offscreenFrame = hidden
 
 function addonTable.Core.Initialize()
   addonTable.Config.InitializeData()
@@ -45,17 +47,40 @@ function addonTable.Core.Initialize()
   addonTable.Messages:AddMessage("Sed consectetur leo nunc, at euismod nisi semper at. Morbi vitae consectetur nisl. Mauris elementum augue ante, eget rutrum nibh suscipit a. Pellentesque consectetur purus eu tellus tincidunt semper. Integer lectus sem, lacinia quis odio id, finibus consectetur quam. Etiam a erat ut ante rutrum varius. Proin congue ac augue a feugiat. Proin ac elit dapibus, congue felis in, imperdiet leo. Cras sodales diam nec neque condimentum laoreet. Vestibulum elementum tellus odio, sit amet efficitur dui blandit id.")
 
   local chatFrame = CreateFrame("Frame", nil, ChatanatorHyperlinkHandler)
+  chatFrame:SetID(1)
   addonTable.ChatFrame = chatFrame
   Mixin(chatFrame, addonTable.ChatFrameMixin)
   chatFrame:OnLoad()
   chatFrame:SetPoint("CENTER", UIParent)
-  chatFrame:SetSize(500, 300)
   addonTable.Messages:RegisterWidth(chatFrame:GetWidth() - addonTable.Messages.inset)
 
   chatFrame:Show()
 
   addonTable.Core.InitializeTabs(chatFrame)
   addonTable.Utilities.Message("Welcome")
+
+  local frame = CreateFrame("Frame")
+  frame:RegisterEvent("PLAYER_ENTERING_WORLD")
+  frame:SetScript("OnEvent", function()
+    C_Timer.After(0, function()
+      for _, tabName in pairs(CHAT_FRAMES) do
+        if tabName ~= "ChatFrame2" then
+          local tab = _G[tabName]
+          tab:SetParent(hidden)
+          tab:UnregisterAllEvents()
+          tab:RegisterEvent("UPDATE_CHAT_COLOR")
+          local tabButton = _G[tabName .. "Tab"]
+          tabButton:SetParent(hidden)
+          local SetParent = tabButton.SetParent
+          hooksecurefunc(tabButton, "SetParent", function(self) SetParent(self, hidden) end)
+        end
+        local tabButton = _G[tabName .. "Tab"]
+        tabButton:SetParent(hidden)
+        local SetParent = tabButton.SetParent
+        hooksecurefunc(tabButton, "SetParent", function(self) SetParent(self, hidden) end)
+      end
+    end)
+  end)
 end
 
 EventUtil.ContinueOnAddOnLoaded("Chatanator", addonTable.Core.Initialize)

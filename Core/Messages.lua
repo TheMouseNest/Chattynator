@@ -141,6 +141,7 @@ function addonTable.MessagesMonitorMixin:UnregisterWidth(width)
           data.height[key] = nil
         end
       end
+      data.height = CopyTable(data.height) -- Optimisation to avoid lots of nils after resizing chat frame
     end
   end
 end
@@ -174,7 +175,7 @@ end
 function addonTable.MessagesMonitorMixin:AddMessage(text, r, g, b, id, _, _, _, _, Formatter)
   local data = {
     text = text,
-    color = CreateColor(r or 1, g or 1, b or 1),
+    color = {r = r or 1, g = g or 1, b = b or 1},
     timestamp = time(),
     id = id,
     formatter = Formatter, -- Stored in case we have to uncensor a message

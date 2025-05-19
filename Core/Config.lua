@@ -3,7 +3,7 @@ local addonTable = select(2, ...)
 addonTable.Config = {}
 
 local settings = {
-  SEEN_WELCOME = {key = "seen_welcome", default = 0},
+  ROWS_LIMIT = {key = "rows_limit", default = 200},
   TABS = {key = "tabs", default = {
     {
       name = "GENERAL",

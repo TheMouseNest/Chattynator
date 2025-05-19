@@ -20,7 +20,7 @@ function addonTable.ChatFrameMixin:OnLoad()
     return self.filteredMessages[index].height[self.key]
   end)
   local oldWidth = 0
-  self:SetScript("OnSizeChanged", function(_, width, height)
+  self:SetScript("OnSizeChanged", function(_, width, _)
     width = math.floor(width - addonTable.Messages.inset - rightInset)
     addonTable.Messages:RegisterWidth(width)
     addonTable.Messages:UnregisterWidth(oldWidth)
@@ -49,7 +49,8 @@ function addonTable.ChatFrameMixin:OnLoad()
         GameTooltip:AddLine("Event: " .. tostring(frame.data.typeInfo.event))
         GameTooltip:AddLine("Source: " .. tostring(frame.data.typeInfo.source))
         GameTooltip:AddLine("Channel: " .. tostring(frame.data.typeInfo.channel))
-        GameTooltip:AddLine("Color: " .. frame.data.color:GenerateHexColorNoAlpha())
+        local color = frame.data.color
+        GameTooltip:AddLine("Color: " .. CreateColor(color.r, color.g, color.b):GenerateHexColorNoAlpha())
         GameTooltip:Show()
       end)
       frame:SetScript("OnLeave", function()
@@ -127,12 +128,26 @@ function addonTable.ChatFrameMixin:SetTabChanged()
   self.tabChanged = true
 end
 
+local function LimitedFilter(tbl, pred, limit)
+  local result = {}
+  for i = #tbl, 1, -1 do
+    if limit == 0 then
+      break
+    end
+    if pred(tbl[i]) then
+      limit = limit - 1
+      table.insert(result, 1, tbl[i])
+    end
+  end
+  return result
+end
+
 function addonTable.ChatFrameMixin:Render(newMessages)
   if newMessages and self.filterFunc and next(tFilter(newMessages, self.filterFunc)) == nil then
     return
   end
   if self.filterFunc then
-    self.filteredMessages = tFilter(addonTable.Messages.messages, self.filterFunc, true)
+    self.filteredMessages = LimitedFilter(addonTable.Messages.messages, self.filterFunc, addonTable.Config.Get(addonTable.Config.Options.ROWS_LIMIT))
   else
     self.filteredMessages = addonTable.Messages.messages
   end

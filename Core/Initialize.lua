@@ -49,7 +49,7 @@ function addonTable.Core.Initialize()
   Mixin(chatFrame, addonTable.ChatFrameMixin)
   chatFrame:OnLoad()
   chatFrame:SetPoint("CENTER", UIParent)
-  chatFrame:SetSize(300, 300)
+  chatFrame:SetSize(500, 300)
   addonTable.Messages:RegisterWidth(chatFrame:GetWidth() - addonTable.Messages.inset)
 
   chatFrame:Show()

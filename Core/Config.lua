@@ -17,7 +17,7 @@ local settings = {
         ["VOICE_TEXT"] = false,
       },
       invert = true,
-      channels = {}, backgroundColor = "444444", tabColor = "111111",
+      channels = {}, backgroundColor = "1A1A1A", tabColor = "111111",
     },
     {
       name = "GUILD",
@@ -26,7 +26,7 @@ local settings = {
         ["OFFICER"] = true,
         ["GUILD_ACHIEVEMENT"] = true,
       },
-      channels = {}, backgroundColor = "444444", tabColor = "309944",
+      channels = {}, backgroundColor = "999999", tabColor = "309944",
     }
   }},
 }

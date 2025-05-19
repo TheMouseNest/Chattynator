@@ -81,7 +81,6 @@ function addonTable.ChatFrameMixin:OnLoad()
   self.background:SetTexCoord(0, 1, 1, 0)
   self.background:SetPoint("TOPLEFT", 0, 5)
   self.background:SetPoint("BOTTOMRIGHT", 0, -5)
-  self.background:SetVertexColor(0.1, 0.1, 0.1)
   self.background:SetAlpha(0.8)
 
   self:RegisterForChat()
@@ -200,8 +199,16 @@ function addonTable.ChatFrameMixin:SetFilter(func)
   self.filterFunc = func
 end
 
+function addonTable.ChatFrameMixin:SetBackgroundColor(r, g, b)
+  self.background:SetVertexColor(r, g, b)
+end
+
 function addonTable.ChatFrameMixin:SetIncomingType(eventType)
   self.incomingType = eventType
+end
+
+function addonTable.ChatFrameMixin:SetTabChanged()
+  self.tabChanged = true
 end
 
 function addonTable.ChatFrameMixin:AddMessage(text, r, g, b, id, _, _, _, _, Formatter)
@@ -232,7 +239,8 @@ function addonTable.ChatFrameMixin:Render()
     self.filteredMessages = self.messages
   end
   self.ScrollBox:SetDataProvider(CreateDataProvider(self.filteredMessages), true)
-  if not self.scrolling then
-    self.ScrollBox:ScrollToEnd()
+  if not self.scrolling or self.tabChanged then
+    self.ScrollBox:ScrollToEnd(self.tabChanged)
   end
+  self.tabChanged = false
 end

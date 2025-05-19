@@ -73,9 +73,13 @@ function addonTable.Core.InitializeTabs(chatFrame)
     local button = pool:Acquire()
     button:Show()
     button:SetText(_G[tab.name] or tab.name or UNKNOWN)
+    local tabColor = CreateColorFromRGBHexString(tab.tabColor)
+    local bgColor = CreateColorFromRGBHexString(tab.backgroundColor)
     if tab.invert then
       button:SetScript("OnClick", function()
         chatFrame:SetFilter(function(data) return tab.groups[data.typeInfo.type] ~= false end)
+        chatFrame:SetBackgroundColor(bgColor.r, bgColor.g, bgColor.b)
+        chatFrame:SetTabChanged()
         chatFrame:Render()
         for _, otherTab in ipairs(allTabs) do
           otherTab:SetSelected(false)
@@ -85,6 +89,8 @@ function addonTable.Core.InitializeTabs(chatFrame)
     else
       button:SetScript("OnClick", function()
         chatFrame:SetFilter(function(data) return tab.groups[data.typeInfo.type] end)
+        chatFrame:SetBackgroundColor(bgColor.r, bgColor.g, bgColor.b)
+        chatFrame:SetTabChanged()
         chatFrame:Render()
         for _, otherTab in ipairs(allTabs) do
           otherTab:SetSelected(false)
@@ -98,7 +104,6 @@ function addonTable.Core.InitializeTabs(chatFrame)
     else
       button:SetPoint("LEFT", lastButton, "RIGHT", 10, 0)
     end
-    local tabColor = CreateColorFromRGBHexString(tab.tabColor)
     button.Left:SetVertexColor(tabColor.r, tabColor.g, tabColor.b)
     button.Right:SetVertexColor(tabColor.r, tabColor.g, tabColor.b)
     button.Middle:SetVertexColor(tabColor.r, tabColor.g, tabColor.b)

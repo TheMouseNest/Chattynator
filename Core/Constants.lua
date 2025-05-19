@@ -2,4 +2,6 @@
 local addonTable = select(2, ...)
 
 addonTable.Constants = {}
-addonTable.Constants.Events = {}
+addonTable.Constants.Events = {
+  "Render",
+}

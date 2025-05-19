@@ -4,7 +4,7 @@
 ## Author: plusmouse
 ## IconTexture: Interface\AddOns\Chatanator\Assets\icon.tga
 ## SavedVariables: CHATANATOR_CONFIG
-## SavedVariablesPerCharacter: CHATANATOR_PROFILE
+## SavedVariablesPerCharacter: CHATANATOR_PROFILE, CHATANATOR_CHAT_LOG
 
 ## Category-enUS: Chat
 ## Category-deDE: Chat
@@ -28,6 +28,9 @@ Core/Utilities.lua
 Core/HyperlinkHandler.xml
 Core/ChatFrameMixin.lua
 Core/Tabs.lua
+Core/Messages.lua
 Core/Initialize.lua
 Core/SlashCmd.lua
 Core/API.lua
+
+CustomiseDialog/Initialize.lua

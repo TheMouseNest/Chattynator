@@ -69,26 +69,22 @@ function addonTable.Core.InitializeTabs(chatFrame)
   local pool = addonTable.Core.GetTabsPool(chatFrame)
   local allTabs = {}
   local lastButton
-  for _, tab in ipairs(addonTable.Config.Get(addonTable.Config.Options.TABS)) do
+  for index, tab in ipairs(addonTable.Config.Get(addonTable.Config.Options.TABS)) do
     local button = pool:Acquire()
+    button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
     button:Show()
     button:SetText(_G[tab.name] or tab.name or UNKNOWN)
     local tabColor = CreateColorFromRGBHexString(tab.tabColor)
     local bgColor = CreateColorFromRGBHexString(tab.backgroundColor)
+    local filter
     if tab.invert then
-      button:SetScript("OnClick", function()
-        chatFrame:SetFilter(function(data) return tab.groups[data.typeInfo.type] ~= false end)
-        chatFrame:SetBackgroundColor(bgColor.r, bgColor.g, bgColor.b)
-        chatFrame:SetTabChanged()
-        chatFrame:Render()
-        for _, otherTab in ipairs(allTabs) do
-          otherTab:SetSelected(false)
-        end
-        button:SetSelected(true)
-      end)
+      filter = function(data) return tab.groups[data.typeInfo.type] ~= false end
     else
-      button:SetScript("OnClick", function()
-        chatFrame:SetFilter(function(data) return tab.groups[data.typeInfo.type] end)
+      filter = function(data) return tab.groups[data.typeInfo.type] end
+    end
+    button:SetScript("OnClick", function(_, mouseButton)
+      if mouseButton == "LeftButton" then
+        chatFrame:SetFilter(filter)
         chatFrame:SetBackgroundColor(bgColor.r, bgColor.g, bgColor.b)
         chatFrame:SetTabChanged()
         chatFrame:Render()
@@ -96,8 +92,14 @@ function addonTable.Core.InitializeTabs(chatFrame)
           otherTab:SetSelected(false)
         end
         button:SetSelected(true)
-      end)
-    end
+      elseif mouseButton == "RightButton" then
+        MenuUtil.CreateContextMenu(button, function(_, rootDescription)
+          rootDescription:CreateButton(SETTINGS, function()
+            addonTable.CustomiseDialog.GetTabCustomiser(index)
+          end)
+        end)
+      end
+    end)
 
     if lastButton == nil then
       button:SetPoint("BOTTOMLEFT", chatFrame, "TOPLEFT", 0, 5)

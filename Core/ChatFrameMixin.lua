@@ -21,7 +21,7 @@ function addonTable.ChatFrameMixin:OnLoad()
   self.ScrollBox = CreateFrame("Frame", nil, self, "WowScrollBoxList")
   local view = CreateScrollBoxListLinearView()
   view:SetElementExtentCalculator(function(index)
-    return self.filteredMessages[index].height[self.key]
+    return self.filteredMessages[index].height[self.key] + 5
   end)
   local oldWidth = 0
   self:SetScript("OnSizeChanged", function(_, width, _)
@@ -62,6 +62,11 @@ function addonTable.ChatFrameMixin:OnLoad()
       end)
       frame:SetPropagateMouseClicks(true)
       frame:SetPropagateMouseMotion(true)
+      frame.Fading = frame:CreateTexture(nil, "BACKGROUND")
+      frame.Fading:SetTexture("Interface/AddOns/Chatanator/Assets/Fade.png")
+      frame.Fading:SetPoint("TOPRIGHT", frame.DisplayString, "TOPLEFT", -4, 0)
+      frame.Fading:SetPoint("BOTTOMRIGHT", frame.DisplayString, "BOTTOMLEFT", -4, 2)
+      frame.Fading:SetWidth(2)
     end
     frame.data = data
     frame.Timestamp:SetText(date("%X", data.timestamp))

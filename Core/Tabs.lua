@@ -73,7 +73,10 @@ local function DisableCombatLog(chatFrame)
 end
 
 function addonTable.Core.InitializeTabs(chatFrame)
-  chatFrame.tabsPool = addonTable.Core.GetTabsPool(chatFrame)
+  if not chatFrame.tabsPool then
+    chatFrame.tabsPool = addonTable.Core.GetTabsPool(chatFrame)
+  end
+  chatFrame.tabsPool:ReleaseAll()
   local allTabs = {}
   local lastButton
   for index, tab in ipairs(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[chatFrame:GetID()].tabs) do
@@ -135,10 +138,13 @@ function addonTable.Core.InitializeTabs(chatFrame)
         combatLogButton:SetSelected(true)
         chatFrame.ScrollBox:Hide()
         CombatLogQuickButtonFrame_Custom:SetParent(ChatFrame2)
+        CombatLogQuickButtonFrame_Custom:ClearAllPoints()
+        CombatLogQuickButtonFrame_Custom:SetPoint("TOPLEFT", chatFrame.ScrollBox, 0, 0)
+        CombatLogQuickButtonFrame_Custom:SetPoint("TOPRIGHT", chatFrame.ScrollBox, 0, 0)
         ChatFrame2:SetParent(chatFrame)
         ChatFrame2:ClearAllPoints()
         ChatFrame2:SetPoint("TOPLEFT", chatFrame.ScrollBox, 0, -22)
-        ChatFrame2:SetPoint("BOTTOMRIGHT", chatFrame.ScrollBox, -8, 0)
+        ChatFrame2:SetPoint("BOTTOMRIGHT", chatFrame.ScrollBox, -15, 0)
         ChatFrame2Background:SetParent(addonTable.hiddenFrame)
         ChatFrame2BottomRightTexture:SetParent(addonTable.hiddenFrame)
         ChatFrame2BottomLeftTexture:SetParent(addonTable.hiddenFrame)
@@ -149,6 +155,7 @@ function addonTable.Core.InitializeTabs(chatFrame)
         ChatFrame2RightTexture:SetParent(addonTable.hiddenFrame)
         ChatFrame2LeftTexture:SetParent(addonTable.hiddenFrame)
         ChatFrame2ButtonFrameBackground:SetParent(addonTable.hiddenFrame)
+        ChatFrame2ButtonFrameRightTexture:SetParent(addonTable.hiddenFrame)
         ChatFrame2:Show()
       elseif mouseButton == "RightButton" then
         MenuUtil.CreateContextMenu(combatLogButton, function(_, rootDescription)
@@ -158,9 +165,10 @@ function addonTable.Core.InitializeTabs(chatFrame)
         end)
       end
     end)
-    combatLogButton.Left:SetVertexColor(0.1, 0.5, 0.1)
-    combatLogButton.Right:SetVertexColor(0.1, 0.5, 0.1)
-    combatLogButton.Middle:SetVertexColor(0.1, 0.5, 0.1)
+    local combatLogColor = CreateColor(201/255, 124/255, 72/255)
+    combatLogButton.Left:SetVertexColor(combatLogColor.r, combatLogColor.g, combatLogColor.b)
+    combatLogButton.Right:SetVertexColor(combatLogColor.r, combatLogColor.g, combatLogColor.b)
+    combatLogButton.Middle:SetVertexColor(combatLogColor.r, combatLogColor.g, combatLogColor.b)
 
     if lastButton == nil then
       combatLogButton:SetPoint("BOTTOMLEFT", chatFrame, "TOPLEFT", 32, -22)

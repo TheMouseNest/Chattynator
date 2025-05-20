@@ -91,6 +91,8 @@ function addonTable.Core.InitializeTabs(chatFrame)
     else
       filter = function(data) return tab.groups[data.typeInfo.type] end
     end
+    button.filter = filter
+    button.bgColor = bgColor
     button:SetScript("OnClick", function(_, mouseButton)
       if chatFrame:GetID() == 1 then
         DisableCombatLog(chatFrame)
@@ -180,5 +182,11 @@ function addonTable.Core.InitializeTabs(chatFrame)
     lastButton = combatLogButton
   end
 
-  allTabs[1]:Click()
+  for _, tab in ipairs(allTabs) do
+    tab:SetSelected(false)
+  end
+  allTabs[1]:SetSelected(true)
+  chatFrame:SetFilter(allTabs[1].filter)
+  chatFrame:SetBackgroundColor(allTabs[1].bgColor.r, allTabs[1].bgColor.g, allTabs[1].bgColor.b)
+  chatFrame:SetTabChanged()
 end

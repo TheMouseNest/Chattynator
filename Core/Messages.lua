@@ -17,7 +17,16 @@ function addonTable.MessagesMonitorMixin:OnLoad()
 
   self.sizingFontString:Hide()
 
-  self.messages = {}
+  CHATANATOR_MESSAGE_LOG = CHATANATOR_MESSAGE_LOG or { current = {}, historical = {} }
+  self.messages = CopyTable(CHATANATOR_MESSAGE_LOG.current)
+  self.messageCount = #self.messages
+  self.store = CHATANATOR_MESSAGE_LOG.current
+  self.storeCount = #self.store
+
+  self.heights = {}
+
+  self:UpdateStores()
+
   self.pending = {}
 
   self:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -46,8 +55,24 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   self.channelList = {}
   self.zoneChannelList = {}
 
-  for event in pairs(ChatTypeGroupInverted) do
-    self:RegisterEvent(event)
+  local ignoredGroups
+  if addonTable.Config.Get(addonTable.Config.Options.ENABLE_COMBAT_MESSAGES) then
+    ignoredGroups = {}
+  else
+    ignoredGroups = {
+      ["TRADESKILLS"] = true,
+      ["OPENING"] = true,
+      ["PET_INFO"] = true,
+      ["COMBAT_MISC_INFO"] = true,
+      ["COMBAT_XP_GAIN"] = true,
+      ["COMBAT_HONOR_GAIN"] = true,
+      ["COMBAT_FACTION_CHANGE"] = true,
+    }
+  end
+  for event, group in pairs(ChatTypeGroupInverted) do
+    if not ignoredGroups[group] then
+      self:RegisterEvent(event)
+    end
   end
 
   hooksecurefunc(C_ChatInfo, "UncensorChatLine", function(lineID)
@@ -118,12 +143,15 @@ function addonTable.MessagesMonitorMixin:RegisterWidth(width)
   self.widths[width] = (self.widths[width] or 0) + 1
   if self.widths[width] == 1 then
     local key = self.font .. " " .. width
-    for _, data in ipairs(self.messages) do
+    for index, height in pairs(self.heights) do
       self.sizingFontString:SetWidth(width)
-      self.sizingFontString:SetText(data.text)
+      self.sizingFontString:SetText(self.messages[index].text)
       local basicHeight = (self.sizingFontString:GetLineHeight() + self.sizingFontString:GetSpacing()) * self.sizingFontString:GetNumLines()
       local stringHeight = self.sizingFontString:GetStringHeight()
-      data.height[key] = math.max(basicHeight, stringHeight)
+      if not self.heights[index] then
+        self.heights[index] = {}
+      end
+      height[key] = math.max(basicHeight, stringHeight)
     end
   end
 end
@@ -135,15 +163,73 @@ function addonTable.MessagesMonitorMixin:UnregisterWidth(width)
   if self.widths[width] <= 0 then
     self.widths[width] = nil
     local tail = " " .. width .. "$"
-    for _, data in ipairs(self.messages) do
-      for key in ipairs(data.height) do
+    for index, height in pairs(self.heights) do
+      for key in ipairs(height) do
         if key:match(tail) then
-          data.height[key] = nil
+          height[key] = nil
         end
       end
-      data.height = CopyTable(data.height) -- Optimisation to avoid lots of nils after resizing chat frame
+      self.heights[index] = CopyTable(height) -- Optimisation to avoid lots of nils after resizing chat frame
     end
   end
+end
+
+function addonTable.MessagesMonitorMixin:GetMessage(reverseIndex)
+  local index = self.messageCount - reverseIndex + 1
+  if not self.messages[index] then
+    return nil
+  end
+  if self.heights[index] == nil then
+    local height = {}
+    self.heights[index] = height
+    for width in pairs(self.widths) do
+      self.sizingFontString:SetWidth(width)
+      self.sizingFontString:SetText(self.messages[index].text)
+      local basicHeight = (self.sizingFontString:GetLineHeight() + self.sizingFontString:GetSpacing()) * self.sizingFontString:GetNumLines()
+      local stringHeight = self.sizingFontString:GetStringHeight()
+      height[self.font .. " " .. width] = math.max(basicHeight, stringHeight)
+    end
+  end
+  return self.messages[index], self.heights[index]
+end
+
+function addonTable.MessagesMonitorMixin:UpdateStores()
+  if self.storeCount < 10000 then
+    return
+  end
+
+  local newStore = {}
+  for i = 1, self.storeCount - 5001 do
+    table.insert(newStore, self.store[i])
+  end
+  local newCurrent = {}
+  for i = self.messageCount - 5000, self.messageCount do
+    table.insert(newCurrent, self.store[i])
+  end
+  table.insert(CHATANATOR_MESSAGE_LOG.historical, {
+    startTimestamp = newStore[1].timestamp,
+    endTimestamp = newStore[#newStore].timestamp,
+    data = C_EncodingUtil.SerializeJSON(newStore)
+  })
+  CHATANATOR_MESSAGE_LOG.current = newCurrent
+  self.store = newCurrent
+  self.storeCount = #self.store
+end
+
+function addonTable.MessagesMonitorMixin:ReduceMessages()
+  if self.messageCount < 10000 then
+    return
+  end
+
+  local oldMessages = self.messages
+  local oldHeights = self.heights
+  self.messages = {}
+  self.heights = {}
+  for i = 1, self.messageCount - 5001 do
+    table.insert(self.messages, oldMessages[i])
+    self.heights[#self.messages] = oldHeights[i]
+  end
+  self.messageCount = #self.messages
 end
 
 function addonTable.MessagesMonitorMixin:UpdateChannels()
@@ -172,6 +258,10 @@ function addonTable.MessagesMonitorMixin:SetIncomingType(eventType)
   self.incomingType = eventType
 end
 
+function addonTable.MessagesMonitorMixin:ShouldLog(data)
+  return data.typeInfo.type ~= "ADDON" and data.typeInfo.type ~= "SYSTEM"
+end
+
 function addonTable.MessagesMonitorMixin:AddMessage(text, r, g, b, id, _, _, _, _, Formatter)
   local data = {
     text = text,
@@ -180,21 +270,23 @@ function addonTable.MessagesMonitorMixin:AddMessage(text, r, g, b, id, _, _, _, 
     id = id,
     formatter = Formatter, -- Stored in case we have to uncensor a message
     typeInfo = self.incomingType or {type = "ADDON", event = "NONE", source = "CHATANATOR"},
+    recordedCharacter = addonTable.Data.CharacterName or "",
   }
   self.incomingType = nil
-  data.height = {}
-  for width in pairs(self.widths) do
-    self.sizingFontString:SetWidth(width)
-    self.sizingFontString:SetText(data.text)
-    local basicHeight = (self.sizingFontString:GetLineHeight() + self.sizingFontString:GetSpacing()) * self.sizingFontString:GetNumLines()
-    local stringHeight = self.sizingFontString:GetStringHeight()
-    data.height[self.font .. " " .. width] = math.max(basicHeight, stringHeight)
-  end
   table.insert(self.messages, data)
+  if self:ShouldLog(data) then
+    self.storeCount = self.storeCount + 1
+    self.store[self.storeCount] = data
+  end
   table.insert(self.pending, data)
+  self.messageCount = self.messageCount + 1
   self:SetScript("OnUpdate", function()
     self:SetScript("OnUpdate", nil)
+    self:ReduceMessages()
     local pending = self.pending
+    self.pending = {}
     addonTable.CallbackRegistry:TriggerEvent("Render", pending)
+
+    self:UpdateStores()
   end)
 end

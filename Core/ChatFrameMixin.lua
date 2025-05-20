@@ -16,12 +16,12 @@ function addonTable.ChatFrameMixin:OnLoad()
   self:SetSize(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].size))
 
   self.filterFunc = nil
-  self.filteredMessages = addonTable.Messages.messages
+  self.heights = {}
 
   self.ScrollBox = CreateFrame("Frame", nil, self, "WowScrollBoxList")
   local view = CreateScrollBoxListLinearView()
   view:SetElementExtentCalculator(function(index)
-    return self.filteredMessages[index].height[self.key] + 5
+    return self.heights[index][self.key] + 5
   end)
   local oldWidth = 0
   self:SetScript("OnSizeChanged", function(_, width, _)
@@ -48,14 +48,16 @@ function addonTable.ChatFrameMixin:OnLoad()
       frame.Timestamp:SetJustifyH("LEFT")
       frame.Timestamp:SetTextColor(0.5, 0.5, 0.5)
       frame:SetScript("OnEnter", function()
-        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        GameTooltip:SetText("Type: " .. tostring(frame.data.typeInfo.type))
-        GameTooltip:AddLine("Event: " .. tostring(frame.data.typeInfo.event))
-        GameTooltip:AddLine("Source: " .. tostring(frame.data.typeInfo.source))
-        GameTooltip:AddLine("Channel: " .. tostring(frame.data.typeInfo.channel))
-        local color = frame.data.color
-        GameTooltip:AddLine("Color: " .. CreateColor(color.r, color.g, color.b):GenerateHexColorNoAlpha())
-        GameTooltip:Show()
+        if addonTable.Config.Get(addonTable.Config.Options.DEBUG) then
+          GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+          GameTooltip:SetText("Type: " .. tostring(frame.data.typeInfo.type))
+          GameTooltip:AddLine("Event: " .. tostring(frame.data.typeInfo.event))
+          GameTooltip:AddLine("Source: " .. tostring(frame.data.typeInfo.source))
+          GameTooltip:AddLine("Channel: " .. tostring(frame.data.typeInfo.channel))
+          local color = frame.data.color
+          GameTooltip:AddLine("Color: " .. CreateColor(color.r, color.g, color.b):GenerateHexColorNoAlpha())
+          GameTooltip:Show()
+        end
       end)
       frame:SetScript("OnLeave", function()
         GameTooltip:Hide()
@@ -223,30 +225,32 @@ function addonTable.ChatFrameMixin:SetTabChanged()
   self.tabChanged = true
 end
 
-local function LimitedFilter(tbl, pred, limit)
-  local result = {}
-  for i = #tbl, 1, -1 do
-    if limit == 0 then
-      break
+function addonTable.ChatFrameMixin:FilterMessages()
+  local result1, result2 = {}, {}
+  local data, height = addonTable.Messages:GetMessage(1)
+  local index = 1
+  local limit = addonTable.Config.Get(addonTable.Config.Options.ROWS_LIMIT)
+  while #result1 < limit and data do
+    if (
+      (data.recordedCharacter == addonTable.Data.CharacterName or not addonTable.Messages:ShouldLog(data)) and
+      (not self.filterFunc or self.filterFunc(data))
+    ) then
+      table.insert(result1, 1, data)
+      table.insert(result2, 1, height)
     end
-    if pred(tbl[i]) then
-      limit = limit - 1
-      table.insert(result, 1, tbl[i])
-    end
+    index = index + 1
+    data, height = addonTable.Messages:GetMessage(index)
   end
-  return result
+  return result1, result2
 end
 
 function addonTable.ChatFrameMixin:Render(newMessages)
   if newMessages and self.filterFunc and next(tFilter(newMessages, self.filterFunc)) == nil then
     return
   end
-  if self.filterFunc then
-    self.filteredMessages = LimitedFilter(addonTable.Messages.messages, self.filterFunc, addonTable.Config.Get(addonTable.Config.Options.ROWS_LIMIT))
-  else
-    self.filteredMessages = addonTable.Messages.messages
-  end
-  self.ScrollBox:SetDataProvider(CreateDataProvider(self.filteredMessages), true)
+  local filteredMessages, heights = self:FilterMessages()
+  self.heights = heights
+  self.ScrollBox:SetDataProvider(CreateDataProvider(filteredMessages), true)
   if not self.scrolling or self.tabChanged then
     self.ScrollBox:ScrollToEnd(self.tabChanged)
   end

@@ -7,7 +7,7 @@ local settings = {
   WINDOWS = {key = "windows", default = {
     {
       position = {"BOTTOMLEFT", "UIParent", "BOTTOMLEFT", 0, 40},
-      size = {460, 205},
+      size = {500, 205},
       tabs = {
         {
           name = "GENERAL",
@@ -35,6 +35,9 @@ local settings = {
       },
     },
   }},
+
+  ENABLE_COMBAT_MESSAGES = {key = "enable_combat_messages", default = false},
+  DEBUG = {key = "debug", default = false},
 }
 
 addonTable.Config.RefreshType = {}

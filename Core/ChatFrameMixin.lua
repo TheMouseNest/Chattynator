@@ -227,7 +227,7 @@ end
 
 function addonTable.ChatFrameMixin:FilterMessages()
   local result1, result2 = {}, {}
-  local data, height = addonTable.Messages:GetMessage(1)
+  local data = addonTable.Messages:GetMessage(1)
   local index = 1
   local limit = addonTable.Config.Get(addonTable.Config.Options.ROWS_LIMIT)
   while #result1 < limit and data do
@@ -236,10 +236,10 @@ function addonTable.ChatFrameMixin:FilterMessages()
       (not self.filterFunc or self.filterFunc(data))
     ) then
       table.insert(result1, 1, data)
-      table.insert(result2, 1, height)
+      table.insert(result2, 1, addonTable.Messages:GetMessageHeight(index))
     end
     index = index + 1
-    data, height = addonTable.Messages:GetMessage(index)
+    data = addonTable.Messages:GetMessage(index)
   end
   return result1, result2
 end

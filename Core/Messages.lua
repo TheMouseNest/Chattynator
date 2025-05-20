@@ -176,10 +176,12 @@ end
 
 function addonTable.MessagesMonitorMixin:GetMessage(reverseIndex)
   local index = self.messageCount - reverseIndex + 1
-  if not self.messages[index] then
-    return nil
-  end
-  if self.heights[index] == nil then
+  return self.messages[index]
+end
+
+function addonTable.MessagesMonitorMixin:GetMessageHeight(reverseIndex)
+  local index = self.messageCount - reverseIndex + 1
+  if not self.heights[index] and self.messages[index] then
     local height = {}
     self.heights[index] = height
     for width in pairs(self.widths) do
@@ -190,7 +192,7 @@ function addonTable.MessagesMonitorMixin:GetMessage(reverseIndex)
       height[self.font .. " " .. width] = math.max(basicHeight, stringHeight)
     end
   end
-  return self.messages[index], self.heights[index]
+  return self.heights[index]
 end
 
 function addonTable.MessagesMonitorMixin:UpdateStores()

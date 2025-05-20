@@ -165,7 +165,7 @@ function addonTable.ChatFrameMixin:RepositionEditBox()
 
   QuickJoinToastButton:SetParent(self)
   QuickJoinToastButton:ClearAllPoints()
-  QuickJoinToastButton:SetPoint("RIGHT", self.ScrollBox, "LEFT", -2, 0)
+  QuickJoinToastButton:SetPoint("RIGHT", self.ScrollBox, "LEFT", -3, 0)
   QuickJoinToastButton:SetPoint("TOP", self.ScrollBox)
   RestyleButton(QuickJoinToastButton)
   QuickJoinToastButton:SetScript("OnMouseDown", function()

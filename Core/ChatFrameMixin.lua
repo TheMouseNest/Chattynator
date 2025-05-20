@@ -53,6 +53,7 @@ function addonTable.ChatFrameMixin:OnLoad()
           GameTooltip:SetText("Type: " .. tostring(frame.data.typeInfo.type))
           GameTooltip:AddLine("Event: " .. tostring(frame.data.typeInfo.event))
           GameTooltip:AddLine("Source: " .. tostring(frame.data.typeInfo.source))
+          GameTooltip:AddLine("Recorder: " .. tostring(frame.data.recordedCharacter))
           GameTooltip:AddLine("Channel: " .. tostring(frame.data.typeInfo.channel))
           local color = frame.data.color
           GameTooltip:AddLine("Color: " .. CreateColor(color.r, color.g, color.b):GenerateHexColorNoAlpha())

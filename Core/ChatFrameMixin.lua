@@ -82,7 +82,7 @@ function addonTable.ChatFrameMixin:OnLoad()
     frame.DisplayString:SetText(data.text)
     frame.DisplayString:SetTextColor(data.color.r, data.color.g, data.color.b)
   end)
-  self.ScrollBox:SetPoint("TOPLEFT", 32, -27)
+  self.ScrollBox:SetPoint("TOPLEFT", 34, -27)
   self.ScrollBox:SetPoint("BOTTOMRIGHT", 0, 38)
   self.ScrollBox:SetInterpolateScroll(true)
   self.ScrollBox:Init(view)
@@ -145,7 +145,7 @@ function addonTable.ChatFrameMixin:RepositionBlizzardWidgets()
     for _, b in ipairs(buttons) do
       b:ClearAllPoints()
       if lastButton == nil then
-        b:SetPoint("TOPRIGHT", self.ScrollBox, "TOPLEFT", -3, 0)
+        b:SetPoint("TOPRIGHT", self.ScrollBox, "TOPLEFT", -5, 0)
       else
         b:SetPoint("TOP", lastButton, "BOTTOM", 0, -5)
       end

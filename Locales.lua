@@ -22,6 +22,8 @@ L["CHATANATOR"] = "Chatanator"
 L["TO_OPEN_OPTIONS_X"] = "Access options with /ctnr"
 L["VERSION_COLON_X"] = "Version: %s"
 L["OPEN_OPTIONS"] = "Open Options"
+L["QUICK_CHAT"] = "Quick Chat"
+L["COPY_CHAT"] = "Copy Chat"
 
 L["SLASH_RESET"] = "reset"
 L["SLASH_RESET_HELP"] = "Reset all Baganator settings, then reload."

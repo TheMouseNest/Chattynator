@@ -5,6 +5,7 @@ local addonTable = select(2, ...)
 addonTable.ChatFrameMixin = {}
 
 local rightInset = 10
+local intensity = 0.8
 
 function addonTable.ChatFrameMixin:OnLoad()
   self:SetHyperlinkPropagateToParent(true)
@@ -101,7 +102,7 @@ function addonTable.ChatFrameMixin:OnLoad()
   self.background:SetAlpha(0.8)
 
   self.resizeWidget = CreateFrame("Button", nil, self)
-  self.resizeWidget:SetSize(25, 27.5)
+  self.resizeWidget:SetSize(20, 22)
   self.resizeWidget:SetPoint("BOTTOMRIGHT", self.ScrollBox, -5,  0)
   self.resizeWidget:RegisterForDrag("LeftButton")
   self.resizeWidget:SetScript("OnDragStart", function()
@@ -112,6 +113,7 @@ function addonTable.ChatFrameMixin:OnLoad()
     self:SaveSize()
   end)
   local tex = self.resizeWidget:CreateTexture(nil, "ARTWORK")
+  tex:SetVertexColor(intensity, intensity, intensity)
   tex:SetTexture("Interface/AddOns/Chatanator/Assets/resize.png")
   tex:SetAllPoints()
   self.resizeWidget:SetScript("OnEnter", function()
@@ -166,7 +168,6 @@ function addonTable.ChatFrameMixin:RepositionBlizzardWidgets()
     button:GetPushedTexture():SetVertexColor(0, 0, 0)
     button:GetPushedTexture():SetDrawLayer("BACKGROUND")
   end
-  local intensity = 0.8
 
   QuickJoinToastButton:SetParent(self)
   QuickJoinToastButton:ClearAllPoints()

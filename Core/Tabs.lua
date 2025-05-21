@@ -65,12 +65,6 @@ function addonTable.Core.InitializeTabs(chatFrame)
           otherTab:SetSelected(false)
         end
         button:SetSelected(true)
-      elseif mouseButton == "RightButton" then
-        MenuUtil.CreateContextMenu(button, function(_, rootDescription)
-          rootDescription:CreateButton(SETTINGS, function()
-            addonTable.CustomiseDialog.GetTabCustomiser(index)
-          end)
-        end)
       end
     end)
 
@@ -117,11 +111,9 @@ function addonTable.Core.InitializeTabs(chatFrame)
         ChatFrame2ButtonFrameRightTexture:SetParent(addonTable.hiddenFrame)
         ChatFrame2:Show()
       elseif mouseButton == "RightButton" then
-        MenuUtil.CreateContextMenu(combatLogButton, function(_, rootDescription)
-          rootDescription:CreateButton(SETTINGS, function()
-            ShowUIPanel(ChatConfigFrame)
-          end)
-        end)
+        if not InCombatLockdown() then
+          ShowUIPanel(ChatConfigFrame)
+        end
       end
     end)
     local combatLogColor = CreateColor(201/255, 124/255, 72/255)

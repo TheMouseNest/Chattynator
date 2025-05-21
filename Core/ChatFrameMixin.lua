@@ -189,6 +189,9 @@ function addonTable.ChatFrameMixin:RepositionBlizzardWidgets()
   addonTable.Skins.AddFrame("ChatButton", self.CopyButton, {"copy"})
   self.SettingsButton = MakeButton(SETTINGS)
   self.SettingsButton:SetPoint("TOP", self.CopyButton, "BOTTOM", 0, -5)
+  self.SettingsButton:SetScript("OnClick", function()
+    addonTable.CustomiseDialog.GetTabCustomiser(index)
+  end)
   addonTable.Skins.AddFrame("ChatButton", self.SettingsButton, {"settings"})
 end
 

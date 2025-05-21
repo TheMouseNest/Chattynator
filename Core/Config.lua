@@ -30,7 +30,7 @@ local settings = {
             ["OFFICER"] = true,
             ["GUILD_ACHIEVEMENT"] = true,
           },
-          channels = {}, backgroundColor = "999999", tabColor = "309944",
+          channels = {}, backgroundColor = "5b663b", tabColor = "309944",
         },
       },
     },

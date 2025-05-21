@@ -136,27 +136,38 @@ function addonTable.ChatFrameMixin:RepositionBlizzardWidgets()
   ChatFrame1EditBox:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, 32)
   addonTable.Skins.AddFrame("ChatEditBox", ChatFrame1EditBox)
 
+  local function ArrangeButtons(buttons)
+    local lastButton
+    for _, b in ipairs(buttons) do
+      b:ClearAllPoints()
+      if lastButton == nil then
+        b:SetPoint("TOPRIGHT", self.ScrollBox, "TOPLEFT", -3, 0)
+      else
+        b:SetPoint("TOP", lastButton, "BOTTOM", 0, -5)
+      end
+      lastButton = b
+    end
+  end
+  local buttons = {}
+
   QuickJoinToastButton:SetParent(self)
-  QuickJoinToastButton:ClearAllPoints()
-  QuickJoinToastButton:SetPoint("RIGHT", self.ScrollBox, "LEFT", -3, 0)
-  QuickJoinToastButton:SetPoint("TOP", self.ScrollBox)
   QuickJoinToastButton:SetScript("OnMouseDown", nil)
   QuickJoinToastButton:SetScript("OnMouseUp", nil)
   addonTable.Skins.AddFrame("ChatButton", QuickJoinToastButton, {"toasts"})
 
   ChatFrameChannelButton:SetParent(self)
   ChatFrameChannelButton:ClearAllPoints()
-  ChatFrameChannelButton:SetPoint("TOP", QuickJoinToastButton, "BOTTOM", 0, -5)
   ChatFrameChannelButton:SetScript("OnMouseDown", nil)
   ChatFrameChannelButton:SetScript("OnMouseUp", nil)
   addonTable.Skins.AddFrame("ChatButton", ChatFrameChannelButton, {"channels"})
+  table.insert(buttons, ChatFrameChannelButton)
 
   ChatFrameMenuButton:SetParent(self)
   ChatFrameMenuButton:ClearAllPoints()
-  ChatFrameMenuButton:SetPoint("TOP", ChatFrameChannelButton, "BOTTOM", 0, -5)
   ChatFrameMenuButton:SetScript("OnMouseDown", nil)
   ChatFrameMenuButton:SetScript("OnMouseUp", nil)
   addonTable.Skins.AddFrame("ChatButton", ChatFrameMenuButton, {"menu"})
+  table.insert(buttons, ChatFrameMenuButton)
 
   ChatFrameMenuButton:SetScript("OnEnter", function()
     GameTooltip:SetOwner(ChatFrameMenuButton, "ANCHOR_RIGHT")
@@ -166,6 +177,8 @@ function addonTable.ChatFrameMixin:RepositionBlizzardWidgets()
   ChatFrameMenuButton:SetScript("OnLeave", function()
     GameTooltip:Hide()
   end)
+
+  addonTable.Skins.AddFrame("ChatButton", ChatFrameMenuButton, {"menu"})
 
   local function MakeButton(tooltipText)
     local button = CreateFrame("Button", nil, self)
@@ -183,16 +196,21 @@ function addonTable.ChatFrameMixin:RepositionBlizzardWidgets()
 
   self.SearchButton = MakeButton(SEARCH)
   self.SearchButton:SetPoint("TOP", ChatFrameMenuButton, "BOTTOM", 0, -5)
+  table.insert(buttons, self.SearchButton)
   addonTable.Skins.AddFrame("ChatButton", self.SearchButton, {"search"})
   self.CopyButton = MakeButton(addonTable.Locales.COPY_CHAT)
   self.CopyButton:SetPoint("TOP", self.SearchButton, "BOTTOM", 0, -5)
+  table.insert(buttons, self.CopyButton)
   addonTable.Skins.AddFrame("ChatButton", self.CopyButton, {"copy"})
   self.SettingsButton = MakeButton(SETTINGS)
   self.SettingsButton:SetPoint("TOP", self.CopyButton, "BOTTOM", 0, -5)
   self.SettingsButton:SetScript("OnClick", function()
-    addonTable.CustomiseDialog.GetTabCustomiser(index)
+    addonTable.CustomiseDialog.GetTabCustomiser(1)
   end)
+  table.insert(buttons, self.SettingsButton)
   addonTable.Skins.AddFrame("ChatButton", self.SettingsButton, {"settings"})
+
+  ArrangeButtons(buttons)
 end
 
 function addonTable.ChatFrameMixin:SetFilter(func)

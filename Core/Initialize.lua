@@ -38,6 +38,8 @@ function addonTable.Core.Initialize()
   Mixin(addonTable.Messages, addonTable.MessagesMonitorMixin)
   addonTable.Messages:OnLoad()
 
+  addonTable.Skins.Initialize()
+
   local chatFrame = CreateFrame("Frame", nil, ChatanatorHyperlinkHandler)
   chatFrame:SetID(1)
   addonTable.ChatFrame = chatFrame
@@ -56,15 +58,11 @@ function addonTable.Core.Initialize()
     C_Timer.After(0, function()
       FloatingChatFrameManager:UnregisterAllEvents()
       for _, tabName in pairs(CHAT_FRAMES) do
+        local tab = _G[tabName]
+        tab:SetParent(hidden)
         if tabName ~= "ChatFrame2" then
-          local tab = _G[tabName]
-          tab:SetParent(hidden)
           tab:UnregisterAllEvents()
           tab:RegisterEvent("UPDATE_CHAT_COLOR")
-          local tabButton = _G[tabName .. "Tab"]
-          tabButton:SetParent(hidden)
-          local SetParent = tabButton.SetParent
-          hooksecurefunc(tabButton, "SetParent", function(self) SetParent(self, hidden) end)
         end
         local tabButton = _G[tabName .. "Tab"]
         tabButton:SetParent(hidden)

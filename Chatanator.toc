@@ -33,4 +33,7 @@ Core/Initialize.lua
 Core/SlashCmd.lua
 Core/API.lua
 
+Skins/Main.lua
+Skins/Dark.lua
+
 CustomiseDialog/Initialize.lua

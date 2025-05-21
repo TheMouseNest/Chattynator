@@ -25,6 +25,8 @@ L["OPEN_OPTIONS"] = "Open Options"
 L["QUICK_CHAT"] = "Quick Chat"
 L["COPY_CHAT"] = "Copy Chat"
 
+L["SKINS_DARK"] = "Dark"
+
 L["SLASH_RESET"] = "reset"
 L["SLASH_RESET_HELP"] = "Reset all Baganator settings, then reload."
 L["SLASH_HELP"] = "Open the Baganator settings."

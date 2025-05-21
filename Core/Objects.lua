@@ -4,4 +4,5 @@ addonTable.Core = {}
 addonTable.Utilities = {}
 addonTable.CustomiseDialog = {}
 addonTable.Data = {}
+addonTable.Skins = {}
 

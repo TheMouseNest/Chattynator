@@ -36,6 +36,10 @@ local settings = {
     },
   }},
 
+  SKINS = {key = "skins", default = {}},
+  DISABLED_SKINS = {key = "disabled_skins", default = {}},
+  CURRENT_SKIN = {key = "current_skin", default = "dark"},
+
   ENABLE_COMBAT_MESSAGES = {key = "enable_combat_messages", default = false},
   DEBUG = {key = "debug", default = false},
 }
@@ -100,12 +104,13 @@ local function RawSet(name, value)
 end
 
 function addonTable.Config.Set(name, value)
-  if RawSet(name, value) then
-    --[[addonTable.CallbackRegistry:TriggerEvent("SettingChanged", name)
+  RawSet(name, value)
+  --[[if RawSet(name, value) then
+    addonTable.CallbackRegistry:TriggerEvent("SettingChanged", name)
     if addonTable.Config.RefreshType[name] then
       addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", addonTable.Config.RefreshType[name])
-    end]]
-  end
+    end
+  end]]
 end
 
 -- Set multiple settings at once and after all are set fire the setting changed

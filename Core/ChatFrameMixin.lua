@@ -38,7 +38,6 @@ function addonTable.ChatFrameMixin:OnLoad()
       frame.initialized = true
       frame:SetHyperlinkPropagateToParent(true)
       frame.DisplayString = frame:CreateFontString(nil, "ARTWORK", addonTable.Messages.font)
-      frame.DisplayString:SetPoint("TOPLEFT", addonTable.Messages.inset, 0)
       frame.DisplayString:SetJustifyV("TOP")
       frame.DisplayString:SetJustifyH("LEFT")
       frame.DisplayString:SetNonSpaceWrap(true)
@@ -53,6 +52,8 @@ function addonTable.ChatFrameMixin:OnLoad()
       frame.Fading:SetPoint("TOP", 0, 0)
       frame.Fading:SetPoint("BOTTOM", 0, 1 + 5)
       frame.Fading:SetWidth(2)
+
+      frame.DisplayString:SetPoint("TOPLEFT", frame.Timestamp, "TOPRIGHT")
     end
     if not frame.debugAttached and not InCombatLockdown() then
       frame.debugAttached = true
@@ -75,6 +76,7 @@ function addonTable.ChatFrameMixin:OnLoad()
       frame:SetPropagateMouseClicks(true)
       frame:SetPropagateMouseMotion(true)
     end
+    frame.Timestamp:SetWidth(addonTable.Messages.inset)
     frame.DisplayString:SetWidth(self.currentStringWidth)
     frame.data = data
     frame.Timestamp:SetText(date("%X", data.timestamp))

@@ -10,10 +10,11 @@ function addonTable.MessagesMonitorMixin:OnLoad()
 
   self.sizingFontString = self:CreateFontString(nil, "BACKGROUND", self.font)
 
-  self.sizingFontString:SetText("00:00:00")
   self.sizingFontString:SetNonSpaceWrap(true)
   self.sizingFontString:SetWordWrap(true)
   self.sizingFontString:Hide()
+
+  self.sizingFontString:SetText("00:00:00")
   self.inset = self.sizingFontString:GetUnboundedStringWidth() + 10
 
   CHATANATOR_MESSAGE_LOG = CHATANATOR_MESSAGE_LOG or { current = {}, historical = {} }
@@ -29,6 +30,9 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   self.pending = {}
 
   self:RegisterEvent("PLAYER_ENTERING_WORLD")
+
+  self:RegisterEvent("UI_SCALE_CHANGED")
+
   self:RegisterEvent("SETTINGS_LOADED")
   --self:RegisterEvent("UPDATE_CHAT_COLOR");
   self:RegisterEvent("UPDATE_CHAT_WINDOWS")
@@ -132,6 +136,10 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   self:SetScript("OnEvent", function(_, eventType, ...)
     if eventType == "UPDATE_CHAT_WINDOWS" or eventType == "CHANNEL_UI_UPDATE" or eventType == "CHANNEL_LEFT" then
       self:UpdateChannels()
+    elseif eventType == "UI_SCALE_CHANGED" then
+      self.sizingFontString:SetText("00:00:00")
+      self.inset = self.sizingFontString:GetUnboundedStringWidth() + 10
+      self.heights = {}
     else
       self:SetIncomingType({
         type = ChatTypeGroupInverted[eventType] or "NONE",

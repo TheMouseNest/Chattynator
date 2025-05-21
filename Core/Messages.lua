@@ -13,8 +13,8 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   self.sizingFontString:SetText("00:00:00")
   self.sizingFontString:SetNonSpaceWrap(true)
   self.sizingFontString:SetWordWrap(true)
+  self.sizingFontString:Hide()
   self.inset = self.sizingFontString:GetUnboundedStringWidth() + 10
-  self.sizingFontString:SetPoint("TOPLEFT", UIParent, "TOPRIGHT")
 
   CHATANATOR_MESSAGE_LOG = CHATANATOR_MESSAGE_LOG or { current = {}, historical = {} }
   self.messages = CopyTable(CHATANATOR_MESSAGE_LOG.current)

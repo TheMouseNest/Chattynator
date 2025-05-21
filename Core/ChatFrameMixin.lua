@@ -47,6 +47,15 @@ function addonTable.ChatFrameMixin:OnLoad()
       frame.Timestamp:SetPoint("TOPLEFT", 0, 0)
       frame.Timestamp:SetJustifyH("LEFT")
       frame.Timestamp:SetTextColor(0.5, 0.5, 0.5)
+      frame.Fading = frame:CreateTexture(nil, "BACKGROUND")
+      frame.Fading:SetTexture("Interface/AddOns/Chatanator/Assets/Fade.png")
+      frame.Fading:SetPoint("RIGHT", frame.DisplayString, "LEFT", -4, 0)
+      frame.Fading:SetPoint("TOP", 0, 0)
+      frame.Fading:SetPoint("BOTTOM", 0, 1 + 5)
+      frame.Fading:SetWidth(2)
+    end
+    if not frame.debugAttached and not InCombatLockdown() then
+      frame.debugAttached = true
       frame:SetScript("OnEnter", function()
         if addonTable.Config.Get(addonTable.Config.Options.DEBUG) then
           GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
@@ -65,12 +74,6 @@ function addonTable.ChatFrameMixin:OnLoad()
       end)
       frame:SetPropagateMouseClicks(true)
       frame:SetPropagateMouseMotion(true)
-      frame.Fading = frame:CreateTexture(nil, "BACKGROUND")
-      frame.Fading:SetTexture("Interface/AddOns/Chatanator/Assets/Fade.png")
-      frame.Fading:SetPoint("RIGHT", frame.DisplayString, "LEFT", -4, 0)
-      frame.Fading:SetPoint("TOP", 0, 0)
-      frame.Fading:SetPoint("BOTTOM", 0, 1 + 5)
-      frame.Fading:SetWidth(2)
     end
     frame.DisplayString:SetWidth(self.currentStringWidth)
     frame.data = data

@@ -120,7 +120,7 @@ function addonTable.ChatFrameMixin:OnLoad()
     tex:SetVertexColor(1, 1, 1)
   end)
 
-  self:RepositionEditBox()
+  self:RepositionBlizzardWidgets()
 
   addonTable.CallbackRegistry:RegisterCallback("Render", self.Render, self)
 end
@@ -136,11 +136,12 @@ function addonTable.ChatFrameMixin:SaveSize()
   addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].size = {x, y}
 end
 
-function addonTable.ChatFrameMixin:RepositionEditBox()
+function addonTable.ChatFrameMixin:RepositionBlizzardWidgets()
   if self:GetID() ~= 1 then
     return
   end
 
+  -- We use the default edit box rather than instantiating our own so that the keyboard shortcuts to open it work
   ChatFrame1EditBox:SetParent(self)
   ChatFrame1EditBox:ClearAllPoints()
   ChatFrame1EditBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, 32)

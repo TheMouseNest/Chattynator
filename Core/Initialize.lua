@@ -54,6 +54,7 @@ function addonTable.Core.Initialize()
   frame:RegisterEvent("PLAYER_ENTERING_WORLD")
   frame:SetScript("OnEvent", function()
     C_Timer.After(0, function()
+      FloatingChatFrameManager:UnregisterAllEvents()
       for _, tabName in pairs(CHAT_FRAMES) do
         if tabName ~= "ChatFrame2" then
           local tab = _G[tabName]

@@ -11,7 +11,7 @@ local skinners = {
     button:GetNormalTexture():SetVertexColor(0.15, 0.15, 0.15)
     button:GetNormalTexture():SetDrawLayer("BACKGROUND")
     button:SetPushedTexture("Interface/AddOns/Chatanator/Assets/ChatButton.png")
-    button:GetPushedTexture():SetVertexColor(0, 0, 0)
+    button:GetPushedTexture():SetVertexColor(0.05, 0.05, 0.05)
     button:GetPushedTexture():SetDrawLayer("BACKGROUND")
     button:ClearHighlightTexture()
 
@@ -23,10 +23,10 @@ local skinners = {
     end)
 
     button:HookScript("OnMouseDown", function()
-      button.Icon:SetPoint("TOP", 2, -2)
+      button.Icon:AdjustPointsOffset(2, -2)
     end)
     button:HookScript("OnMouseUp", function()
-      button.Icon:SetPoint("TOP", 0, -2)
+      button.Icon:AdjustPointsOffset(-2, 2)
     end)
 
     if tags.toasts then

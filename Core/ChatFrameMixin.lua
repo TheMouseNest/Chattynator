@@ -23,12 +23,12 @@ function addonTable.ChatFrameMixin:OnLoad()
   view:SetElementExtentCalculator(function(index)
     return self.heights[index][self.key] + 5
   end)
-  local oldWidth = 0
+  self.currentStringWidth = 0
   self:SetScript("OnSizeChanged", function(_, width, _)
     width = math.floor(self.ScrollBox:GetWidth() - addonTable.Messages.inset - rightInset)
     addonTable.Messages:RegisterWidth(width)
-    addonTable.Messages:UnregisterWidth(oldWidth)
-    oldWidth = width
+    addonTable.Messages:UnregisterWidth(self.currentStringWidth)
+    self.currentStringWidth = width
     self.key = addonTable.Messages.font .. " " .. width
     self:Render()
   end)
@@ -38,7 +38,6 @@ function addonTable.ChatFrameMixin:OnLoad()
       frame:SetHyperlinkPropagateToParent(true)
       frame.DisplayString = frame:CreateFontString(nil, "ARTWORK", addonTable.Messages.font)
       frame.DisplayString:SetPoint("TOPLEFT", addonTable.Messages.inset, 0)
-      frame.DisplayString:SetPoint("RIGHT", -rightInset, 0)
       frame.DisplayString:SetJustifyV("TOP")
       frame.DisplayString:SetJustifyH("LEFT")
       frame.DisplayString:SetNonSpaceWrap(true)
@@ -67,10 +66,12 @@ function addonTable.ChatFrameMixin:OnLoad()
       frame:SetPropagateMouseMotion(true)
       frame.Fading = frame:CreateTexture(nil, "BACKGROUND")
       frame.Fading:SetTexture("Interface/AddOns/Chatanator/Assets/Fade.png")
-      frame.Fading:SetPoint("TOPRIGHT", frame.DisplayString, "TOPLEFT", -4, 0)
-      frame.Fading:SetPoint("BOTTOMRIGHT", frame.DisplayString, "BOTTOMLEFT", -4, 2)
+      frame.Fading:SetPoint("RIGHT", frame.DisplayString, "LEFT", -4, 0)
+      frame.Fading:SetPoint("TOP", 0, 0)
+      frame.Fading:SetPoint("BOTTOM", 0, 1 + 5)
       frame.Fading:SetWidth(2)
     end
+    frame.DisplayString:SetWidth(self.currentStringWidth)
     frame.data = data
     frame.Timestamp:SetText(date("%X", data.timestamp))
     frame.DisplayString:SetText(data.text)

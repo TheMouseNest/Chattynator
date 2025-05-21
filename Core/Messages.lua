@@ -14,8 +14,7 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   self.sizingFontString:SetNonSpaceWrap(true)
   self.sizingFontString:SetWordWrap(true)
   self.inset = self.sizingFontString:GetUnboundedStringWidth() + 10
-
-  self.sizingFontString:Hide()
+  self.sizingFontString:SetPoint("TOPLEFT", UIParent, "TOPRIGHT")
 
   CHATANATOR_MESSAGE_LOG = CHATANATOR_MESSAGE_LOG or { current = {}, historical = {} }
   self.messages = CopyTable(CHATANATOR_MESSAGE_LOG.current)
@@ -144,9 +143,9 @@ function addonTable.MessagesMonitorMixin:RegisterWidth(width)
   if self.widths[width] == 1 then
     local key = self.font .. " " .. width
     for index, height in pairs(self.heights) do
-      self.sizingFontString:SetWidth(width)
+      self.sizingFontString:SetWidth(width + 1)
       self.sizingFontString:SetText(self.messages[index].text)
-      local basicHeight = (self.sizingFontString:GetLineHeight() + self.sizingFontString:GetSpacing()) * self.sizingFontString:GetNumLines()
+      local basicHeight = (self.sizingFontString:GetLineHeight() + self.sizingFontString:GetSpacing()) * math.max(self.sizingFontString:GetNumLines(), 1)
       local stringHeight = self.sizingFontString:GetStringHeight()
       if not self.heights[index] then
         self.heights[index] = {}
@@ -185,7 +184,7 @@ function addonTable.MessagesMonitorMixin:GetMessageHeight(reverseIndex)
     local height = {}
     self.heights[index] = height
     for width in pairs(self.widths) do
-      self.sizingFontString:SetWidth(width)
+      self.sizingFontString:SetWidth(width + 1)
       self.sizingFontString:SetText(self.messages[index].text)
       local basicHeight = (self.sizingFontString:GetLineHeight() + self.sizingFontString:GetSpacing()) * self.sizingFontString:GetNumLines()
       local stringHeight = self.sizingFontString:GetStringHeight()

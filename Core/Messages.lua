@@ -98,8 +98,15 @@ function addonTable.MessagesMonitorMixin:OnLoad()
       return
     end
 
-    local isBlizzard = trace:find("Interface/AddOns/Blizzard_") ~= nil and trace:find("PrintHandler") == nil
-    self:SetIncomingType({type = isBlizzard and "SYSTEM" or "ADDON", event = "NONE"})
+    local type
+    if fullTrace:find("DevTools_Dump") then
+      type = "DUMP"
+    elseif trace:find("Interface/AddOns/Blizzard_") ~= nil and trace:find("PrintHandler") == nil then
+      type = "SYSTEM"
+    else
+      type = "ADDON"
+    end
+    self:SetIncomingType({type = type, event = "NONE"})
     self:AddMessage(...)
   end)
 
@@ -260,7 +267,7 @@ function addonTable.MessagesMonitorMixin:SetIncomingType(eventType)
 end
 
 function addonTable.MessagesMonitorMixin:ShouldLog(data)
-  return data.typeInfo.type ~= "ADDON" and data.typeInfo.type ~= "SYSTEM"
+  return data.typeInfo.type ~= "ADDON" and data.typeInfo.type ~= "SYSTEM" and data.typeInfo.type ~= "DUMP"
 end
 
 function addonTable.MessagesMonitorMixin:AddMessage(text, r, g, b, id, _, _, _, _, Formatter)

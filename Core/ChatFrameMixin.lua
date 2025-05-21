@@ -38,7 +38,6 @@ function addonTable.ChatFrameMixin:OnLoad()
       frame.initialized = true
       frame:SetHyperlinkPropagateToParent(true)
       frame.DisplayString = frame:CreateFontString(nil, "ARTWORK", addonTable.Messages.font)
-      frame.DisplayString:SetJustifyV("TOP")
       frame.DisplayString:SetJustifyH("LEFT")
       frame.DisplayString:SetNonSpaceWrap(true)
       frame.DisplayString:SetWordWrap(true)

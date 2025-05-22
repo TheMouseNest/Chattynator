@@ -25,11 +25,19 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   self.store = CHATANATOR_MESSAGE_LOG.current
   self.storeCount = #self.store
 
+  self.pending = {}
+
+  if DEFAULT_CHAT_FRAME:GetNumMessages() > 0 then
+    for i = 1, DEFAULT_CHAT_FRAME:GetNumMessages() do
+      self:SetIncomingType(nil)
+      local text, r, g, b = DEFAULT_CHAT_FRAME:GetMessageInfo(i)
+      self:AddMessage(text, r, g, b)
+    end
+  end
+
   self.heights = {}
 
   self:UpdateStores()
-
-  self.pending = {}
 
   self.editBox = ChatFrame1EditBox
 

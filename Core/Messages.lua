@@ -18,6 +18,8 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   self.inset = self.sizingFontString:GetUnboundedStringWidth() + 10
 
   CHATANATOR_MESSAGE_LOG = CHATANATOR_MESSAGE_LOG or { current = {}, historical = {} }
+  CHATANATOR_MESSAGE_LOG.cleanIndex = self:CleanStore(CHATANATOR_MESSAGE_LOG.current, CHATANATOR_MESSAGE_LOG.cleanIndex or 1)
+
   self.messages = CopyTable(CHATANATOR_MESSAGE_LOG.current)
   self.messageCount = #self.messages
   self.store = CHATANATOR_MESSAGE_LOG.current
@@ -28,6 +30,8 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   self:UpdateStores()
 
   self.pending = {}
+
+  self.editBox = ChatFrame1EditBox
 
   self:RegisterEvent("PLAYER_ENTERING_WORLD")
 
@@ -129,27 +133,45 @@ function addonTable.MessagesMonitorMixin:OnLoad()
       return true or ChatFrame_AddChannel(self, C_ChatInfo.GetChannelShortcutForChannelID(channelID)) ~= nil
     end,
   }
-  self.editBox = ChatFrame1EditBox
 
   setmetatable(env, {__index = _G, __newindex = _G})
   setfenv(ChatFrame_MessageEventHandler, env)
-  self:SetScript("OnEvent", function(_, eventType, ...)
-    if eventType == "UPDATE_CHAT_WINDOWS" or eventType == "CHANNEL_UI_UPDATE" or eventType == "CHANNEL_LEFT" then
-      self:UpdateChannels()
-    elseif eventType == "UI_SCALE_CHANGED" then
-      self.sizingFontString:SetText("00:00:00")
-      self.inset = self.sizingFontString:GetUnboundedStringWidth() + 10
-      self.heights = {}
-    else
-      self:SetIncomingType({
-        type = ChatTypeGroupInverted[eventType] or "NONE",
-        event = eventType,
-        source = select(2, ...),
-        channel = self.channelMap[select(8, ...)],
-      })
-      ChatFrame_OnEvent(self, eventType, ...)
+  self:SetScript("OnEvent", self.OnEvent)
+end
+
+function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
+  if eventName == "UPDATE_CHAT_WINDOWS" or eventName == "CHANNEL_UI_UPDATE" or eventName == "CHANNEL_LEFT" then
+    self:UpdateChannels()
+  elseif eventName == "UI_SCALE_CHANGED" then
+    self.sizingFontString:SetText("00:00:00")
+    self.inset = self.sizingFontString:GetUnboundedStringWidth() + 10
+    self.heights = {}
+  else
+    self:SetIncomingType({
+      type = ChatTypeGroupInverted[eventName] or "NONE",
+      event = eventName,
+      source = select(2, ...),
+      channel = self.channelMap[select(8, ...)],
+    })
+    ChatFrame_OnEvent(self, eventName, ...)
+  end
+end
+
+function addonTable.MessagesMonitorMixin:CleanStore(store, index)
+  if #store <= index then
+    return
+  end
+  for i = index + 1, #store do
+    local data = store[i]
+    if data.text:find("|K.-|k") then
+      data.text = data.text:gsub("|K.-|k", addonTable.Locales.UNKNOWN)
+      data.text = data.text:gsub("|HBNplayer.-|h(.-)|h", "%1")
+      if data.typeInfo.source then
+        data.typeInfo.source = data.typeInfo.source:gsub("|K.-|k", addonTable.Locales.UNKNOWN)
+      end
     end
-  end)
+  end
+  return #store
 end
 
 function addonTable.MessagesMonitorMixin:RegisterWidth(width)
@@ -216,7 +238,10 @@ function addonTable.MessagesMonitorMixin:UpdateStores()
 
   local newStore = {}
   for i = 1, self.storeCount - 5001 do
-    table.insert(newStore, self.store[i])
+    table.insert(newStore, CopyTable(self.store[i]))
+  end
+  if CHATANATOR_MESSAGE_LOG.cleanIndex <= #newStore then
+    self:CleanStore(newStore, CHATANATOR_MESSAGE_LOG.cleanIndex)
   end
   local newCurrent = {}
   for i = self.messageCount - 5000, self.messageCount do
@@ -274,8 +299,15 @@ function addonTable.MessagesMonitorMixin:SetIncomingType(eventType)
   self.incomingType = eventType
 end
 
+local ignore = {
+  ["ADDON"] = true,
+  ["SYSTEM"] = true,
+  ["DUMP"] = true,
+  ["BN_INLINE_TOAST_ALERT"] = true,
+}
+
 function addonTable.MessagesMonitorMixin:ShouldLog(data)
-  return data.typeInfo.type ~= "ADDON" and data.typeInfo.type ~= "SYSTEM" and data.typeInfo.type ~= "DUMP"
+  return not ignore[data.typeInfo.type]
 end
 
 function addonTable.MessagesMonitorMixin:AddMessage(text, r, g, b, id, _, _, _, _, Formatter)

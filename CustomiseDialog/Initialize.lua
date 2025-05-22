@@ -3,14 +3,14 @@ local addonTable = select(2, ...)
 
 local customisers = {}
 
-function addonTable.CustomiseDialog.GetTabCustomiser(tabIndex)
-  if customisers[tabIndex] then
-    customisers[tabIndex]:Show()
+function addonTable.CustomiseDialog.Toggle()
+  if customisers[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)] then
+    customisers[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)]:Show()
     return
   end
-  local frame = CreateFrame("Frame", "ChatanatorTabCustomiser" .. tabIndex, UIParent, "ButtonFrameTemplate")
+  local frame = CreateFrame("Frame", "ChatanatorTabCustomiser" .. addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN), UIParent, "ButtonFrameTemplate")
   frame:SetToplevel(true)
-  customisers[tabIndex] = frame
+  customisers[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)] = frame
   table.insert(UISpecialFrames, frame:GetName())
   frame:SetSize(800, 700)
   frame:SetPoint("CENTER")

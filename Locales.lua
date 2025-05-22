@@ -24,6 +24,7 @@ L["VERSION_COLON_X"] = "Version: %s"
 L["OPEN_OPTIONS"] = "Open Options"
 L["QUICK_CHAT"] = "Quick Chat"
 L["COPY_CHAT"] = "Copy Chat"
+L["UNKNOWN"] = "UNKNOWN"
 
 L["SKINS_DARK"] = "Dark"
 

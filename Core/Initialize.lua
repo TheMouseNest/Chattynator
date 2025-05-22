@@ -45,8 +45,6 @@ function addonTable.Core.Initialize()
   addonTable.ChatFrame = chatFrame
   Mixin(chatFrame, addonTable.ChatFrameMixin)
   chatFrame:OnLoad()
-  chatFrame:SetPoint("CENTER", UIParent)
-  addonTable.Messages:RegisterWidth(chatFrame:GetWidth() - addonTable.Messages.inset)
 
   chatFrame:Show()
 
@@ -62,7 +60,7 @@ function addonTable.Core.Initialize()
         tab:SetParent(hidden)
         if tabName ~= "ChatFrame2" then
           tab:UnregisterAllEvents()
-          tab:RegisterEvent("UPDATE_CHAT_COLOR")
+          tab:RegisterEvent("UPDATE_CHAT_COLOR") -- Needed to prevent errors in OnUpdate from UIParent
         end
         local tabButton = _G[tabName .. "Tab"]
         tabButton:SetParent(hidden)

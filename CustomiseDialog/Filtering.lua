@@ -109,6 +109,7 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
   for _, data in ipairs(LAYOUT.MESSAGES) do
     local cb = GetTypeCheckbox(container, data, function(group, enabled)
       container.tabData.groups[group] = enabled
+      addonTable.CallbackRegistry:TriggerEvent("ScrollToEndImmediate")
       addonTable.CallbackRegistry:TriggerEvent("Render")
     end)
     container.checkboxes[data[1]] = cb

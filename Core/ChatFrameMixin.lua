@@ -113,6 +113,7 @@ function addonTable.ChatFrameMixin:OnLoad()
   self:RepositionBlizzardWidgets()
 
   addonTable.CallbackRegistry:RegisterCallback("Render", self.Render, self)
+  addonTable.CallbackRegistry:RegisterCallback("ScrollToEndImmediate", self.SetTabChanged, self)
 
   addonTable.Skins.AddFrame("ChatFrame", self)
 end

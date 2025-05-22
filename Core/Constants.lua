@@ -3,5 +3,6 @@ local addonTable = select(2, ...)
 
 addonTable.Constants = {}
 addonTable.Constants.Events = {
+  "ScrollToEndImmediate",
   "Render",
 }

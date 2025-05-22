@@ -178,7 +178,7 @@ function addonTable.MessagesMonitorMixin:RegisterWidth(width)
   if self.widths[width] == 1 then
     local key = self.font .. " " .. width
     for index, height in pairs(self.heights) do
-      self.sizingFontString:SetWidth(width + 1)
+      self.sizingFontString:SetWidth(width + 0.1)
       self.sizingFontString:SetText(self.messages[index].text)
       local basicHeight = (self.sizingFontString:GetLineHeight() + self.sizingFontString:GetSpacing()) * math.max(self.sizingFontString:GetNumLines(), 1)
       local stringHeight = self.sizingFontString:GetStringHeight()
@@ -219,7 +219,7 @@ function addonTable.MessagesMonitorMixin:GetMessageHeight(reverseIndex)
     local height = {}
     self.heights[index] = height
     for width in pairs(self.widths) do
-      self.sizingFontString:SetWidth(width + 1)
+      self.sizingFontString:SetWidth(width + 0.1)
       self.sizingFontString:SetText(self.messages[index].text)
       local basicHeight = (self.sizingFontString:GetLineHeight() + self.sizingFontString:GetSpacing()) * self.sizingFontString:GetNumLines()
       local stringHeight = self.sizingFontString:GetStringHeight()

@@ -257,9 +257,28 @@ function addonTable.ChatFrameMixin:Render(newMessages)
   end
   local filteredMessages, heights = self:FilterMessages()
   self.heights = heights
+
+  local lowest, data = nil, nil
+  for _, f in ipairs(self.ScrollBox:GetFrames()) do
+    local testLow = f:GetBottom()
+    if not lowest or testLow < lowest then
+      data = f.data
+      lowest = testLow
+    end
+  end
+  local extent
+  if data then
+    extent = self.ScrollBox:GetExtentUntil(self.ScrollBox:FindElementDataIndex(data)) - self.ScrollBox:GetDerivedScrollOffset()
+  end
   self.ScrollBox:SetDataProvider(CreateDataProvider(filteredMessages), true)
   if not self.scrolling or self.tabChanged then
     self.ScrollBox:ScrollToEnd(self.tabChanged)
+  elseif data then
+    local newIndex = tIndexOf(filteredMessages, data)
+    if newIndex then
+      local diff = extent - (self.ScrollBox:GetExtentUntil(newIndex) - self.ScrollBox:GetDerivedScrollOffset())
+      self.ScrollBox:SetScrollPercentage(self.ScrollBox:GetScrollPercentage() - diff / self.ScrollBox:GetDerivedScrollRange(), true)
+    end
   end
   self.tabChanged = false
 end

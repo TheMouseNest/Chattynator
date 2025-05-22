@@ -80,7 +80,7 @@ function addonTable.Core.InitializeTabs(chatFrame)
     lastButton = button
   end
 
-  if chatFrame:GetID() == 1 then
+  if chatFrame:GetID() == 1 and addonTable.Config.Get(addonTable.Config.Options.SHOW_COMBAT_LOG) then
     local combatLogButton = chatFrame.tabsPool:Acquire()
     combatLogButton:SetID(#allTabs + 1)
     combatLogButton:Show()

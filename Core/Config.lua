@@ -39,6 +39,7 @@ local settings = {
   SKINS = {key = "skins", default = {}},
   DISABLED_SKINS = {key = "disabled_skins", default = {}},
   CURRENT_SKIN = {key = "current_skin", default = "dark"},
+  SHOW_COMBAT_LOG = {key = "show_combat_log", default = true},
 
   ENABLE_COMBAT_MESSAGES = {key = "enable_combat_messages", default = false},
   DEBUG = {key = "debug", default = false},

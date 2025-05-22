@@ -72,8 +72,6 @@ function addonTable.MessagesMonitorMixin:OnLoad()
       ["PET_INFO"] = true,
       ["COMBAT_MISC_INFO"] = true,
       ["COMBAT_XP_GAIN"] = true,
-      ["COMBAT_HONOR_GAIN"] = true,
-      ["COMBAT_FACTION_CHANGE"] = true,
     }
   end
   for event, group in pairs(ChatTypeGroupInverted) do

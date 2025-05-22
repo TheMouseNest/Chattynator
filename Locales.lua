@@ -26,6 +26,8 @@ L["QUICK_CHAT"] = "Quick Chat"
 L["COPY_CHAT"] = "Copy Chat"
 L["UNKNOWN"] = "UNKNOWN"
 
+L["CUSTOMISE_CHATANATOR"] = "Customise Chatanator"
+
 L["SKINS_DARK"] = "Dark"
 
 L["SLASH_RESET"] = "reset"

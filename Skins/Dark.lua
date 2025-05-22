@@ -69,7 +69,7 @@ local skinners = {
   end,
   ChatFrame = function(frame, tags)
     frame.background = frame:CreateTexture(nil, "BACKGROUND")
-    frame.background:SetTexture("Interface/AddOns/Chatanator/Assets/ChatTabMiddle")
+    frame.background:SetTexture("Interface/AddOns/Chatanator/Assets/ChatBackground")
     frame.background:SetTexCoord(0, 1, 1, 0)
     frame.background:SetPoint("TOP", frame.ScrollBox, 0, 5)
     frame.background:SetPoint("LEFT")

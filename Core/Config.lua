@@ -21,7 +21,7 @@ local settings = {
             ["VOICE_TEXT"] = false,
           },
           invert = true,
-          channels = {}, backgroundColor = "1A1A1A", tabColor = "111111",
+          channels = {}, backgroundColor = "000000", tabColor = "111111",
         },
         {
           name = "GUILD",

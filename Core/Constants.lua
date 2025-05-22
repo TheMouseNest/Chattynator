@@ -5,4 +5,6 @@ addonTable.Constants = {}
 addonTable.Constants.Events = {
   "ScrollToEndImmediate",
   "Render",
+
+  "TabSelected",
 }

@@ -40,6 +40,7 @@ function addonTable.Core.InitializeTabs(chatFrame)
   local lastButton
   for index, tab in ipairs(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[chatFrame:GetID()].tabs) do
     local button = chatFrame.tabsPool:Acquire()
+    button:SetID(index)
     button:Show()
     button:SetText(_G[tab.name] or tab.name or UNKNOWN)
     local tabColor = CreateColorFromRGBHexString(tab.tabColor)
@@ -65,6 +66,7 @@ function addonTable.Core.InitializeTabs(chatFrame)
           otherTab:SetSelected(false)
         end
         button:SetSelected(true)
+        addonTable.CallbackRegistry:TriggerEvent("TabSelected", chatFrame:GetID(), button:GetID())
       end
     end)
 
@@ -80,6 +82,7 @@ function addonTable.Core.InitializeTabs(chatFrame)
 
   if chatFrame:GetID() == 1 then
     local combatLogButton = chatFrame.tabsPool:Acquire()
+    combatLogButton:SetID(#allTabs + 1)
     combatLogButton:Show()
     combatLogButton:SetText(COMBAT_LOG)
     combatLogButton:SetScript("OnClick", function(_, mouseButton)
@@ -133,6 +136,7 @@ function addonTable.Core.InitializeTabs(chatFrame)
     tab:SetSelected(false)
   end
   allTabs[1]:SetSelected(true)
+  addonTable.CallbackRegistry:TriggerEvent("TabSelected", chatFrame:GetID(), 1)
   chatFrame:SetFilter(allTabs[1].filter)
   chatFrame:SetBackgroundColor(allTabs[1].bgColor.r, allTabs[1].bgColor.g, allTabs[1].bgColor.b)
   chatFrame:SetTabChanged()

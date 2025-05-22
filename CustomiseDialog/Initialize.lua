@@ -2,11 +2,22 @@
 local addonTable = select(2, ...)
 
 local customisers = {}
+local currentTab = 1
+addonTable.CallbackRegistry:RegisterCallback("TabSelected", function(_, windowIndex, tabIndex)
+  currentTab = tabIndex
+  local frame = customisers[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)]
+  if frame and frame:IsShown() then
+    frame.filters:ShowSettings(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[1].tabs[currentTab])
+  end
+end)
 
 function addonTable.CustomiseDialog.Toggle()
   if customisers[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)] then
     local frame = customisers[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)]
     frame:SetShown(not frame:IsVisible())
+    if frame:IsShown() then
+      frame.filters:ShowSettings(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[1].tabs[currentTab])
+    end
     return
   end
 
@@ -31,5 +42,7 @@ function addonTable.CustomiseDialog.Toggle()
   filters:SetPoint("BOTTOMRIGHT")
   filters:Show()
 
-  filters:ShowSettings(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[1].tabs[2])
+  frame.filters = filters
+
+  filters:ShowSettings(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[1].tabs[currentTab])
 end

@@ -64,7 +64,7 @@ local LAYOUT = {
   }
 }
 
-local function GetTypeCheckbox(parent, typeData, callback)
+local function GetTypeCheckbox(parent, label, callback)
   local holder = CreateFrame("Frame", nil, parent)
   holder:SetHeight(30)
   holder:SetPoint("LEFT", parent)
@@ -72,7 +72,7 @@ local function GetTypeCheckbox(parent, typeData, callback)
   local checkBox = CreateFrame("CheckButton", nil, holder, "SettingsCheckboxTemplate")
 
   checkBox:SetPoint("LEFT", holder, "CENTER", -15, 0)
-  checkBox:SetText(typeData[2] or _G[typeData[1]] or UNKNOWN)
+  checkBox:SetText(label)
   checkBox:SetNormalFontObject(GameFontHighlight)
   checkBox:GetFontString():SetPoint("RIGHT", holder, "CENTER", -30, 0)
 
@@ -95,7 +95,7 @@ local function GetTypeCheckbox(parent, typeData, callback)
   end)
 
   checkBox:SetScript("OnClick", function()
-    callback(typeData[1], checkBox:GetChecked())
+    callback(checkBox:GetChecked())
   end)
 
   return holder
@@ -107,8 +107,8 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
   container.checkboxes = {}
   local lastCB
   for _, data in ipairs(LAYOUT.MESSAGES) do
-    local cb = GetTypeCheckbox(container, data, function(group, enabled)
-      container.tabData.groups[group] = enabled
+    local cb = GetTypeCheckbox(container, data[2] or _G[data[1]] or UNKNOWN, function(enabled)
+      container.tabData.groups[data[1]] = enabled
       addonTable.CallbackRegistry:TriggerEvent("ScrollToEndImmediate")
       addonTable.CallbackRegistry:TriggerEvent("Render")
     end)

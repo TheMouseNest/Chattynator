@@ -34,6 +34,21 @@ local settings = {
         },
       },
     },
+    --[[{
+      position = {"TOPRIGHT", "UIParent", "TOPRIGHT", -200, -40},
+      size = {500, 200},
+      tabs = {
+        {
+          name = "LOOT",
+          groups = {
+            ["LOOT"] = true,
+            ["CURRENCY"] = true,
+            ["MONEY"] = true,
+          },
+          channels = {}, backgroundColor = "000000", tabColor = "111111",
+        },
+      },
+    },]]
   }},
 
   SKINS = {key = "skins", default = {}},

@@ -40,15 +40,17 @@ function addonTable.Core.Initialize()
 
   addonTable.Skins.Initialize()
 
-  local chatFrame = CreateFrame("Frame", nil, ChatanatorHyperlinkHandler)
-  chatFrame:SetID(1)
-  addonTable.ChatFrame = chatFrame
-  Mixin(chatFrame, addonTable.ChatFrameMixin)
-  chatFrame:OnLoad()
-
-  chatFrame:Show()
-
-  addonTable.Core.InitializeTabs(chatFrame)
+  for id, window in ipairs(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)) do
+    local chatFrame = CreateFrame("Frame", nil, ChatanatorHyperlinkHandler)
+    chatFrame:SetID(id)
+    if id == 1 then
+      addonTable.ChatFrame = chatFrame
+    end
+    Mixin(chatFrame, addonTable.ChatFrameMixin)
+    chatFrame:OnLoad()
+    chatFrame:Show()
+    addonTable.Core.InitializeTabs(chatFrame)
+  end
 
   local frame = CreateFrame("Frame")
   frame:RegisterEvent("PLAYER_ENTERING_WORLD")

@@ -21,6 +21,7 @@ function addonTable.MessagesMonitorMixin:OnLoad()
     CHATANATOR_MESSAGE_LOG = nil
   end
   CHATANATOR_MESSAGE_LOG = CHATANATOR_MESSAGE_LOG or { current = {}, historical = {}, version = 1, cleanIndex = 0}
+  CHATANATOR_MESSAGE_LOG.cleanIndex = CHATANATOR_MESSAGE_LOG.cleanIndex or 0
   CHATANATOR_MESSAGE_LOG.cleanIndex = self:CleanStore(CHATANATOR_MESSAGE_LOG.current, CHATANATOR_MESSAGE_LOG.cleanIndex)
 
   self.messages = CopyTable(CHATANATOR_MESSAGE_LOG.current)
@@ -172,7 +173,7 @@ end
 
 function addonTable.MessagesMonitorMixin:CleanStore(store, index)
   if #store <= index then
-    return
+    return index
   end
   for i = index + 1, #store do
     local data = store[i]

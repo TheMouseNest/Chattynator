@@ -4,6 +4,8 @@ local addonTable = select(2, ...)
 ---@class MessagesMonitorMixin: Frame
 addonTable.MessagesMonitorMixin ={}
 
+local conversionThreshold = 10000
+
 local function GetNewLog()
   return { current = {}, historical = {}, version = 1, cleanIndex = 0}
 end
@@ -27,12 +29,15 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   CHATANATOR_MESSAGE_LOG.cleanIndex = CHATANATOR_MESSAGE_LOG.cleanIndex or 0
   CHATANATOR_MESSAGE_LOG.cleanIndex = self:CleanStore(CHATANATOR_MESSAGE_LOG.current, CHATANATOR_MESSAGE_LOG.cleanIndex)
 
+  self.store = CHATANATOR_MESSAGE_LOG.current
+  self.storeCount = #self.store
+
+  self:UpdateStores()
+
   self.messages = CopyTable(CHATANATOR_MESSAGE_LOG.current)
   self.newMessageStartPoint = #self.messages + 1
   self.formatters = {}
   self.messageCount = #self.messages
-  self.store = CHATANATOR_MESSAGE_LOG.current
-  self.storeCount = #self.store
 
   self.awaitingRecorderSet = {}
   self.pending = {}
@@ -46,8 +51,6 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   end
 
   self.heights = {}
-
-  self:UpdateStores()
 
   self.editBox = ChatFrame1EditBox
   local events = {
@@ -297,19 +300,19 @@ function addonTable.MessagesMonitorMixin:GetMessageHeight(reverseIndex)
 end
 
 function addonTable.MessagesMonitorMixin:UpdateStores()
-  if self.storeCount < 10000 then
+  if self.storeCount < conversionThreshold then
     return
   end
 
   local newStore = {}
-  for i = 1, self.storeCount - 5001 do
+  for i = 1, self.storeCount - conversionThreshold / 2 - 1 do
     table.insert(newStore, CopyTable(self.store[i]))
   end
   if CHATANATOR_MESSAGE_LOG.cleanIndex <= #newStore then
     self:CleanStore(newStore, CHATANATOR_MESSAGE_LOG.cleanIndex)
   end
   local newCurrent = {}
-  for i = self.messageCount - 5000, self.messageCount do
+  for i = self.messageCount - conversionThreshold / 2, self.messageCount do
     table.insert(newCurrent, self.store[i])
   end
   table.insert(CHATANATOR_MESSAGE_LOG.historical, {
@@ -323,7 +326,7 @@ function addonTable.MessagesMonitorMixin:UpdateStores()
 end
 
 function addonTable.MessagesMonitorMixin:ReduceMessages()
-  if self.messageCount < 10000 then
+  if self.messageCount < conversionThreshold then
     return
   end
 
@@ -333,11 +336,12 @@ function addonTable.MessagesMonitorMixin:ReduceMessages()
   self.messages = {}
   self.heights = {}
   self.formatters = {}
-  for i = 1, self.messageCount - 5001 do
+  for i = self.messageCount - conversionThreshold / 2, self.messageCount do
     table.insert(self.messages, oldMessages[i])
     self.heights[#self.messages] = oldHeights[i]
     self.formatters[#self.messages] = oldFormatters[i]
   end
+  self.newMessageStartPoint = self.newMessageStartPoint - (#oldMessages - #self.messages)
   self.messageCount = #self.messages
 end
 

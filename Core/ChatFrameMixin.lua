@@ -163,7 +163,7 @@ function addonTable.ChatFrameMixin:UpdateAlphas()
       self.alphas[f.data] = oldAlphas[f.data] or 0
 
       local targetAlpha
-      if f.DisplayString:GetTop() - self.ScrollBox:GetTop() > 5 or f.DisplayString:GetBottom() - self.ScrollBox:GetBottom() < -5 then
+      if f.DisplayString:GetBottom() - self.ScrollBox:GetTop() > -f.DisplayString:GetLineHeight() or f.DisplayString:GetTop() - self.ScrollBox:GetBottom() < f.DisplayString:GetLineHeight() then
         if f:GetAlpha() ~= 0.5 then
           targetAlpha = 0.5
         end

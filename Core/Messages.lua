@@ -4,6 +4,10 @@ local addonTable = select(2, ...)
 ---@class MessagesMonitorMixin: Frame
 addonTable.MessagesMonitorMixin ={}
 
+local function GetNewLog()
+  return { current = {}, historical = {}, version = 1, cleanIndex = 0}
+end
+
 function addonTable.MessagesMonitorMixin:OnLoad()
   self.font = "ChatFontNormal"
   self.widths = {}
@@ -16,11 +20,10 @@ function addonTable.MessagesMonitorMixin:OnLoad()
 
   self.sizingFontString:SetText("00:00:00")
   self.inset = self.sizingFontString:GetUnboundedStringWidth() + 10
-
+  CHATANATOR_MESSAGE_LOG = CHATANATOR_MESSAGE_LOG or GetNewLog()
   if CHATANATOR_MESSAGE_LOG.version ~= 1 then
-    CHATANATOR_MESSAGE_LOG = nil
+    CHATANATOR_MESSAGE_LOG = GetNewLog()
   end
-  CHATANATOR_MESSAGE_LOG = CHATANATOR_MESSAGE_LOG or { current = {}, historical = {}, version = 1, cleanIndex = 0}
   CHATANATOR_MESSAGE_LOG.cleanIndex = CHATANATOR_MESSAGE_LOG.cleanIndex or 0
   CHATANATOR_MESSAGE_LOG.cleanIndex = self:CleanStore(CHATANATOR_MESSAGE_LOG.current, CHATANATOR_MESSAGE_LOG.cleanIndex)
 
@@ -47,31 +50,38 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   self:UpdateStores()
 
   self.editBox = ChatFrame1EditBox
-  self:RegisterEvent("PLAYER_LOGIN")
-  self:RegisterEvent("UI_SCALE_CHANGED")
+  local events = {
+    "PLAYER_LOGIN",
+    "UI_SCALE_CHANGED",
 
-  self:RegisterEvent("PLAYER_ENTERING_WORLD")
-  self:RegisterEvent("SETTINGS_LOADED")
-  self:RegisterEvent("UPDATE_CHAT_COLOR");
-  self:RegisterEvent("UPDATE_CHAT_WINDOWS")
-  self:RegisterEvent("CHANNEL_UI_UPDATE")
-  self:RegisterEvent("CHANNEL_LEFT")
-  self:RegisterEvent("CHAT_MSG_CHANNEL")
-  self:RegisterEvent("CHAT_MSG_COMMUNITIES_CHANNEL")
-  self:RegisterEvent("CLUB_REMOVED")
-  self:RegisterEvent("UPDATE_INSTANCE_INFO")
-  --self:RegisterEvent("UPDATE_CHAT_COLOR_NAME_BY_CLASS");
-  self:RegisterEvent("CHAT_SERVER_DISCONNECTED")
-  self:RegisterEvent("CHAT_SERVER_RECONNECTED")
-  self:RegisterEvent("BN_CONNECTED")
-  self:RegisterEvent("BN_DISCONNECTED")
-  self:RegisterEvent("PLAYER_REPORT_SUBMITTED")
-  self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT")
-  self:RegisterEvent("ALTERNATIVE_DEFAULT_LANGUAGE_CHANGED")
-  self:RegisterEvent("NEWCOMER_GRADUATION")
-  self:RegisterEvent("CHAT_REGIONAL_STATUS_CHANGED")
-  self:RegisterEvent("CHAT_REGIONAL_SEND_FAILED")
-  self:RegisterEvent("NOTIFY_CHAT_SUPPRESSED")
+    "PLAYER_ENTERING_WORLD",
+    "SETTINGS_LOADED",
+    "UPDATE_CHAT_COLOR",
+    "UPDATE_CHAT_WINDOWS",
+    "CHANNEL_UI_UPDATE",
+    "CHANNEL_LEFT",
+    "CHAT_MSG_CHANNEL",
+    "CHAT_MSG_COMMUNITIES_CHANNEL",
+    "CLUB_REMOVED",
+    "UPDATE_INSTANCE_INFO",
+    --"UPDATE_CHAT_COLOR_NAME_BY_CLASS",
+    "CHAT_SERVER_DISCONNECTED",
+    "CHAT_SERVER_RECONNECTED",
+    "BN_CONNECTED",
+    "BN_DISCONNECTED",
+    "PLAYER_REPORT_SUBMITTED",
+    "NEUTRAL_FACTION_SELECT_RESULT",
+    "ALTERNATIVE_DEFAULT_LANGUAGE_CHANGED",
+    "NEWCOMER_GRADUATION",
+    "CHAT_REGIONAL_STATUS_CHANGED",
+    "CHAT_REGIONAL_SEND_FAILED",
+    "NOTIFY_CHAT_SUPPRESSED",
+  }
+  for _, e in ipairs(events) do
+    if C_EventUtils.IsEventValid(e) then
+      self:RegisterEvent(e)
+    end
+  end
 
   self.channelList = {}
   self.zoneChannelList = {}

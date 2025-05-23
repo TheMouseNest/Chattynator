@@ -85,7 +85,10 @@ local skinners = {
   end,
   ChatEditBox = function(editBox, tags)
     for _, texName in ipairs({"Left", "Right", "Mid", "FocusLeft", "FocusRight", "FocusMid"}) do
-      _G[editBox:GetName() .. texName]:SetParent(addonTable.hiddenFrame)
+      local tex = _G[editBox:GetName() .. texName]
+      if tex then
+        tex:SetParent(addonTable.hiddenFrame)
+      end
     end
     local background = editBox:CreateTexture(nil, "BACKGROUND")
     background:SetColorTexture(0.1, 0.1, 0.1, 0.8)

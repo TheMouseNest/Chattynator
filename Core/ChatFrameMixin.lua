@@ -163,7 +163,7 @@ function addonTable.ChatFrameMixin:UpdateAlphas()
       self.alphas[f.data] = oldAlphas[f.data] or 0
 
       local targetAlpha
-      if f.DisplayString:GetBottom() - self.ScrollBox:GetTop() > -f.DisplayString:GetLineHeight() or f.DisplayString:GetTop() - self.ScrollBox:GetBottom() < f.DisplayString:GetLineHeight() then
+      if f.DisplayString:GetBottom() - self.ScrollBox:GetTop() > -f.DisplayString:GetLineHeight() * 0.9 or f.DisplayString:GetTop() - self.ScrollBox:GetBottom() < f.DisplayString:GetLineHeight() * 0.9 then
         if f:GetAlpha() ~= 0.5 then
           targetAlpha = 0.5
         end
@@ -210,12 +210,14 @@ function addonTable.ChatFrameMixin:RepositionBlizzardWidgets()
   end
   local buttons = {}
 
-  QuickJoinToastButton:SetParent(self)
-  QuickJoinToastButton:SetScript("OnMouseDown", nil)
-  QuickJoinToastButton:SetScript("OnMouseUp", nil)
-  QuickJoinToastButton:ClearAllPoints()
-  QuickJoinToastButton:SetPoint("BOTTOMRIGHT", self.ScrollBox, "TOPLEFT", -5, 35)
-  addonTable.Skins.AddFrame("ChatButton", QuickJoinToastButton, {"toasts"})
+  if QuickJoinToastButton then
+    QuickJoinToastButton:SetParent(self)
+    QuickJoinToastButton:SetScript("OnMouseDown", nil)
+    QuickJoinToastButton:SetScript("OnMouseUp", nil)
+    QuickJoinToastButton:ClearAllPoints()
+    QuickJoinToastButton:SetPoint("BOTTOMRIGHT", self.ScrollBox, "TOPLEFT", -5, 35)
+    addonTable.Skins.AddFrame("ChatButton", QuickJoinToastButton, {"toasts"})
+  end
 
   ChatFrameChannelButton:SetParent(self)
   ChatFrameChannelButton:ClearAllPoints()

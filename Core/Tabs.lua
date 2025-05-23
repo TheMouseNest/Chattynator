@@ -121,8 +121,10 @@ function addonTable.Core.InitializeTabs(chatFrame)
         ChatFrame2TopTexture:SetParent(addonTable.hiddenFrame)
         ChatFrame2RightTexture:SetParent(addonTable.hiddenFrame)
         ChatFrame2LeftTexture:SetParent(addonTable.hiddenFrame)
-        ChatFrame2ButtonFrameBackground:SetParent(addonTable.hiddenFrame)
-        ChatFrame2ButtonFrameRightTexture:SetParent(addonTable.hiddenFrame)
+        if ChatFrame2ButtonFrameBackground then
+          ChatFrame2ButtonFrameBackground:SetParent(addonTable.hiddenFrame)
+          ChatFrame2ButtonFrameRightTexture:SetParent(addonTable.hiddenFrame)
+        end
         ChatFrame2:Show()
       elseif mouseButton == "RightButton" then
         if not InCombatLockdown() then

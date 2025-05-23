@@ -292,13 +292,19 @@ function addonTable.MessagesMonitorMixin:UpdateChannels()
     end
   end
 
+  self.defaultChannels = {}
+
   self.channelMap = {}
   self.maxDisplay = 0
   for i = 1, GetNumDisplayChannels() do
-    local name, isHeader, _, channelNumber = GetChannelDisplayInfo(i)
+    local name, isHeader, _, channelNumber, _, _, category = GetChannelDisplayInfo(i)
     if not isHeader and channelNumber then
       self.channelMap[channelNumber] = name
       self.maxDisplay = math.max(self.maxDisplay, channelNumber)
+
+      if category ~= "CHANNEL_CATEGORY_CUSTOM" or select(4, GetChannelName(name)) then
+        self.defaultChannels[name] = true
+      end
     end
   end
 end

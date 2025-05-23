@@ -47,9 +47,18 @@ function addonTable.Core.InitializeTabs(chatFrame)
     local bgColor = CreateColorFromRGBHexString(tab.backgroundColor)
     local filter
     if tab.invert then
-      filter = function(data) return tab.groups[data.typeInfo.type] ~= false end
+      filter = function(data)
+        return tab.groups[data.typeInfo.type] ~= false and
+          (
+          not data.typeInfo.channel or
+          (tab.channels[data.typeInfo.channel] == nil and addonTable.Messages.defaultChannels[data.typeInfo.channel]) or
+          tab.channels[data.typeInfo.channel]
+        )
+      end
     else
-      filter = function(data) return tab.groups[data.typeInfo.type] end
+      filter = function(data)
+        return tab.groups[data.typeInfo.type]
+      end
     end
     button.filter = filter
     button.bgColor = bgColor

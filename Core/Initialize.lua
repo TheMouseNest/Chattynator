@@ -40,6 +40,7 @@ function addonTable.Core.Initialize()
 
   addonTable.Skins.Initialize()
 
+  addonTable.allChatFrames = {}
   for id, window in ipairs(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)) do
     local chatFrame = CreateFrame("Frame", nil, ChatanatorHyperlinkHandler)
     chatFrame:SetID(id)
@@ -50,27 +51,10 @@ function addonTable.Core.Initialize()
     chatFrame:OnLoad()
     chatFrame:Show()
     addonTable.Core.InitializeTabs(chatFrame)
+    table.insert(addonTable.allChatFrames, chatFrame)
   end
 
-  local frame = CreateFrame("Frame")
-  frame:RegisterEvent("PLAYER_ENTERING_WORLD")
-  frame:SetScript("OnEvent", function()
-    C_Timer.After(0, function()
-      FloatingChatFrameManager:UnregisterAllEvents()
-      for _, tabName in pairs(CHAT_FRAMES) do
-        local tab = _G[tabName]
-        tab:SetParent(hidden)
-        if tabName ~= "ChatFrame2" then
-          tab:UnregisterAllEvents()
-          tab:RegisterEvent("UPDATE_CHAT_COLOR") -- Needed to prevent errors in OnUpdate from UIParent
-        end
-        local tabButton = _G[tabName .. "Tab"]
-        tabButton:SetParent(hidden)
-        local SetParent = tabButton.SetParent
-        hooksecurefunc(tabButton, "SetParent", function(self) SetParent(self, hidden) end)
-      end
-    end)
-  end)
+  addonTable.Core.ApplyOverrides()
 end
 
 local frame = CreateFrame("Frame")

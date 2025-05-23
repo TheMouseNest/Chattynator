@@ -17,8 +17,10 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   self.sizingFontString:SetText("00:00:00")
   self.inset = self.sizingFontString:GetUnboundedStringWidth() + 10
 
-  CHATANATOR_MESSAGE_LOG = CHATANATOR_MESSAGE_LOG or { current = {}, historical = {} }
-  CHATANATOR_MESSAGE_LOG.cleanIndex = self:CleanStore(CHATANATOR_MESSAGE_LOG.current, CHATANATOR_MESSAGE_LOG.cleanIndex or 1)
+  if CHATANATOR_MESSAGE_LOG.version ~= 1 then
+    CHATANATOR_MESSAGE_LOG = nil
+  end
+  CHATANATOR_MESSAGE_LOG = CHATANATOR_MESSAGE_LOG or { current = {}, historical = {}, version = 1, cleanIndex = 1}
 
   self.messages = CopyTable(CHATANATOR_MESSAGE_LOG.current)
   self.messageCount = #self.messages
@@ -153,11 +155,12 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
     self.inset = self.sizingFontString:GetUnboundedStringWidth() + 10
     self.heights = {}
   else
+    local channelName = self.channelMap[select(8, ...)]
     self:SetIncomingType({
       type = ChatTypeGroupInverted[eventName] or "NONE",
       event = eventName,
-      source = select(2, ...),
-      channel = self.channelMap[select(8, ...)],
+      player = select(2, ...),
+      channel = channelName and {name = channelName, isDefault = self.defaultChannels[channelName]} or nil,
     })
     ChatFrame_OnEvent(self, eventName, ...)
   end
@@ -172,8 +175,8 @@ function addonTable.MessagesMonitorMixin:CleanStore(store, index)
     if data.text:find("|K.-|k") then
       data.text = data.text:gsub("|K.-|k", addonTable.Locales.UNKNOWN)
       data.text = data.text:gsub("|HBNplayer.-|h(.-)|h", "%1")
-      if data.typeInfo.source then
-        data.typeInfo.source = data.typeInfo.source:gsub("|K.-|k", addonTable.Locales.UNKNOWN)
+      if data.typeInfo.player then
+        data.typeInfo.player = data.typeInfo.player:gsub("|K.-|k", addonTable.Locales.UNKNOWN)
       end
     end
   end
@@ -335,8 +338,8 @@ function addonTable.MessagesMonitorMixin:AddMessage(text, r, g, b, id, _, _, _, 
     timestamp = time(),
     id = id,
     formatter = Formatter, -- Stored in case we have to uncensor a message
-    typeInfo = self.incomingType or {type = "ADDON", event = "NONE", source = "CHATANATOR"},
-    recordedCharacter = addonTable.Data.CharacterName or "",
+    typeInfo = self.incomingType or {type = "ADDON", event = "NONE"},
+    recordedBy = addonTable.Data.CharacterName or "",
   }
   self.incomingType = nil
   table.insert(self.messages, data)

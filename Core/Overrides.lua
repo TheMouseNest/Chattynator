@@ -1,0 +1,50 @@
+---@class addonTableChatanator
+local addonTable = select(2, ...)
+
+function addonTable.Core.ApplyOverrides()
+  -- Disable context menu to move channel to new window (for now, will add functionality back)
+  hooksecurefunc("ChatChannelDropdown_Show", function(chatFrame, chatType, chatTarget, chatName)
+    local actualChatFrame
+    for _, frame in ipairs(addonTable.allChatFrames) do
+      if frame:IsMouseOver() then
+        actualChatFrame = frame
+      end
+    end
+    MenuUtil.CreateContextMenu(nil, function(menu, rootDescription)
+      local channelNumber = tonumber(chatTarget)
+      local channelName = addonTable.Messages.channelMap[channelNumber]
+      if not channelName then
+        rootDescription:CreateTitle(GRAY_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.CANT_POPOUT_THIS_CHANNEL))
+        return
+      end
+      rootDescription:CreateButton(MOVE_TO_NEW_WINDOW, function()
+        local config = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[actualChatFrame:GetID()]
+        local tabConfig = addonTable.Config.GetEmptyTabConfig(channelName)
+        tabConfig.channels[channelName] = true
+        table.insert(config.tabs, tabConfig)
+        config.tabs[actualChatFrame.tabIndex].channels[channelName] = false
+        addonTable.Core.InitializeTabs(actualChatFrame)
+      end)
+    end)
+  end)
+
+  local frame = CreateFrame("Frame")
+  frame:RegisterEvent("PLAYER_ENTERING_WORLD")
+  frame:SetScript("OnEvent", function()
+    C_Timer.After(0, function()
+      FloatingChatFrameManager:UnregisterAllEvents()
+      for _, tabName in pairs(CHAT_FRAMES) do
+        local tab = _G[tabName]
+        tab:SetParent(addonTable.hiddenFrame)
+        if tabName ~= "ChatFrame2" then
+          tab:UnregisterAllEvents()
+          tab:RegisterEvent("UPDATE_CHAT_COLOR") -- Needed to prevent errors in OnUpdate from UIParent
+        end
+        local tabButton = _G[tabName .. "Tab"]
+        tabButton:SetParent(addonTable.hiddenFrame)
+        local SetParent = tabButton.SetParent
+        hooksecurefunc(tabButton, "SetParent", function(self) SetParent(self, addonTable.hiddenFrame) end)
+      end
+    end)
+  end)
+end

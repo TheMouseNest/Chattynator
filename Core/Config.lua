@@ -2,6 +2,14 @@
 local addonTable = select(2, ...)
 addonTable.Config = {}
 
+function addonTable.Config.GetEmptyTabConfig(name)
+  return {
+    name = name,
+    groups = {},
+    channels = {}, backgroundColor = "1a1a1a", tabColor = "111111",
+  }
+end
+
 local settings = {
   ROWS_LIMIT = {key = "rows_limit", default = 200},
   WINDOWS = {key = "windows", default = {
@@ -21,7 +29,7 @@ local settings = {
             ["VOICE_TEXT"] = false,
           },
           invert = true,
-          channels = {}, backgroundColor = "000000", tabColor = "111111",
+          channels = {}, backgroundColor = "1a1a1a", tabColor = "111111",
         },
         {
           name = "GUILD",
@@ -30,7 +38,7 @@ local settings = {
             ["OFFICER"] = true,
             ["GUILD_ACHIEVEMENT"] = true,
           },
-          channels = {}, backgroundColor = "5b663b", tabColor = "309944",
+          channels = {}, backgroundColor = "1a1a1a", tabColor = "309944",
         },
       },
     },

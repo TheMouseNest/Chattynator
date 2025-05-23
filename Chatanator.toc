@@ -29,6 +29,7 @@ Core/HyperlinkHandler.xml
 Core/ChatFrameMixin.lua
 Core/Tabs.lua
 Core/Messages.lua
+Core/Overrides.lua
 Core/Initialize.lua
 Core/SlashCmd.lua
 Core/API.lua

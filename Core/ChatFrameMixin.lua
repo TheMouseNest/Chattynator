@@ -61,8 +61,9 @@ function addonTable.ChatFrameMixin:OnLoad()
           GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
           GameTooltip:SetText("Type: " .. tostring(frame.data.typeInfo.type))
           GameTooltip:AddLine("Event: " .. tostring(frame.data.typeInfo.event))
+          GameTooltip:AddLine("Player: " .. tostring(frame.data.typeInfo.player))
           GameTooltip:AddLine("Source: " .. tostring(frame.data.typeInfo.source))
-          GameTooltip:AddLine("Recorder: " .. tostring(frame.data.recordedCharacter))
+          GameTooltip:AddLine("Recorder: " .. tostring(frame.data.recordedBy))
           GameTooltip:AddLine("Channel: " .. tostring(frame.data.typeInfo.channel))
           local color = frame.data.color
           GameTooltip:AddLine("Color: " .. CreateColor(color.r, color.g, color.b):GenerateHexColorNoAlpha())
@@ -113,7 +114,9 @@ function addonTable.ChatFrameMixin:OnLoad()
   self:RepositionBlizzardWidgets()
 
   addonTable.CallbackRegistry:RegisterCallback("Render", self.Render, self)
-  addonTable.CallbackRegistry:RegisterCallback("ScrollToEndImmediate", self.SetTabChanged, self)
+  addonTable.CallbackRegistry:RegisterCallback("ScrollToEndImmediate", function()
+    self:SetTabSelected(self.tabIndex)
+  end, self)
 
   addonTable.Skins.AddFrame("ChatFrame", self)
 end
@@ -228,7 +231,8 @@ function addonTable.ChatFrameMixin:SetBackgroundColor(r, g, b)
   self.backgroundColor = {r= r, g = g, b = b}
 end
 
-function addonTable.ChatFrameMixin:SetTabChanged()
+function addonTable.ChatFrameMixin:SetTabSelected(index)
+  self.tabIndex = index
   self.tabChanged = true
 end
 
@@ -239,7 +243,7 @@ function addonTable.ChatFrameMixin:FilterMessages()
   local limit = addonTable.Config.Get(addonTable.Config.Options.ROWS_LIMIT)
   while #result1 < limit and data do
     if (
-      (data.recordedCharacter == addonTable.Data.CharacterName or not addonTable.Messages:ShouldLog(data)) and
+      (data.recordedBy == addonTable.Data.CharacterName or not addonTable.Messages:ShouldLog(data)) and
       (not self.filterFunc or self.filterFunc(data))
     ) then
       table.insert(result1, 1, data)

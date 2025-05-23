@@ -26,6 +26,8 @@ L["QUICK_CHAT"] = "Quick Chat"
 L["COPY_CHAT"] = "Copy Chat"
 L["UNKNOWN"] = "UNKNOWN"
 
+L["CANT_POPOUT_THIS_CHANNEL"] = "Can't popout this channel"
+
 L["CUSTOMISE_CHATANATOR"] = "Customise Chatanator"
 
 L["SKINS_DARK"] = "Dark"

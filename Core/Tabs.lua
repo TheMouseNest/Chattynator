@@ -51,13 +51,13 @@ function addonTable.Core.InitializeTabs(chatFrame)
         return tab.groups[data.typeInfo.type] ~= false and
           (
           not data.typeInfo.channel or
-          (tab.channels[data.typeInfo.channel] == nil and addonTable.Messages.defaultChannels[data.typeInfo.channel]) or
-          tab.channels[data.typeInfo.channel]
+          (tab.channels[data.typeInfo.channel.name] == nil and data.typeInfo.channel.isDefault) or
+          tab.channels[data.typeInfo.channel.name]
         )
       end
     else
       filter = function(data)
-        return tab.groups[data.typeInfo.type]
+        return tab.groups[data.typeInfo.type] or tab.channels[data.typeInfo.channel and data.typeInfo.channel.name]
       end
     end
     button.filter = filter
@@ -69,7 +69,7 @@ function addonTable.Core.InitializeTabs(chatFrame)
       if mouseButton == "LeftButton" then
         chatFrame:SetFilter(filter)
         chatFrame:SetBackgroundColor(bgColor.r, bgColor.g, bgColor.b)
-        chatFrame:SetTabChanged()
+        chatFrame:SetTabSelected(button:GetID())
         chatFrame:Render()
         for _, otherTab in ipairs(allTabs) do
           otherTab:SetSelected(false)
@@ -148,5 +148,5 @@ function addonTable.Core.InitializeTabs(chatFrame)
   addonTable.CallbackRegistry:TriggerEvent("TabSelected", chatFrame:GetID(), 1)
   chatFrame:SetFilter(allTabs[1].filter)
   chatFrame:SetBackgroundColor(allTabs[1].bgColor.r, allTabs[1].bgColor.g, allTabs[1].bgColor.b)
-  chatFrame:SetTabChanged()
+  chatFrame:SetTabSelected(1)
 end

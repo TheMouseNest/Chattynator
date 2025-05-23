@@ -66,14 +66,8 @@ end
 
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("ADDON_LOADED")
-frame:RegisterEvent("PLAYER_LOGIN")
 frame:SetScript("OnEvent", function(_, eventName, data)
   if eventName == "ADDON_LOADED" and data == "Chatanator" then
     addonTable.Core.Initialize()
-  elseif eventName == "PLAYER_LOGIN" then
-    local name, realm = UnitFullName("player")
-    addonTable.Data.CharacterName = name .. "-" .. realm
-
-    addonTable.ChatFrame:Render()
   end
 end)

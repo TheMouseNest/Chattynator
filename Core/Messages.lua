@@ -25,12 +25,13 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   CHATANATOR_MESSAGE_LOG.cleanIndex = self:CleanStore(CHATANATOR_MESSAGE_LOG.current, CHATANATOR_MESSAGE_LOG.cleanIndex)
 
   self.messages = CopyTable(CHATANATOR_MESSAGE_LOG.current)
+  self.newMessageStartPoint = #self.messages + 1
   self.formatters = {}
   self.messageCount = #self.messages
   self.store = CHATANATOR_MESSAGE_LOG.current
   self.storeCount = #self.store
 
-
+  self.awaitingRecorderSet = {}
   self.pending = {}
 
   if DEFAULT_CHAT_FRAME:GetNumMessages() > 0 then
@@ -46,13 +47,12 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   self:UpdateStores()
 
   self.editBox = ChatFrame1EditBox
-
-  self:RegisterEvent("PLAYER_ENTERING_WORLD")
-
+  self:RegisterEvent("PLAYER_LOGIN")
   self:RegisterEvent("UI_SCALE_CHANGED")
 
+  self:RegisterEvent("PLAYER_ENTERING_WORLD")
   self:RegisterEvent("SETTINGS_LOADED")
-  --self:RegisterEvent("UPDATE_CHAT_COLOR");
+  self:RegisterEvent("UPDATE_CHAT_COLOR");
   self:RegisterEvent("UPDATE_CHAT_WINDOWS")
   self:RegisterEvent("CHANNEL_UI_UPDATE")
   self:RegisterEvent("CHANNEL_LEFT")
@@ -152,13 +152,54 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   self:SetScript("OnEvent", self.OnEvent)
 end
 
+function addonTable.MessagesMonitorMixin:ShowGMOTDOnLogin()
+  local motd = GetGuildRosterMOTD()
+  if motd and motd ~= "" then
+    self.seenMOTD = true
+    local info = ChatTypeInfo["GUILD"]
+		local formatted = format(GUILD_MOTD_TEMPLATE, motd)
+    self:SetIncomingType({type = "GUILD", event = "GUILD_MOTD"})
+		self:AddMessage(formatted, info.r, info.g, info.b, info.id)
+  end
+end
+
 function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
   if eventName == "UPDATE_CHAT_WINDOWS" or eventName == "CHANNEL_UI_UPDATE" or eventName == "CHANNEL_LEFT" then
     self:UpdateChannels()
+
+    if not self.seenMOTD then
+      self:ShowGMOTDOnLogin()
+    end
+  elseif eventName == "UPDATE_CHAT_COLOR" then
+    local group, r, g, b = ...
+    if group then
+      group = string.upper(group)
+      if self.messageCount >= self.newMessageStartPoint then
+        for i = self.newMessageStartPoint, self.messageCount do
+          local data = self.messages[i]
+          if data.typeInfo.type == group then
+            data.color = {r = r, g = g, b = b}
+          end
+        end
+        if self:GetScript("OnUpdate") == nil then
+          self:SetScript("OnUpdate", function()
+            addonTable.CallbackRegistry:TriggerEvent("Render")
+          end)
+        end
+      end
+    end
   elseif eventName == "UI_SCALE_CHANGED" then
     self.sizingFontString:SetText("00:00:00")
     self.inset = self.sizingFontString:GetUnboundedStringWidth() + 10
     self.heights = {}
+  elseif eventName == "PLAYER_LOGIN" then
+    local name, realm = UnitFullName("player")
+    addonTable.Data.CharacterName = name .. "-" .. realm
+    for _, data in ipairs(self.awaitingRecorderSet) do
+      data.recordedBy = addonTable.Data.CharacterName
+    end
+
+    addonTable.CallbackRegistry:TriggerEvent("Render")
   else
     local channelName = self.channelMap[select(8, ...)]
     self:SetIncomingType({
@@ -239,7 +280,7 @@ function addonTable.MessagesMonitorMixin:GetMessageHeight(reverseIndex)
       self.sizingFontString:SetText(self.messages[index].text)
       local basicHeight = (self.sizingFontString:GetLineHeight() + self.sizingFontString:GetSpacing()) * self.sizingFontString:GetNumLines()
       local stringHeight = self.sizingFontString:GetStringHeight()
-      height[self.font .. " " .. width] = math.max(basicHeight, stringHeight)
+      height[self.font .. " " .. width] = math.max(basicHeight, stringHeight, self.sizingFontString:GetLineHeight())
     end
   end
   return self.heights[index]
@@ -309,9 +350,11 @@ function addonTable.MessagesMonitorMixin:UpdateChannels()
   self.maxDisplay = 0
   for i = 1, GetNumDisplayChannels() do
     local name, isHeader, _, channelNumber, _, _, category = GetChannelDisplayInfo(i)
-    if not isHeader and channelNumber then
-      self.channelMap[channelNumber] = name
-      self.maxDisplay = math.max(self.maxDisplay, channelNumber)
+    if not isHeader then
+      if channelNumber then
+        self.channelMap[channelNumber] = name
+        self.maxDisplay = math.max(self.maxDisplay, channelNumber)
+      end
 
       if category ~= "CHANNEL_CATEGORY_CUSTOM" or select(4, GetChannelName(name)) then
         self.defaultChannels[name] = true
@@ -344,10 +387,12 @@ function addonTable.MessagesMonitorMixin:AddMessage(text, r, g, b, id, _, _, _, 
     text = text,
     color = {r = r or 1, g = g or 1, b = b or 1},
     timestamp = time(),
-    id = id,
     typeInfo = self.incomingType or {type = "ADDON", event = "NONE"},
     recordedBy = addonTable.Data.CharacterName or "",
   }
+  if addonTable.Data.CharacterName == nil then
+    table.insert(self.awaitingRecorderSet, data)
+  end
   self.incomingType = nil
   table.insert(self.messages, data)
   self.formatters[self.messageCount + 1] = {

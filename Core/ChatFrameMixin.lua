@@ -295,7 +295,7 @@ function addonTable.ChatFrameMixin:FilterMessages()
   local limit = addonTable.Config.Get(addonTable.Config.Options.ROWS_LIMIT)
   while #result1 < limit and data do
     if (
-      (data.recordedBy == addonTable.Data.CharacterName or not addonTable.Messages:ShouldLog(data)) and
+      data.recordedBy == addonTable.Data.CharacterName and
       (not self.filterFunc or self.filterFunc(data))
     ) then
       table.insert(result1, 1, data)

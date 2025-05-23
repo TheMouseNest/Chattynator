@@ -24,6 +24,7 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   CHATANATOR_MESSAGE_LOG.cleanIndex = self:CleanStore(CHATANATOR_MESSAGE_LOG.current, CHATANATOR_MESSAGE_LOG.cleanIndex)
 
   self.messages = CopyTable(CHATANATOR_MESSAGE_LOG.current)
+  self.formatters = {}
   self.messageCount = #self.messages
   self.store = CHATANATOR_MESSAGE_LOG.current
   self.storeCount = #self.store
@@ -94,8 +95,9 @@ function addonTable.MessagesMonitorMixin:OnLoad()
 
   hooksecurefunc(C_ChatInfo, "UncensorChatLine", function(lineID)
     local found = false
-    for _, message in ipairs(self.messages) do
-      if message.id == lineID then
+    for index, message in ipairs(self.messages) do
+      local id = self.formatters[index].id
+      if id == lineID then
         found = true
         message.text = message.Formatter(C_ChatInfo.GetChatLineText(lineID))
         break
@@ -275,11 +277,14 @@ function addonTable.MessagesMonitorMixin:ReduceMessages()
 
   local oldMessages = self.messages
   local oldHeights = self.heights
+  local oldFormatters = self.formatters
   self.messages = {}
   self.heights = {}
+  self.formatters = {}
   for i = 1, self.messageCount - 5001 do
     table.insert(self.messages, oldMessages[i])
     self.heights[#self.messages] = oldHeights[i]
+    self.formatters[#self.messages] = oldFormatters[i]
   end
   self.messageCount = #self.messages
 end
@@ -339,12 +344,15 @@ function addonTable.MessagesMonitorMixin:AddMessage(text, r, g, b, id, _, _, _, 
     color = {r = r or 1, g = g or 1, b = b or 1},
     timestamp = time(),
     id = id,
-    formatter = Formatter, -- Stored in case we have to uncensor a message
     typeInfo = self.incomingType or {type = "ADDON", event = "NONE"},
     recordedBy = addonTable.Data.CharacterName or "",
   }
   self.incomingType = nil
   table.insert(self.messages, data)
+  self.formatters[self.messageCount + 1] = {
+    formatter = Formatter,
+    id = id,
+  }
   if self:ShouldLog(data) then
     self.storeCount = self.storeCount + 1
     self.store[self.storeCount] = data

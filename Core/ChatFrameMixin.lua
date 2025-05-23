@@ -110,7 +110,8 @@ function addonTable.ChatFrameMixin:OnLoad()
 
   -- Preserve location when scrolling up
   hooksecurefunc(self.ScrollBox, "scrollInternal", function()
-    self.scrolling = self.ScrollBox:GetScrollPercentage() ~= 1
+    self.scrolling = self.ScrollBox:GetScrollPercentage() ~= 1 and self.ScrollBox:GetScrollInterpolator():GetInterpolateTo() ~= 1
+    self.ScrollToBottomButton:SetShown(self.scrolling)
     self:UpdateAlphas()
   end)
 
@@ -259,20 +260,24 @@ function addonTable.ChatFrameMixin:RepositionBlizzardWidgets()
   end
 
   self.SearchButton = MakeButton(SEARCH)
-  self.SearchButton:SetPoint("TOP", ChatFrameMenuButton, "BOTTOM", 0, -5)
   table.insert(buttons, self.SearchButton)
   addonTable.Skins.AddFrame("ChatButton", self.SearchButton, {"search"})
   self.CopyButton = MakeButton(addonTable.Locales.COPY_CHAT)
-  self.CopyButton:SetPoint("TOP", self.SearchButton, "BOTTOM", 0, -5)
   table.insert(buttons, self.CopyButton)
   addonTable.Skins.AddFrame("ChatButton", self.CopyButton, {"copy"})
   self.SettingsButton = MakeButton(SETTINGS)
-  self.SettingsButton:SetPoint("TOP", self.CopyButton, "BOTTOM", 0, -5)
   self.SettingsButton:SetScript("OnClick", function()
     addonTable.CustomiseDialog.Toggle()
   end)
   table.insert(buttons, self.SettingsButton)
   addonTable.Skins.AddFrame("ChatButton", self.SettingsButton, {"settings"})
+
+  self.ScrollToBottomButton = MakeButton(addonTable.Locales.SCROLL_TO_END)
+  self.ScrollToBottomButton:SetPoint("BOTTOMRIGHT", self.ScrollBox, "BOTTOMLEFT", -5, 5)
+  self.ScrollToBottomButton:SetScript("OnClick", function()
+    self.ScrollBox:ScrollToEnd()
+  end)
+  addonTable.Skins.AddFrame("ChatButton", self.ScrollToBottomButton, {"scrollToEnd"})
 
   ArrangeButtons(buttons)
 end

@@ -61,6 +61,8 @@ local skinners = {
         button.Icon:SetTexture("Interface/AddOns/Chatanator/Assets/Copy.png")
       elseif tags.settings then
         button.Icon:SetTexture("Interface/AddOns/Chatanator/Assets/SettingsCog.png")
+      elseif tags.scrollToEnd then
+        button.Icon:SetTexture("Interface/AddOns/Chatanator/Assets/ScrollToBottom.png")
       end
       button.Icon:SetPoint("CENTER")
       button.Icon:SetSize(15, 15)

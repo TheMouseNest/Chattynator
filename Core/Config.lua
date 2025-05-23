@@ -7,6 +7,8 @@ function addonTable.Config.GetEmptyTabConfig(name)
     name = name,
     groups = {},
     channels = {}, backgroundColor = "1a1a1a", tabColor = "111111",
+    whispersTemp = {}, filters = {},
+    isTemporary = false,
   }
 end
 
@@ -30,6 +32,8 @@ local settings = {
           },
           invert = true,
           channels = {}, backgroundColor = "1a1a1a", tabColor = "111111",
+          whispersTemp = {}, filters = {},
+          isTemporary = false,
         },
         {
           name = "GUILD",
@@ -39,6 +43,8 @@ local settings = {
             ["GUILD_ACHIEVEMENT"] = true,
           },
           channels = {}, backgroundColor = "1a1a1a", tabColor = "309944",
+          whispersTemp = {}, filters = {},
+          isTemporary = false,
         },
       },
     },
@@ -54,6 +60,7 @@ local settings = {
             ["MONEY"] = true,
           },
           channels = {}, backgroundColor = "000000", tabColor = "111111",
+          whispers = {}, filters = {}
         },
       },
     },]]

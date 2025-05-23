@@ -6,6 +6,13 @@ addonTable.CallbackRegistry:OnLoad()
 addonTable.CallbackRegistry:GenerateCallbackEvents(addonTable.Constants.Events)
 
 function addonTable.Core.MigrateSettings()
+  for _, window in ipairs(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)) do
+    window.tabs = tFilter(window.tabs, function(t) return not t.isTemporary end, true)
+    for _, tab in ipairs(window.tabs) do
+      tab.filters = tab.filters or {}
+      tab.whispersTemp = {}
+    end
+  end
 end
 
 local hidden = CreateFrame("Frame")

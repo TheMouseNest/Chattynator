@@ -20,12 +20,14 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   if CHATANATOR_MESSAGE_LOG.version ~= 1 then
     CHATANATOR_MESSAGE_LOG = nil
   end
-  CHATANATOR_MESSAGE_LOG = CHATANATOR_MESSAGE_LOG or { current = {}, historical = {}, version = 1, cleanIndex = 1}
+  CHATANATOR_MESSAGE_LOG = CHATANATOR_MESSAGE_LOG or { current = {}, historical = {}, version = 1, cleanIndex = 0}
+  CHATANATOR_MESSAGE_LOG.cleanIndex = self:CleanStore(CHATANATOR_MESSAGE_LOG.current, CHATANATOR_MESSAGE_LOG.cleanIndex)
 
   self.messages = CopyTable(CHATANATOR_MESSAGE_LOG.current)
   self.messageCount = #self.messages
   self.store = CHATANATOR_MESSAGE_LOG.current
   self.storeCount = #self.store
+
 
   self.pending = {}
 
@@ -173,7 +175,7 @@ function addonTable.MessagesMonitorMixin:CleanStore(store, index)
   for i = index + 1, #store do
     local data = store[i]
     if data.text:find("|K.-|k") then
-      data.text = data.text:gsub("|K.-|k", addonTable.Locales.UNKNOWN)
+      data.text = data.text:gsub("|K.-|k", "???")
       data.text = data.text:gsub("|HBNplayer.-|h(.-)|h", "%1")
       if data.typeInfo.player then
         data.typeInfo.player = data.typeInfo.player:gsub("|K.-|k", addonTable.Locales.UNKNOWN)

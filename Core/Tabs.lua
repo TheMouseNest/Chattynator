@@ -53,11 +53,13 @@ function addonTable.Core.InitializeTabs(chatFrame)
           not data.typeInfo.channel or
           (tab.channels[data.typeInfo.channel.name] == nil and data.typeInfo.channel.isDefault) or
           tab.channels[data.typeInfo.channel.name]
-        )
+        ) and tab.whispersTemp[data.typeInfo.player] ~= false
       end
     else
       filter = function(data)
-        return tab.groups[data.typeInfo.type] or tab.channels[data.typeInfo.channel and data.typeInfo.channel.name]
+        return tab.groups[data.typeInfo.type] or
+          data.typeInfo.player and tab.whispersTemp[data.typeInfo.player] or
+          tab.channels[data.typeInfo.channel and data.typeInfo.channel.name]
       end
     end
     button.filter = filter
@@ -144,6 +146,7 @@ function addonTable.Core.InitializeTabs(chatFrame)
   for _, tab in ipairs(allTabs) do
     tab:SetSelected(false)
   end
+  chatFrame.tabs = allTabs
   allTabs[1]:SetSelected(true)
   addonTable.CallbackRegistry:TriggerEvent("TabSelected", chatFrame:GetID(), 1)
   chatFrame:SetFilter(allTabs[1].filter)

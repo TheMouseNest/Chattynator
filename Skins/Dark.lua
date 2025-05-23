@@ -116,9 +116,9 @@ local skinners = {
       tab:SetText(" ")
     end
     local tabPadding = 30
-    tab:SetWidth(tab:GetFontString():GetUnboundedStringWidth() + tabPadding)
+    tab:SetWidth(math.max(tab:GetFontString():GetUnboundedStringWidth(), 80) + tabPadding)
     hooksecurefunc(tab, "SetText", function()
-      tab:SetWidth(tab:GetFontString():GetUnboundedStringWidth() + tabPadding)
+      tab:SetWidth(math.max(tab:GetFontString():GetUnboundedStringWidth(), 80) + tabPadding)
     end)
     tab:GetFontString():SetPoint("TOP", 0, -5)
     tab:HookScript("OnEnter", function()

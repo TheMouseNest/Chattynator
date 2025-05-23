@@ -3,17 +3,17 @@ local addonTable = select(2, ...)
 
 function addonTable.Core.ApplyOverrides()
   -- Disable context menu to move channel to new window (for now, will add functionality back)
-  hooksecurefunc("ChatChannelDropdown_Show", function(chatFrame, chatType, chatTarget, chatName)
+  hooksecurefunc("ChatChannelDropdown_Show", function(_, chatType, chatTarget, chatName)
     local actualChatFrame
     for _, frame in ipairs(addonTable.allChatFrames) do
       if frame:IsMouseOver() then
         actualChatFrame = frame
       end
     end
-    MenuUtil.CreateContextMenu(nil, function(menu, rootDescription)
+    MenuUtil.CreateContextMenu(nil, function(_, rootDescription)
       local channelNumber = tonumber(chatTarget)
       local channelName = addonTable.Messages.channelMap[channelNumber]
-      if not channelName then
+      if not channelName or chatType ~= "CHANNEL" then
         rootDescription:CreateTitle(GRAY_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.CANT_POPOUT_THIS_CHANNEL))
         return
       end
@@ -24,9 +24,38 @@ function addonTable.Core.ApplyOverrides()
         table.insert(config.tabs, tabConfig)
         config.tabs[actualChatFrame.tabIndex].channels[channelName] = false
         addonTable.Core.InitializeTabs(actualChatFrame)
+        actualChatFrame.tabs[#config.tabs]:Click()
       end)
     end)
   end)
+
+  do
+    local actualChatFrame
+    hooksecurefunc(UnitPopupPopoutChatButtonMixin, "GetText", function()
+      for _, frame in ipairs(addonTable.allChatFrames) do
+        if frame:IsMouseOver() then
+          actualChatFrame = frame
+        end
+      end
+    end)
+    function FCF_OpenTemporaryWindow(chatType, chatTarget, _, _)
+      if not debugstack():find("UnitPopupShared") or chatType ~= "WHISPER" and chatType ~= "BN_WHISPER" then
+        return
+      end
+      if not actualChatFrame then
+        return
+      end
+      local config = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[actualChatFrame:GetID()]
+      local tabConfig = addonTable.Config.GetEmptyTabConfig(chatTarget)
+      tabConfig.whispersTemp[chatTarget] = true
+      tabConfig.isTemporary = true
+      table.insert(config.tabs, tabConfig)
+      config.tabs[actualChatFrame.tabIndex].whispersTemp[chatTarget] = false
+      addonTable.Core.InitializeTabs(actualChatFrame)
+      actualChatFrame.tabs[#config.tabs]:Click()
+      actualChatFrame = nil
+    end
+  end
 
   local frame = CreateFrame("Frame")
   frame:RegisterEvent("PLAYER_ENTERING_WORLD")

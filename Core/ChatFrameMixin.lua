@@ -55,7 +55,7 @@ function addonTable.ChatFrameMixin:OnLoad()
 
       frame.FadeAnimation = frame:CreateAnimationGroup()
       frame.FadeAnimation.alpha = frame.FadeAnimation:CreateAnimation("Alpha")
-      frame.FadeAnimation.alpha:SetDuration(0.5)
+      frame.FadeAnimation.alpha:SetDuration(0.20)
       frame.FadeAnimation:SetToFinalAlpha(true)
       frame.FadeAnimation:SetScript("OnFinished", function()
         frame.FadeAnimation:SetScript("OnUpdate", nil)

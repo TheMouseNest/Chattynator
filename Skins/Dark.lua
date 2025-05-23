@@ -95,7 +95,6 @@ local skinners = {
   end,
   ChatTab = function(tab, tags)
     tab:SetHeight(22)
-    tab:SetWidth(80)
     tab:SetAlpha(1)
     tab.Left = tab:CreateTexture(nil, "BACKGROUND")
     tab.Left:SetTexture("Interface/AddOns/Chatanator/Assets/ChatTabLeft")
@@ -116,6 +115,11 @@ local skinners = {
     if tab:GetFontString() == nil then
       tab:SetText(" ")
     end
+    local tabPadding = 30
+    tab:SetWidth(tab:GetFontString():GetUnboundedStringWidth() + tabPadding)
+    hooksecurefunc(tab, "SetText", function()
+      tab:SetWidth(tab:GetFontString():GetUnboundedStringWidth() + tabPadding)
+    end)
     tab:GetFontString():SetPoint("TOP", 0, -5)
     tab:HookScript("OnEnter", function()
       if tab.selected then

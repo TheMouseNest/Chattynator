@@ -40,6 +40,7 @@ function addonTable.Core.InitializeTabs(chatFrame)
   local lastButton
   for index, tab in ipairs(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[chatFrame:GetID()].tabs) do
     local button = chatFrame.tabsPool:Acquire()
+    button.minWidth = false
     button:SetID(index)
     button:Show()
     button:SetText(_G[tab.name] or tab.name or UNKNOWN)
@@ -78,6 +79,13 @@ function addonTable.Core.InitializeTabs(chatFrame)
         end
         button:SetSelected(true)
         addonTable.CallbackRegistry:TriggerEvent("TabSelected", chatFrame:GetID(), button:GetID())
+      elseif mouseButton == "RightButton" then
+        MenuUtil.CreateContextMenu(button, function(menu, rootDescription)
+          rootDescription:CreateButton(CLOSE, function()
+            table.remove(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[chatFrame:GetID()].tabs, index)
+            addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+          end)
+        end)
       end
     end)
 
@@ -93,6 +101,7 @@ function addonTable.Core.InitializeTabs(chatFrame)
 
   if chatFrame:GetID() == 1 and addonTable.Config.Get(addonTable.Config.Options.SHOW_COMBAT_LOG) then
     local combatLogButton = chatFrame.tabsPool:Acquire()
+    combatLogButton.minWidth = false
     combatLogButton:SetID(#allTabs + 1)
     combatLogButton:Show()
     combatLogButton:SetText(COMBAT_LOG)
@@ -143,6 +152,26 @@ function addonTable.Core.InitializeTabs(chatFrame)
 
     table.insert(allTabs, combatLogButton)
     lastButton = combatLogButton
+  end
+
+  do
+    local newTab = chatFrame.tabsPool:Acquire()
+    newTab.minWidth = true
+    newTab:SetText(CreateTextureMarkup("Interface/AddOns/Chatanator/Assets/NewTab.png", 40, 40, 15, 15, 0, 1, 0, 1))
+    newTab:SetScript("OnClick", function()
+      table.insert(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[chatFrame:GetID()].tabs, addonTable.Config.GetEmptyTabConfig(addonTable.Locales.NEW_TAB))
+      addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+    end)
+    newTab:Show()
+    newTab:SetColor(0.3, 0.3, 0.3)
+    table.insert(allTabs, newTab)
+
+    if lastButton == nil then
+      newTab:SetPoint("BOTTOMLEFT", chatFrame, "TOPLEFT", 32, -22)
+    else
+      newTab:SetPoint("LEFT", lastButton, "RIGHT", 10, 0)
+    end
+    lastButton = newTab
   end
 
   for _, tab in ipairs(allTabs) do

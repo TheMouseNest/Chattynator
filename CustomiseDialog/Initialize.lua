@@ -11,6 +11,23 @@ addonTable.CallbackRegistry:RegisterCallback("TabSelected", function(_, windowIn
   end
 end)
 
+local function GetTab(parent)
+  local tab
+  if addonTable.Constants.IsRetail then
+    tab = CreateFrame("Button", nil, parent, "PanelTopTabButtonTemplate")
+    tab:SetScript("OnShow", function(self)
+      PanelTemplates_TabResize(self, 15, nil, 10)
+      PanelTemplates_DeselectTab(self)
+    end)
+  else
+    tab = CreateFrame("Button", nil, parent, "TabButtonTemplate")
+    tab:SetScript("OnShow", function(self)
+      PanelTemplates_TabResize(self, 0, nil, 0)
+      PanelTemplates_DeselectTab(self)
+    end)
+  end
+end
+
 function addonTable.CustomiseDialog.Toggle()
   if customisers[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)] then
     local frame = customisers[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)]

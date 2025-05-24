@@ -5,6 +5,7 @@ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Bliz
       <!-- Remove default handlers (except for hyperlinks) -->
       <OnLoad>
         self:Show()
+        self.editBox = ChatFrame1EditBox -- Ensure no errors when using IM chat style in Blizz settings
       </OnLoad>
       <OnUpdate></OnUpdate>
     </Scripts>

@@ -131,6 +131,7 @@ function addonTable.ChatFrameMixin:OnLoad()
     self:SaveSize()
   end)
   addonTable.Skins.AddFrame("ResizeWidget", self.resizeWidget)
+  self.resizeWidget:SetShown(not addonTable.Config.Get(addonTable.Config.Options.LOCKED))
 
   self:RepositionBlizzardWidgets()
 
@@ -146,6 +147,9 @@ function addonTable.ChatFrameMixin:OnLoad()
   addonTable.CallbackRegistry:RegisterCallback("RefreshStateChange", function(_, refreshState)
     if refreshState[addonTable.Constants.RefreshReason.Tabs] then
       addonTable.Core.InitializeTabs(self)
+    end
+    if refreshState[addonTable.Constants.RefreshReason.Locked] then
+      self.resizeWidget:SetShown(not addonTable.Config.Get(addonTable.Config.Options.LOCKED))
     end
   end)
 end

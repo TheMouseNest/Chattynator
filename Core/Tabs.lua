@@ -7,7 +7,9 @@ function addonTable.Core.GetTabsPool(parent)
       tabButton:RegisterForClicks("LeftButtonUp", "RightButtonUp")
       tabButton:RegisterForDrag("LeftButton")
       tabButton:SetScript("OnDragStart", function()
-        parent:StartMoving()
+        if not addonTable.Config.Get(addonTable.Config.Options.LOCKED) then
+          parent:StartMoving()
+        end
       end)
       tabButton:SetScript("OnDragStop", function()
         parent:StopMovingOrSizing()
@@ -79,7 +81,7 @@ function addonTable.Core.InitializeTabs(chatFrame)
         end
         button:SetSelected(true)
         addonTable.CallbackRegistry:TriggerEvent("TabSelected", chatFrame:GetID(), button:GetID())
-      elseif mouseButton == "RightButton" then
+      elseif mouseButton == "RightButton" and (tab.isTemporary or not addonTable.Config.Get(addonTable.Config.Options.LOCKED)) then
         MenuUtil.CreateContextMenu(button, function(menu, rootDescription)
           rootDescription:CreateButton(CLOSE, function()
             table.remove(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[chatFrame:GetID()].tabs, index)
@@ -140,9 +142,11 @@ function addonTable.Core.InitializeTabs(chatFrame)
           rootDescription:CreateButton(SETTINGS, function()
             ShowUIPanel(ChatConfigFrame)
           end)
-          rootDescription:CreateButton(CLOSE, function()
-            addonTable.Config.Set(addonTable.Config.Options.SHOW_COMBAT_LOG, false)
-          end)
+          if not addonTable.Config.Get(addonTable.Config.Options.LOCKED) then
+            rootDescription:CreateButton(CLOSE, function()
+              addonTable.Config.Set(addonTable.Config.Options.SHOW_COMBAT_LOG, false)
+            end)
+          end
         end)
       end
     end)
@@ -159,7 +163,7 @@ function addonTable.Core.InitializeTabs(chatFrame)
     lastButton = combatLogButton
   end
 
-  do
+  if not addonTable.Config.Get(addonTable.Config.Options.LOCKED) then
     local newTab = chatFrame.tabsPool:Acquire()
     newTab.minWidth = true
     newTab:SetText(CreateTextureMarkup("Interface/AddOns/Chatanator/Assets/NewTab.png", 40, 40, 15, 15, 0, 1, 0, 1))

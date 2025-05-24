@@ -71,6 +71,7 @@ local settings = {
   CURRENT_SKIN = {key = "current_skin", default = "dark"},
 
   SHOW_COMBAT_LOG = {key = "show_combat_log", default = true, refresh = {addonTable.Constants.RefreshReason.Tabs}},
+  LOCKED = {key = "locked", default = false, refresh = {addonTable.Constants.RefreshReason.Tabs, addonTable.Constants.RefreshReason.Locked}},
 
   ENABLE_COMBAT_MESSAGES = {key = "enable_combat_messages", default = false},
   DEBUG = {key = "debug", default = false},

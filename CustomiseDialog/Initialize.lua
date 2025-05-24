@@ -18,11 +18,17 @@ local function SetupGeneral(parent)
     addonTable.Config.Set(addonTable.Config.Options.SHOW_COMBAT_LOG, state)
   end)
 
+  local locked = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.LOCKED, 20, function(state)
+    addonTable.Config.Set(addonTable.Config.Options.LOCKED, state)
+  end)
+
   container:SetScript("OnShow", function()
     showCombatLog:SetValue(addonTable.Config.Get(addonTable.Config.Options.SHOW_COMBAT_LOG))
+    locked:SetValue(addonTable.Config.Get(addonTable.Config.Options.LOCKED))
   end)
 
   showCombatLog:SetPoint("TOP", 0, 0)
+  locked:SetPoint("TOP", showCombatLog, "BOTTOM")
 
   return container
 end

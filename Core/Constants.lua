@@ -28,6 +28,6 @@ addonTable.Constants.RefreshReason = {
   Tabs = 1,
   FontFamily = 2,
   FontSize = 3,
-  BackgroundColor = 4,
+  Locked = 4,
 }
 

@@ -136,9 +136,14 @@ function addonTable.Core.InitializeTabs(chatFrame)
         end
         ChatFrame2:Show()
       elseif mouseButton == "RightButton" then
-        if not InCombatLockdown() then
-          ShowUIPanel(ChatConfigFrame)
-        end
+        MenuUtil.CreateContextMenu(combatLogButton, function(menu, rootDescription)
+          rootDescription:CreateButton(SETTINGS, function()
+            ShowUIPanel(ChatConfigFrame)
+          end)
+          rootDescription:CreateButton(CLOSE, function()
+            addonTable.Config.Set(addonTable.Config.Options.SHOW_COMBAT_LOG, false)
+          end)
+        end)
       end
     end)
     local combatLogColor = CreateColor(201/255, 124/255, 72/255)

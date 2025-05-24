@@ -69,7 +69,8 @@ local settings = {
   SKINS = {key = "skins", default = {}},
   DISABLED_SKINS = {key = "disabled_skins", default = {}},
   CURRENT_SKIN = {key = "current_skin", default = "dark"},
-  SHOW_COMBAT_LOG = {key = "show_combat_log", default = true},
+
+  SHOW_COMBAT_LOG = {key = "show_combat_log", default = true, refresh = {addonTable.Constants.RefreshReason.Tabs}},
 
   ENABLE_COMBAT_MESSAGES = {key = "enable_combat_messages", default = false},
   DEBUG = {key = "debug", default = false},
@@ -81,13 +82,13 @@ addonTable.Config.Options = {}
 addonTable.Config.Defaults = {}
 
 for key, details in pairs(settings) do
-  --[[if details.refresh then
+  if details.refresh then
     local refreshType = {}
     for _, r in ipairs(details.refresh) do
       refreshType[r] = true
     end
     addonTable.Config.RefreshType[details.key] = refreshType
-  end]]
+  end
   addonTable.Config.Options[key] = details.key
   addonTable.Config.Defaults[details.key] = details.default
 end
@@ -135,13 +136,12 @@ local function RawSet(name, value)
 end
 
 function addonTable.Config.Set(name, value)
-  RawSet(name, value)
-  --[[if RawSet(name, value) then
+  if RawSet(name, value) then
     addonTable.CallbackRegistry:TriggerEvent("SettingChanged", name)
     if addonTable.Config.RefreshType[name] then
       addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", addonTable.Config.RefreshType[name])
     end
-  end]]
+  end
 end
 
 -- Set multiple settings at once and after all are set fire the setting changed
@@ -154,7 +154,7 @@ function addonTable.Config.MultiSet(nameValueMap)
     end
   end
 
-  --[[local refreshState = {}
+  local refreshState = {}
   for _, name in ipairs(changed) do
     addonTable.CallbackRegistry:TriggerEvent("SettingChanged", name)
     if addonTable.Config.RefreshType[name] then
@@ -163,7 +163,7 @@ function addonTable.Config.MultiSet(nameValueMap)
   end
   if next(refreshState) ~= nil then
     addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", refreshState)
-  end]]
+  end
 end
 
 local addedInstalledNestedToList = {}

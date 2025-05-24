@@ -64,50 +64,13 @@ local LAYOUT = {
   }
 }
 
-local function GetTypeCheckbox(parent, label, callback)
-  local holder = CreateFrame("Frame", nil, parent)
-  holder:SetHeight(30)
-  holder:SetPoint("LEFT", parent)
-  holder:SetPoint("RIGHT", parent)
-  local checkBox = CreateFrame("CheckButton", nil, holder, "SettingsCheckboxTemplate")
-
-  checkBox:SetPoint("LEFT", holder, "CENTER", -15, 0)
-  checkBox:SetText(label)
-  checkBox:SetNormalFontObject(GameFontHighlight)
-  checkBox:GetFontString():SetPoint("RIGHT", holder, "CENTER", -30, 0)
-
-  addonTable.Skins.AddFrame("CheckBox", checkBox)
-
-  function holder:SetValue(value)
-    checkBox:SetChecked(value)
-  end
-
-  holder:SetScript("OnEnter", function()
-    checkBox:OnEnter()
-  end)
-
-  holder:SetScript("OnLeave", function()
-    checkBox:OnLeave()
-  end)
-
-  holder:SetScript("OnMouseUp", function()
-    checkBox:Click()
-  end)
-
-  checkBox:SetScript("OnClick", function()
-    callback(checkBox:GetChecked())
-  end)
-
-  return holder
-end
-
 function addonTable.CustomiseDialog.SetupTabFilters(parent)
   local container = CreateFrame("Frame", nil, parent)
 
   container.checkboxes = {}
   local lastCB
   for _, data in ipairs(LAYOUT.MESSAGES) do
-    local cb = GetTypeCheckbox(container, data[2] or _G[data[1]] or UNKNOWN, function(enabled)
+    local cb = addonTable.CustomiseDialog.Components.GetCheckbox(container, data[2] or _G[data[1]] or UNKNOWN, nil, function(enabled)
       container.tabData.groups[data[1]] = enabled
       addonTable.CallbackRegistry:TriggerEvent("ScrollToEndImmediate")
       addonTable.CallbackRegistry:TriggerEvent("Render")

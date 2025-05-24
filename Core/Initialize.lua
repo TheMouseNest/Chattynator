@@ -57,7 +57,6 @@ function addonTable.Core.Initialize()
     Mixin(chatFrame, addonTable.ChatFrameMixin)
     chatFrame:OnLoad()
     chatFrame:Show()
-    addonTable.Core.InitializeTabs(chatFrame)
     table.insert(addonTable.allChatFrames, chatFrame)
   end
 

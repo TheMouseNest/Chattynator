@@ -3,30 +3,47 @@ local addonTable = select(2, ...)
 
 local customisers = {}
 local currentTab = 1
+local filtersToRefresh = {}
 addonTable.CallbackRegistry:RegisterCallback("TabSelected", function(_, windowIndex, tabIndex)
   currentTab = tabIndex
-  local frame = customisers[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)]
-  if frame and frame:IsShown() then
-    frame.filters:ShowSettings(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[1].tabs[currentTab])
+  for _, frame in ipairs(filtersToRefresh) do
+    if frame and frame:IsShown() then
+      frame:ShowSettings(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[1].tabs[currentTab])
+    end
   end
 end)
 
-local function GetTab(parent)
-  local tab
-  if addonTable.Constants.IsRetail then
-    tab = CreateFrame("Button", nil, parent, "PanelTopTabButtonTemplate")
-    tab:SetScript("OnShow", function(self)
-      PanelTemplates_TabResize(self, 15, nil, 10)
-      PanelTemplates_DeselectTab(self)
-    end)
-  else
-    tab = CreateFrame("Button", nil, parent, "TabButtonTemplate")
-    tab:SetScript("OnShow", function(self)
-      PanelTemplates_TabResize(self, 0, nil, 0)
-      PanelTemplates_DeselectTab(self)
-    end)
-  end
+local function SetupGeneral(parent)
+  local container = CreateFrame("Frame", nil, parent)
+
+  local showCombatLog = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_COMBAT_LOG, 20, function(state)
+    addonTable.Config.Set(addonTable.Config.Options.SHOW_COMBAT_LOG, state)
+    addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+  end)
+
+  container:SetScript("OnShow", function()
+    showCombatLog:SetValue(addonTable.Config.Get(addonTable.Config.Options.SHOW_COMBAT_LOG))
+  end)
+
+  showCombatLog:SetPoint("TOP", 0, 0)
+
+  return container
 end
+
+local function SetupFilters(parent)
+  local filters = addonTable.CustomiseDialog.SetupTabFilters(parent)
+
+  table.insert(filtersToRefresh, filters)
+
+  filters:ShowSettings(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[1].tabs[currentTab])
+
+  return filters
+end
+
+local TabSetups = {
+  {name = GENERAL, callback = SetupGeneral},
+  {name = FILTERS, callback = SetupFilters},
+}
 
 function addonTable.CustomiseDialog.Toggle()
   if customisers[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)] then
@@ -54,12 +71,37 @@ function addonTable.CustomiseDialog.Toggle()
 
   frame:SetTitle(addonTable.Locales.CUSTOMISE_CHATANATOR)
 
-  local filters = addonTable.CustomiseDialog.SetupTabFilters(frame)
-  filters:SetPoint("TOPLEFT", 0, -50)
-  filters:SetPoint("BOTTOMRIGHT")
-  filters:Show()
+  local containers = {}
+  local lastTab
+  local Tabs = {}
+  for _, setup in ipairs(TabSetups) do
+    local tabContainer = setup.callback(frame)
+    tabContainer:SetPoint("TOPLEFT", 0 + addonTable.Constants.ButtonFrameOffset, -65)
+    tabContainer:SetPoint("BOTTOMRIGHT")
 
-  frame.filters = filters
+    local tabButton = addonTable.CustomiseDialog.Components.GetTab(frame)
+    if lastTab then
+      tabButton:SetPoint("LEFT", lastTab, "RIGHT", 5, 0)
+    else
+      tabButton:SetPoint("TOPLEFT", 0 + addonTable.Constants.ButtonFrameOffset, -25)
+    end
+    lastTab = tabButton
+    tabContainer.button = tabButton
+    tabButton:SetScript("OnClick", function()
+      for _, c in ipairs(containers) do
+        PanelTemplates_DeselectTab(c.button)
+        c:Hide()
+      end
+      PanelTemplates_SelectTab(tabButton)
+      tabContainer:Show()
+    end)
+    tabButton:SetText(setup.name)
+    tabContainer:Hide()
 
-  filters:ShowSettings(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[1].tabs[currentTab])
+    table.insert(Tabs, tabButton)
+    table.insert(containers, tabContainer)
+  end
+  frame.Tabs = Tabs
+  PanelTemplates_SetNumTabs(frame, #frame.Tabs)
+  containers[1].button:Click()
 end

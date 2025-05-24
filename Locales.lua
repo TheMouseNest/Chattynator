@@ -30,6 +30,7 @@ L["SCROLL_TO_END"] = "Scroll to end"
 L["CANT_POPOUT_THIS_CHANNEL"] = "Can't popout this channel"
 
 L["CUSTOMISE_CHATANATOR"] = "Customise Chatanator"
+L["SHOW_COMBAT_LOG"] = "Show Combat Log"
 
 L["SKINS_DARK"] = "Dark"
 

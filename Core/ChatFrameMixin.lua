@@ -139,7 +139,15 @@ function addonTable.ChatFrameMixin:OnLoad()
     self:SetTabSelected(self.tabIndex)
   end, self)
 
+  addonTable.Core.InitializeTabs(self)
+
   addonTable.Skins.AddFrame("ChatFrame", self)
+
+  addonTable.CallbackRegistry:RegisterCallback("RefreshStateChange", function(_, refreshState)
+    if refreshState[addonTable.Constants.RefreshReason.Tabs] then
+      addonTable.Core.InitializeTabs(self)
+    end
+  end)
 end
 
 function addonTable.ChatFrameMixin:SavePosition()

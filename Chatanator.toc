@@ -39,3 +39,4 @@ Skins/Dark.lua
 
 CustomiseDialog/Initialize.lua
 CustomiseDialog/Filtering.lua
+CustomiseDialog/Components.lua

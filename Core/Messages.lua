@@ -165,14 +165,14 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   self:SetScript("OnEvent", self.OnEvent)
 end
 
-function addonTable.MessagesMonitorMixin:ShowGMOTDOnLogin()
+function addonTable.MessagesMonitorMixin:ShowGMOTD()
   local guildID = C_Club.GetGuildClubId()
   if not guildID then
     return
   end
   local motd = C_Club.GetClubInfo(guildID).broadcast
-  if motd and motd ~= "" then
-    self.seenMOTD = true
+  if motd and motd ~= "" and motd ~= self.seenMOTD then
+    self.seenMOTD = motd
     local info = ChatTypeInfo["GUILD"]
 		local formatted = format(GUILD_MOTD_TEMPLATE, motd)
     self:SetIncomingType({type = "GUILD", event = "GUILD_MOTD"})
@@ -185,7 +185,7 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
     self:UpdateChannels()
 
     if not self.seenMOTD then
-      self:ShowGMOTDOnLogin()
+      self:ShowGMOTD()
     end
   elseif eventName == "UPDATE_CHAT_COLOR" then
     local group, r, g, b = ...
@@ -205,6 +205,8 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
         end
       end
     end
+  elseif eventName == "GUILD_MOTD" then
+    self:ShowGMOTD()
   elseif eventName == "UI_SCALE_CHANGED" then
     self.sizingFontString:SetText("00:00:00")
     self.inset = self.sizingFontString:GetUnboundedStringWidth() + 10

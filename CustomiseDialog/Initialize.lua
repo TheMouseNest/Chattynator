@@ -2,13 +2,11 @@
 local addonTable = select(2, ...)
 
 local customisers = {}
-local currentTab = 1
 local filtersToRefresh = {}
 addonTable.CallbackRegistry:RegisterCallback("TabSelected", function(_, windowIndex, tabIndex)
-  currentTab = tabIndex
   for _, frame in ipairs(filtersToRefresh) do
-    if frame and frame:IsShown() then
-      frame:ShowSettings(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[1].tabs[currentTab])
+    if frame and frame:IsShown() and windowIndex == 1 then
+      frame:ShowSettings(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[1].tabs[addonTable.allChatFrames[1].tabIndex])
     end
   end
 end)
@@ -18,7 +16,6 @@ local function SetupGeneral(parent)
 
   local showCombatLog = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_COMBAT_LOG, 20, function(state)
     addonTable.Config.Set(addonTable.Config.Options.SHOW_COMBAT_LOG, state)
-    addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
   end)
 
   container:SetScript("OnShow", function()
@@ -35,7 +32,7 @@ local function SetupFilters(parent)
 
   table.insert(filtersToRefresh, filters)
 
-  filters:ShowSettings(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[1].tabs[currentTab])
+  filters:ShowSettings(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[1].tabs[addonTable.allChatFrames[1].tabIndex])
 
   return filters
 end

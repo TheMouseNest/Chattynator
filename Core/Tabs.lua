@@ -183,10 +183,10 @@ function addonTable.Core.InitializeTabs(chatFrame)
     tab:SetSelected(false)
   end
   chatFrame.tabs = allTabs
-  local currentTab = chatFrame.tabIndex or 1
+  local currentTab = chatFrame.tabIndex and math.min(chatFrame.tabIndex, #addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[chatFrame:GetID()].tabs) or 1
   allTabs[1]:SetSelected(true)
-  addonTable.CallbackRegistry:TriggerEvent("TabSelected", chatFrame:GetID(), currentTab)
   chatFrame:SetFilter(allTabs[currentTab].filter)
   chatFrame:SetBackgroundColor(allTabs[currentTab].bgColor.r, allTabs[currentTab].bgColor.g, allTabs[currentTab].bgColor.b)
   chatFrame:SetTabSelected(currentTab)
+  addonTable.CallbackRegistry:TriggerEvent("TabSelected", chatFrame:GetID(), currentTab)
 end

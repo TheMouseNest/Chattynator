@@ -166,7 +166,11 @@ function addonTable.MessagesMonitorMixin:OnLoad()
 end
 
 function addonTable.MessagesMonitorMixin:ShowGMOTDOnLogin()
-  local motd = GetGuildRosterMOTD()
+  local guildID = C_Club.GetGuildClubId()
+  if not guildID then
+    return
+  end
+  local motd = C_Club.GetClubInfo(guildID).broadcast
   if motd and motd ~= "" then
     self.seenMOTD = true
     local info = ChatTypeInfo["GUILD"]

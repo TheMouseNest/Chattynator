@@ -278,7 +278,7 @@ function addonTable.MessagesMonitorMixin:RegisterWidth(width)
       if not self.heights[index] then
         self.heights[index] = {}
       end
-      height[key] = math.max(basicHeight, stringHeight)
+      height[key] = math.max(basicHeight, stringHeight, self.sizingFontString:GetLineHeight())
     end
   end
 end

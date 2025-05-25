@@ -18,6 +18,8 @@ function addonTable.ChatFrameMixin:OnLoad()
   self.filterFunc = nil
   self.heights = {}
 
+  self.tabIndex = 1
+
   self.alphas = {}
 
   self.ScrollBox = CreateFrame("Frame", nil, self, "WowScrollBoxList")
@@ -26,8 +28,8 @@ function addonTable.ChatFrameMixin:OnLoad()
     return self.heights[index][self.key] + addonTable.Messages.spacing
   end)
   self.currentStringWidth = 0
-  self:SetScript("OnSizeChanged", function(_, width, _)
-    width = math.floor(self.ScrollBox:GetWidth() - addonTable.Messages.inset - rightInset)
+  self:SetScript("OnSizeChanged", function()
+    local width = math.floor(self.ScrollBox:GetWidth() - addonTable.Messages.inset - rightInset)
     addonTable.Messages:RegisterWidth(width)
     addonTable.Messages:UnregisterWidth(self.currentStringWidth)
     self.currentStringWidth = width

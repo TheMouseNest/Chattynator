@@ -189,19 +189,12 @@ local function SetupGeneral(parent)
   end
   table.insert(allFrames, profileDropdown)
 
-  local showCombatLog = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_COMBAT_LOG, 30, function(state)
+  local showCombatLog = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_COMBAT_LOG, 28, function(state)
     addonTable.Config.Set(addonTable.Config.Options.SHOW_COMBAT_LOG, state)
   end)
   showCombatLog.option = addonTable.Config.Options.SHOW_COMBAT_LOG
   showCombatLog:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
   table.insert(allFrames, showCombatLog)
-
-  local locked = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.LOCK_CHAT_POSITION, 30, function(state)
-    addonTable.Config.Set(addonTable.Config.Options.LOCKED, state)
-  end)
-  locked.option = addonTable.Config.Options.LOCKED
-  locked:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, 0)
-  table.insert(allFrames, locked)
 
   container:SetScript("OnShow", function()
     for _, f in ipairs(allFrames) do
@@ -226,6 +219,13 @@ local function SetupLayout(parent)
   messageSpacing.option = addonTable.Config.Options.MESSAGE_SPACING
   messageSpacing:SetPoint("TOP")
   table.insert(allFrames, messageSpacing)
+
+  local locked = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.LOCK_CHAT_POSITION, 28, function(state)
+    addonTable.Config.Set(addonTable.Config.Options.LOCKED, state)
+  end)
+  locked.option = addonTable.Config.Options.LOCKED
+  locked:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, 0)
+  table.insert(allFrames, locked)
 
   container:SetScript("OnShow", function()
     for _, f in ipairs(allFrames) do

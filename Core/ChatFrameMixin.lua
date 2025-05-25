@@ -29,6 +29,7 @@ function addonTable.ChatFrameMixin:OnLoad()
   end)
   self.currentStringWidth = 0
   self:SetScript("OnSizeChanged", function()
+    self:SaveSize()
     self:UpdateWidth()
     self:Render()
   end)

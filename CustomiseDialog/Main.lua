@@ -298,6 +298,8 @@ function addonTable.CustomiseDialog.Toggle()
 
   frame:SetTitle(addonTable.Locales.CUSTOMISE_CHATTYNATOR)
 
+  addonTable.Skins.AddFrame("ButtonFrame", frame, {"customise"})
+
   local containers = {}
   local lastTab
   local Tabs = {}

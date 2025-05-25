@@ -30,6 +30,8 @@ L["NEW_TAB"] = "New tab"
 
 L["CANT_POPOUT_THIS_CHANNEL"] = "Can't popout this channel"
 
+L["LAYOUT"] = "Layout"
+
 L["CUSTOMISE_CHATANATOR"] = "Customise Chatanator"
 L["CTRL_C_TO_COPY"] = "Ctrl+C to copy"
 L["JOIN_THE_DISCORD"] = "Join the Discord"
@@ -40,6 +42,8 @@ L["DONATE"] = "Donate"
 L["LINK"] = "Link"
 L["SHOW_COMBAT_LOG"] = "Show Combat Log"
 L["LOCK_CHAT_POSITION"] = "Lock chat position"
+
+L["MESSAGE_SPACING"] = "Message spacing"
 
 L["SKINS_DARK"] = "Dark"
 

@@ -22,6 +22,8 @@ function addonTable.MessagesMonitorMixin:OnLoad()
 
   self.sizingFontString:SetText("00:00:00")
   self.inset = self.sizingFontString:GetUnboundedStringWidth() + 10
+  self.spacing = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_SPACING)
+
   CHATANATOR_MESSAGE_LOG = CHATANATOR_MESSAGE_LOG or GetNewLog()
   if CHATANATOR_MESSAGE_LOG.version ~= 1 then
     CHATANATOR_MESSAGE_LOG = GetNewLog()
@@ -163,6 +165,21 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   setmetatable(env, {__index = _G, __newindex = _G})
   setfenv(ChatFrame_MessageEventHandler, env)
   self:SetScript("OnEvent", self.OnEvent)
+
+  addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
+    local renderNeeded = false
+    if settingName == addonTable.Config.Options.MESSAGE_SPACING then
+      self.spacing = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_SPACING)
+      renderNeeded = true
+    elseif settingName == addonTable.Config.Options.TIMESTAMP_FORMAT then
+      error("haven't handled this yet")
+    end
+    if renderNeeded and self:GetScript("OnUpdate") == nil then
+      self:SetScript("OnUpdate", function()
+        addonTable.CallbackRegistry:TriggerEvent("Render")
+      end)
+    end
+  end, self)
 end
 
 function addonTable.MessagesMonitorMixin:ShowGMOTD()

@@ -214,6 +214,30 @@ local function SetupGeneral(parent)
   return container
 end
 
+local function SetupLayout(parent)
+  local container = CreateFrame("Frame", nil, parent)
+
+  local allFrames = {}
+
+  local messageSpacing
+  messageSpacing = addonTable.CustomiseDialog.Components.GetSlider(container, addonTable.Locales.MESSAGE_SPACING, 0, 60, "%spx", function()
+    addonTable.Config.Set(addonTable.Config.Options.MESSAGE_SPACING, messageSpacing:GetValue())
+  end)
+  messageSpacing.option = addonTable.Config.Options.MESSAGE_SPACING
+  messageSpacing:SetPoint("TOP")
+  table.insert(allFrames, messageSpacing)
+
+  container:SetScript("OnShow", function()
+    for _, f in ipairs(allFrames) do
+      if f.SetValue then
+        f:SetValue(addonTable.Config.Get(f.option))
+      end
+    end
+  end)
+
+  return container
+end
+
 local function SetupFilters(parent)
   local filters = addonTable.CustomiseDialog.SetupTabFilters(parent)
 
@@ -230,6 +254,7 @@ end
 
 local TabSetups = {
   {name = GENERAL, callback = SetupGeneral},
+  {name = addonTable.Locales.LAYOUT, callback = SetupLayout},
   {name = FILTERS, callback = SetupFilters},
 }
 

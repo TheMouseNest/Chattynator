@@ -107,3 +107,56 @@ function addonTable.CustomiseDialog.Components.GetBasicDropdown(parent)
 
   return frame
 end
+
+function addonTable.CustomiseDialog.Components.GetSlider(parent, label, min, max, valuePattern, callback)
+  local holder = CreateFrame("Frame", nil, parent)
+  holder:SetHeight(40)
+  holder:SetPoint("LEFT", parent, "LEFT", 30, 0)
+  holder:SetPoint("RIGHT", parent, "RIGHT", -30, 0)
+
+  holder.Label = holder:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+  holder.Label:SetJustifyH("RIGHT")
+  holder.Label:SetPoint("LEFT", 20, 0)
+  holder.Label:SetPoint("RIGHT", holder, "CENTER", -50, 0)
+  holder.Label:SetText(label)
+
+  holder.ValueText = holder:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+  holder.ValueText:SetJustifyH("LEFT")
+  holder.ValueText:SetPoint("LEFT", holder, "RIGHT", -35, 0)
+
+  holder.Slider = CreateFrame("Slider", nil, holder, "OptionsSliderTemplate")
+  holder.Slider:SetPoint("LEFT", holder, "CENTER", -32, 0)
+  holder.Slider:SetPoint("RIGHT", -45, 0)
+  holder.Slider:SetHeight(20)
+  holder.Slider:SetMinMaxValues(min, max)
+  holder.Slider:SetValueStep(1)
+  holder.Slider:SetObeyStepOnDrag(true)
+
+  holder.Slider:SetScript("OnValueChanged", function(_, _, userInput)
+    local value = holder.Slider:GetValue()
+    --[[if scale then
+      value = value / scale
+    end]]
+    holder.ValueText:SetText(valuePattern:format(math.floor(holder.Slider:GetValue())))
+    callback(value)
+  end)
+
+  function holder:GetValue()
+    return holder.Slider:GetValue()
+  end
+
+  function holder:SetValue(value)
+    return holder.Slider:SetValue(value)
+  end
+
+  addonTable.Skins.AddFrame("Slider", holder.Slider)
+
+  holder:SetScript("OnMouseWheel", function(_, delta)
+    if holder.Slider:IsEnabled() then
+      holder.Slider:SetValue(holder.Slider:GetValue() + delta)
+      holder.callback(holder.Slider:GetValue())
+    end
+  end)
+
+  return holder
+end

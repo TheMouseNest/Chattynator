@@ -75,6 +75,7 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
       addonTable.CallbackRegistry:TriggerEvent("ScrollToEndImmediate")
       addonTable.CallbackRegistry:TriggerEvent("Render")
     end)
+    cb:SetHeight(30)
     container.checkboxes[data[1]] = cb
     if lastCB then
       cb:SetPoint("TOP", lastCB, "BOTTOM")

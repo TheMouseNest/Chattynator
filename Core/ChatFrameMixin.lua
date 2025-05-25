@@ -239,6 +239,8 @@ function addonTable.ChatFrameMixin:RepositionBlizzardWidgets()
     QuickJoinToastButton:SetPoint("BOTTOMRIGHT", self.ScrollBox, "TOPLEFT", -5, 35)
     hooksecurefunc(QuickJoinToastButton, "SetPoint", function(_, _, frame)
       if frame ~= self.ScrollBox then
+        QuickJoinToastButton:SetParent(self)
+        QuickJoinToastButton:ClearAllPoints()
         QuickJoinToastButton:SetPoint("BOTTOMRIGHT", self.ScrollBox, "TOPLEFT", -5, 35)
       end
     end)

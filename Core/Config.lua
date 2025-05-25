@@ -31,7 +31,7 @@ local settings = {
             ["VOICE_TEXT"] = false,
           },
           invert = true,
-          channels = {}, backgroundColor = "1a1a1a", tabColor = "111111",
+          channels = {}, backgroundColor = "1a1a1a", tabColor = "1a1a1a",
           whispersTemp = {}, filters = {},
           isTemporary = false,
         },

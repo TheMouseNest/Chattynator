@@ -111,6 +111,84 @@ local function SetupGeneral(parent)
     table.insert(allFrames, donateFrame)
   end
 
+  local profileDropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container)
+  profileDropdown.Label:SetText(addonTable.Locales.PROFILES)
+  do
+    profileDropdown.SetValue = nil
+
+    local clone = false
+    local function ValidateAndCreate(profileName)
+      if profileName ~= "" and CHATANATOR_CONFIG.Profiles[profileName] == nil then
+        addonTable.Config.MakeProfile(profileName, clone)
+        profileDropdown.DropDown:GenerateMenu()
+      end
+    end
+    local makeProfileDialog = "Baganator_MakeProfileDialog"
+    StaticPopupDialogs[makeProfileDialog] = {
+      text = addonTable.Locales.ENTER_PROFILE_NAME,
+      button1 = ACCEPT,
+      button2 = CANCEL,
+      hasEditBox = 1,
+      OnAccept = function(self)
+        ValidateAndCreate(self.editBox:GetText())
+      end,
+      EditBoxOnEnterPressed = function(self)
+        ValidateAndCreate(self:GetText())
+        self:GetParent():Hide()
+      end,
+      EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
+      timeout = 0,
+      hideOnEscape = 1,
+    }
+    local deleteProfileDialog = "Baganator_DeleteProfileDialog"
+    StaticPopupDialogs[deleteProfileDialog] = {
+      button1 = YES,
+      button2 = NO,
+      OnAccept = function(_, data)
+        addonTable.Config.DeleteProfile(data)
+      end,
+      timeout = 0,
+      hideOnEscape = 1,
+    }
+    profileDropdown:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
+    profileDropdown.DropDown:SetupMenu(function(menu, rootDescription)
+      local profiles = addonTable.Config.GetProfileNames()
+      table.sort(profiles, function(a, b) return a:lower() < b:lower() end)
+      for _, name in ipairs(profiles) do
+        local button = rootDescription:CreateRadio(name ~= "DEFAULT" and name or LIGHTBLUE_FONT_COLOR:WrapTextInColorCode(DEFAULT), function()
+          return CHATANATOR_CURRENT_PROFILE == name
+        end, function()
+          addonTable.Config.ChangeProfile(name)
+        end)
+        if name ~= "DEFAULT" and name ~= CHATANATOR_CURRENT_PROFILE then
+          button:AddInitializer(function(button, description, menu)
+            local delete = MenuTemplates.AttachAutoHideButton(button, "transmog-icon-remove")
+            delete:SetPoint("RIGHT")
+            delete:SetSize(18, 18)
+            delete.Texture:SetAtlas("transmog-icon-remove")
+            delete:SetScript("OnClick", function()
+              menu:Close()
+              StaticPopupDialogs[deleteProfileDialog].text = addonTable.Locales.CONFIRM_DELETE_PROFILE_X:format(name)
+              StaticPopup_Show(deleteProfileDialog, nil, nil, name)
+            end)
+            MenuUtil.HookTooltipScripts(delete, function(tooltip)
+              GameTooltip_SetTitle(tooltip, DELETE);
+            end);
+          end)
+        end
+      end
+      rootDescription:CreateButton(NORMAL_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.NEW_PROFILE_CLONE), function()
+        clone = true
+        StaticPopup_Show(makeProfileDialog)
+      end)
+      rootDescription:CreateButton(NORMAL_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.NEW_PROFILE_BLANK), function()
+        clone = false
+        StaticPopup_Show(makeProfileDialog)
+      end)
+    end)
+  end
+  table.insert(allFrames, profileDropdown)
+
   local showCombatLog = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_COMBAT_LOG, 30, function(state)
     addonTable.Config.Set(addonTable.Config.Options.SHOW_COMBAT_LOG, state)
   end)

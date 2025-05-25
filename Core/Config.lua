@@ -301,10 +301,10 @@ function addonTable.Config.ChangeProfile(newProfileName)
 
   addonTable.Core.MigrateSettings()
 
-  --[[for _, name in ipairs(changedOptions) do
+  for _, name in ipairs(changedOptions) do
     addonTable.CallbackRegistry:TriggerEvent("SettingChanged", name)
   end
-  addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", refreshState)]]
+  addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", refreshState)
 end
 
 -- characterName is optional, only use if need a character specific setting for

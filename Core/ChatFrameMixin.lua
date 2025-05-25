@@ -152,6 +152,13 @@ function addonTable.ChatFrameMixin:OnLoad()
       self.resizeWidget:SetShown(not addonTable.Config.Get(addonTable.Config.Options.LOCKED))
     end
   end)
+
+  addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
+    if settingName == addonTable.Config.Options.WINDOWS then
+      self:SetPoint(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].position))
+      self:SetSize(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].size))
+    end
+  end)
 end
 
 function addonTable.ChatFrameMixin:SavePosition()

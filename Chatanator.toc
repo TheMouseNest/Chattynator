@@ -4,7 +4,7 @@
 ## Author: plusmouse
 ## IconTexture: Interface\AddOns\Chatanator\Assets\Logo.png
 ## SavedVariables: CHATANATOR_CONFIG, CHATANATOR_MESSAGE_LOG
-## SavedVariablesPerCharacter: CHATANATOR_PROFILE, CHATANATOR_CHAT_LOG
+## SavedVariablesPerCharacter: CHATANATOR_CURRENT_PROFILE, CHATANATOR_CHAT_LOG
 
 ## Category-enUS: Chat
 ## Category-deDE: Chat

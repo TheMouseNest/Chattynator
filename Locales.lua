@@ -43,6 +43,12 @@ L["LOCK_CHAT_POSITION"] = "Lock chat position"
 
 L["SKINS_DARK"] = "Dark"
 
+L["ENTER_PROFILE_NAME"] = "Enter Profile Name:"
+L["PROFILES"] = "Profiles"
+L["NEW_PROFILE_CLONE"] = "New Profile (clone current)"
+L["NEW_PROFILE_BLANK"] = "New Profile (blank)"
+L["CONFIRM_DELETE_PROFILE_X"] = "Are you sure you want to delete profile \"%s\"?"
+
 L["SLASH_RESET"] = "reset"
 L["SLASH_RESET_HELP"] = "Reset all Chatanator settings, then reload."
 L["SLASH_HELP"] = "Open the Chatanator settings."

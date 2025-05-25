@@ -6,9 +6,9 @@ addonTable.CustomiseDialog.Components = {}
 function addonTable.CustomiseDialog.Components.GetCheckbox(parent, label, spacing, callback)
   spacing = spacing or 0
   local holder = CreateFrame("Frame", nil, parent)
-  holder:SetHeight(30)
-  holder:SetPoint("LEFT", parent, "LEFT", 10, 0)
-  holder:SetPoint("RIGHT", parent, "RIGHT", 5, 0)
+  holder:SetHeight(40)
+  holder:SetPoint("LEFT", parent, "LEFT", 30, 0)
+  holder:SetPoint("RIGHT", parent, "RIGHT", -15, 0)
   local checkBox = CreateFrame("CheckButton", nil, holder, "SettingsCheckboxTemplate")
 
   checkBox:SetPoint("LEFT", holder, "CENTER", -15 - spacing, 0)
@@ -41,6 +41,18 @@ function addonTable.CustomiseDialog.Components.GetCheckbox(parent, label, spacin
   return holder
 end
 
+function addonTable.CustomiseDialog.Components.GetHeader(parent, text)
+  local holder = CreateFrame("Frame", nil, parent)
+  holder:SetPoint("LEFT", 30, 0)
+  holder:SetPoint("RIGHT", -30, 0)
+  holder.text = holder:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
+  holder.text:SetText(text)
+  holder.text:SetPoint("LEFT", 20, -1)
+  holder.text:SetPoint("RIGHT", 20, -1)
+  holder:SetHeight(40)
+  return holder
+end
+
 function addonTable.CustomiseDialog.Components.GetTab(parent)
   local tab
   if addonTable.Constants.IsRetail then
@@ -56,5 +68,6 @@ function addonTable.CustomiseDialog.Components.GetTab(parent)
       PanelTemplates_DeselectTab(self)
     end)
   end
+  addonTable.Skins.AddFrame("TopTabButton", tab)
   return tab
 end

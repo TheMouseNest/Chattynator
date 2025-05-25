@@ -31,14 +31,21 @@ L["NEW_TAB"] = "New tab"
 L["CANT_POPOUT_THIS_CHANNEL"] = "Can't popout this channel"
 
 L["CUSTOMISE_CHATANATOR"] = "Customise Chatanator"
+L["CTRL_C_TO_COPY"] = "Ctrl+C to copy"
+L["JOIN_THE_DISCORD"] = "Join the Discord"
+L["DISCORD_DESCRIPTION"] = "Updates, feature suggestions and support"
+L["BY_PLUSMOUSE"] = "by plusmouse"
+L["DEVELOPMENT_IS_TIME_CONSUMING"] = "|cff04cca4Development takes a huge amount of time|r"
+L["DONATE"] = "Donate"
+L["LINK"] = "Link"
 L["SHOW_COMBAT_LOG"] = "Show Combat Log"
-L["LOCKED"] = "Locked"
+L["LOCK_CHAT_POSITION"] = "Lock chat position"
 
 L["SKINS_DARK"] = "Dark"
 
 L["SLASH_RESET"] = "reset"
-L["SLASH_RESET_HELP"] = "Reset all Baganator settings, then reload."
-L["SLASH_HELP"] = "Open the Baganator settings."
+L["SLASH_RESET_HELP"] = "Reset all Chatanator settings, then reload."
+L["SLASH_HELP"] = "Open the Chatanator settings."
 L["SLASH_UNKNOWN_COMMAND"] = "Unknown command '%s'"
 
 local L = Locales.frFR

@@ -61,6 +61,7 @@ function addonTable.Core.Initialize()
   end
 
   addonTable.Core.ApplyOverrides()
+  addonTable.CustomiseDialog.Initialize()
 end
 
 local frame = CreateFrame("Frame")

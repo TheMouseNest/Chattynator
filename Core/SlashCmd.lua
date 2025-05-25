@@ -56,10 +56,11 @@ function addonTable.SlashCmd.Reset()
 end
 
 function addonTable.SlashCmd.CustomiseUI()
-  addonTable.CallbackRegistry:TriggerEvent("ShowCustomise")
+  addonTable.CustomiseDialog.Toggle()
 end
 
 local COMMANDS = {
+  [""] = addonTable.SlashCmd.CustomiseUI,
   ["c"] = addonTable.SlashCmd.Config,
   ["config"] = addonTable.SlashCmd.Config,
   ["reset"] = addonTable.SlashCmd.Reset,

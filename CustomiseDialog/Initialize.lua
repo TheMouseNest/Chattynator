@@ -1,110 +1,45 @@
 ---@class addonTableChatanator
 local addonTable = select(2, ...)
 
-local customisers = {}
-local filtersToRefresh = {}
-addonTable.CallbackRegistry:RegisterCallback("TabSelected", function(_, windowIndex, tabIndex)
-  for _, frame in ipairs(filtersToRefresh) do
-    if frame and frame:IsShown() and windowIndex == 1 then
-      frame:ShowSettings(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[1].tabs[addonTable.allChatFrames[1].tabIndex])
-    end
+
+function addonTable.CustomiseDialog.Initialize()
+  -- Create shortcut to open Baganator options from the Bliizzard addon options
+  -- panel
+  local optionsFrame = CreateFrame("Frame")
+
+  local instructions = optionsFrame:CreateFontString(nil, "ARTWORK", "GameFontNormalHuge3")
+  instructions:SetPoint("CENTER", optionsFrame)
+  instructions:SetText(WHITE_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.TO_OPEN_OPTIONS_X))
+
+  local version = C_AddOns.GetAddOnMetadata("Chatanator", "Version")
+  local versionText = optionsFrame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+  versionText:SetPoint("CENTER", optionsFrame, 0, 28)
+  versionText:SetText(WHITE_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.VERSION_COLON_X:format(version)))
+
+  local header = optionsFrame:CreateFontString(nil, "ARTWORK", "GameFontNormalHuge3")
+  header:SetScale(3)
+  header:SetPoint("CENTER", optionsFrame, 0, 30)
+  header:SetText(LINK_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.CHATANATOR))
+
+  local template = "SharedButtonLargeTemplate"
+  if not C_XMLUtil.GetTemplateInfo(template) then
+    template = "UIPanelDynamicResizeButtonTemplate"
   end
-end)
-
-local function SetupGeneral(parent)
-  local container = CreateFrame("Frame", nil, parent)
-
-  local showCombatLog = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_COMBAT_LOG, 20, function(state)
-    addonTable.Config.Set(addonTable.Config.Options.SHOW_COMBAT_LOG, state)
+  local button = CreateFrame("Button", nil, optionsFrame, template)
+  button:SetText(addonTable.Locales.OPEN_OPTIONS)
+  DynamicResizeButton_Resize(button)
+  button:SetPoint("CENTER", optionsFrame, 0, -30)
+  button:SetScale(2)
+  button:SetScript("OnClick", function()
+    addonTable.CustomiseDialog:Toggle()
   end)
 
-  local locked = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.LOCKED, 20, function(state)
-    addonTable.Config.Set(addonTable.Config.Options.LOCKED, state)
-  end)
 
-  container:SetScript("OnShow", function()
-    showCombatLog:SetValue(addonTable.Config.Get(addonTable.Config.Options.SHOW_COMBAT_LOG))
-    locked:SetValue(addonTable.Config.Get(addonTable.Config.Options.LOCKED))
-  end)
+  optionsFrame.OnCommit = function() end
+  optionsFrame.OnDefault = function() end
+  optionsFrame.OnRefresh = function() end
 
-  showCombatLog:SetPoint("TOP", 0, 0)
-  locked:SetPoint("TOP", showCombatLog, "BOTTOM")
-
-  return container
-end
-
-local function SetupFilters(parent)
-  local filters = addonTable.CustomiseDialog.SetupTabFilters(parent)
-
-  table.insert(filtersToRefresh, filters)
-
-  filters:ShowSettings(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[1].tabs[addonTable.allChatFrames[1].tabIndex])
-
-  return filters
-end
-
-local TabSetups = {
-  {name = GENERAL, callback = SetupGeneral},
-  {name = FILTERS, callback = SetupFilters},
-}
-
-function addonTable.CustomiseDialog.Toggle()
-  if customisers[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)] then
-    local frame = customisers[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)]
-    frame:SetShown(not frame:IsVisible())
-    if frame:IsShown() then
-      frame.filters:ShowSettings(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[1].tabs[currentTab])
-    end
-    return
-  end
-
-  local frame = CreateFrame("Frame", "ChatanatorCustomiseDialog" .. addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN), UIParent, "ButtonFrameTemplate")
-  frame:SetToplevel(true)
-  customisers[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)] = frame
-  table.insert(UISpecialFrames, frame:GetName())
-  frame:SetSize(800, 700)
-  frame:SetPoint("CENTER")
-  frame:Raise()
-
-  ButtonFrameTemplate_HidePortrait(frame)
-  ButtonFrameTemplate_HideButtonBar(frame)
-  frame.Inset:Hide()
-  frame:EnableMouse(true)
-  frame:SetScript("OnMouseWheel", function() end)
-
-  frame:SetTitle(addonTable.Locales.CUSTOMISE_CHATANATOR)
-
-  local containers = {}
-  local lastTab
-  local Tabs = {}
-  for _, setup in ipairs(TabSetups) do
-    local tabContainer = setup.callback(frame)
-    tabContainer:SetPoint("TOPLEFT", 0 + addonTable.Constants.ButtonFrameOffset, -65)
-    tabContainer:SetPoint("BOTTOMRIGHT")
-
-    local tabButton = addonTable.CustomiseDialog.Components.GetTab(frame)
-    if lastTab then
-      tabButton:SetPoint("LEFT", lastTab, "RIGHT", 5, 0)
-    else
-      tabButton:SetPoint("TOPLEFT", 0 + addonTable.Constants.ButtonFrameOffset, -25)
-    end
-    lastTab = tabButton
-    tabContainer.button = tabButton
-    tabButton:SetScript("OnClick", function()
-      for _, c in ipairs(containers) do
-        PanelTemplates_DeselectTab(c.button)
-        c:Hide()
-      end
-      PanelTemplates_SelectTab(tabButton)
-      tabContainer:Show()
-    end)
-    tabButton:SetText(setup.name)
-    tabContainer:Hide()
-
-    table.insert(Tabs, tabButton)
-    table.insert(containers, tabContainer)
-  end
-  frame.Tabs = Tabs
-  PanelTemplates_SetNumTabs(frame, #frame.Tabs)
-  containers[1].button:Click()
+  local category = Settings.RegisterCanvasLayoutCategory(optionsFrame, addonTable.Locales.CHATANATOR)
+  category.ID = addonTable.Locales.CHATANATOR
+  Settings.RegisterAddOnCategory(category)
 end

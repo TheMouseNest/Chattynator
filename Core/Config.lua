@@ -74,6 +74,7 @@ local settings = {
   LOCKED = {key = "locked", default = false, refresh = {addonTable.Constants.RefreshReason.Tabs, addonTable.Constants.RefreshReason.Locked}},
 
   MESSAGE_SPACING = {key = "message_spacing", default = 5},
+  TIMESTAMP_FORMAT = {key = "timestamp_format", default = "%X"},
 
   ENABLE_COMBAT_MESSAGES = {key = "enable_combat_messages", default = false},
   DEBUG = {key = "debug", default = false},

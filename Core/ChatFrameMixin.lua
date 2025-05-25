@@ -95,7 +95,7 @@ function addonTable.ChatFrameMixin:OnLoad()
     frame.Timestamp:SetWidth(addonTable.Messages.inset)
     frame.DisplayString:SetWidth(self.currentStringWidth)
     frame.data = data
-    frame.Timestamp:SetText(date("%X", data.timestamp))
+    frame.Timestamp:SetText(date(addonTable.Messages.timestampFormat, data.timestamp))
     frame.DisplayString:SetText(data.text)
     frame.DisplayString:SetTextColor(data.color.r, data.color.g, data.color.b)
     frame.FadeAnimation:Stop()

@@ -23,6 +23,7 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   self.sizingFontString:SetText("00:00:00")
   self.inset = self.sizingFontString:GetUnboundedStringWidth() + 10
   self.spacing = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_SPACING)
+  self.timestampFormat = addonTable.Config.Get(addonTable.Config.Options.TIMESTAMP_FORMAT)
 
   CHATANATOR_MESSAGE_LOG = CHATANATOR_MESSAGE_LOG or GetNewLog()
   if CHATANATOR_MESSAGE_LOG.version ~= 1 then

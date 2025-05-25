@@ -111,8 +111,7 @@ local function SetupGeneral(parent)
     table.insert(allFrames, donateFrame)
   end
 
-  local profileDropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container)
-  profileDropdown.Label:SetText(addonTable.Locales.PROFILES)
+  local profileDropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.PROFILES)
   do
     profileDropdown.SetValue = nil
 
@@ -224,8 +223,26 @@ local function SetupLayout(parent)
     addonTable.Config.Set(addonTable.Config.Options.LOCKED, state)
   end)
   locked.option = addonTable.Config.Options.LOCKED
-  locked:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, 0)
+  locked:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
   table.insert(allFrames, locked)
+
+  local timestampDropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.TIMESTAMP_FORMAT, function(value)
+    return addonTable.Config.Get(addonTable.Config.Options.TIMESTAMP_FORMAT) == value
+  end, function(value)
+    addonTable.Config.Set(addonTable.Config.Options.TIMESTAMP_FORMAT, value)
+  end)
+  timestampDropdown:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
+  do
+    local entries = {
+      "HH:MM:SS",
+      "HH:MM",
+    }
+    local values = {
+      "%X",
+      "%H:%S",
+    }
+    timestampDropdown:Init(entries, values)
+  end
 
   container:SetScript("OnShow", function()
     for _, f in ipairs(allFrames) do

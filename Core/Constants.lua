@@ -26,8 +26,6 @@ addonTable.Constants.Events = {
 
 addonTable.Constants.RefreshReason = {
   Tabs = 1,
-  FontFamily = 2,
-  FontSize = 3,
-  Locked = 4,
+  Font = 2,
+  Locked = 3,
 }
-

@@ -72,7 +72,7 @@ function addonTable.CustomiseDialog.Components.GetTab(parent)
   return tab
 end
 
-function addonTable.CustomiseDialog.Components.GetBasicDropdown(parent)
+function addonTable.CustomiseDialog.Components.GetBasicDropdown(parent, labelText, isSelectedCallback, onSelectionCallback)
   local frame = CreateFrame("Frame", nil, parent)
   local dropdown = CreateFrame("DropdownButton", nil, frame, "WowStyle1DropdownTemplate")
   dropdown:SetWidth(250)
@@ -81,20 +81,15 @@ function addonTable.CustomiseDialog.Components.GetBasicDropdown(parent)
   label:SetPoint("LEFT", 20, 0)
   label:SetPoint("RIGHT", frame, "CENTER", -50, 0)
   label:SetJustifyH("RIGHT")
+  label:SetText(labelText)
   frame:SetPoint("LEFT", 30, 0)
   frame:SetPoint("RIGHT", -30, 0)
-  frame.Init = function(_, option)
-    frame.option = option.option
-    label:SetText(option.text)
+  frame.Init = function(_, entryLabels, values)
     local entries = {}
-    for index = 1, #option.entries do
-      table.insert(entries, {option.entries[index], option.values[index]})
+    for index = 1, #entryLabels do
+      table.insert(entries, {entryLabels[index], values[index]})
     end
-    MenuUtil.CreateRadioMenu(dropdown, function(value)
-      return addonTable.Config.Get(option.option) == value
-    end, function(value)
-      addonTable.Config.Set(option.option, value)
-    end, unpack(entries))
+    MenuUtil.CreateRadioMenu(dropdown, isSelectedCallback, onSelectionCallback, unpack(entries))
   end
   frame.SetValue = function(_, _)
     dropdown:GenerateMenu()

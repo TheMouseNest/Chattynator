@@ -44,6 +44,7 @@ L["SHOW_COMBAT_LOG"] = "Show Combat Log"
 L["LOCK_CHAT_POSITION"] = "Lock chat position"
 
 L["MESSAGE_SPACING"] = "Message spacing"
+L["TIMESTAMP_FORMAT"] = "Timestamp format"
 
 L["SKINS_DARK"] = "Dark"
 

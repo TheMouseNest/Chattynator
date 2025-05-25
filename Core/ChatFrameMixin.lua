@@ -29,11 +29,7 @@ function addonTable.ChatFrameMixin:OnLoad()
   end)
   self.currentStringWidth = 0
   self:SetScript("OnSizeChanged", function()
-    local width = math.floor(self.ScrollBox:GetWidth() - addonTable.Messages.inset - rightInset)
-    addonTable.Messages:RegisterWidth(width)
-    addonTable.Messages:UnregisterWidth(self.currentStringWidth)
-    self.currentStringWidth = width
-    self.key = addonTable.Messages.font .. " " .. width
+    self:UpdateWidth()
     self:Render()
   end)
   view:SetElementInitializer("Frame", function(frame, data)
@@ -162,6 +158,17 @@ function addonTable.ChatFrameMixin:OnLoad()
       self:SetSize(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].size))
     end
   end)
+  addonTable.CallbackRegistry:RegisterCallback("InsetChanged", function()
+    self:UpdateWidth()
+  end)
+end
+
+function addonTable.ChatFrameMixin:UpdateWidth()
+  local width = math.floor(self.ScrollBox:GetWidth() - addonTable.Messages.inset - rightInset)
+  addonTable.Messages:RegisterWidth(width)
+  addonTable.Messages:UnregisterWidth(self.currentStringWidth)
+  self.currentStringWidth = width
+  self.key = addonTable.Messages.font .. " " .. width
 end
 
 function addonTable.ChatFrameMixin:SavePosition()

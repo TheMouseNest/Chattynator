@@ -11,6 +11,9 @@ local function GetNewLog()
 end
 
 function addonTable.MessagesMonitorMixin:OnLoad()
+  self.spacing = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_SPACING)
+  self.timestampFormat = addonTable.Config.Get(addonTable.Config.Options.TIMESTAMP_FORMAT)
+
   self.font = "ChatFontNormal"
   self.widths = {}
 
@@ -20,10 +23,7 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   self.sizingFontString:SetWordWrap(true)
   self.sizingFontString:Hide()
 
-  self.sizingFontString:SetText("00:00:00")
-  self.inset = self.sizingFontString:GetUnboundedStringWidth() + 10
-  self.spacing = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_SPACING)
-  self.timestampFormat = addonTable.Config.Get(addonTable.Config.Options.TIMESTAMP_FORMAT)
+  self:SetInset()
 
   CHATTYNATOR_MESSAGE_LOG = CHATTYNATOR_MESSAGE_LOG or GetNewLog()
   if CHATTYNATOR_MESSAGE_LOG.version ~= 1 then
@@ -173,7 +173,10 @@ function addonTable.MessagesMonitorMixin:OnLoad()
       self.spacing = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_SPACING)
       renderNeeded = true
     elseif settingName == addonTable.Config.Options.TIMESTAMP_FORMAT then
-      error("haven't handled this yet")
+      self.timestampFormat = addonTable.Config.Get(addonTable.Config.Options.TIMESTAMP_FORMAT)
+      self:SetInset()
+      addonTable.CallbackRegistry:TriggerEvent("InsetChanged")
+      renderNeeded = true
     end
     if renderNeeded and self:GetScript("OnUpdate") == nil then
       self:SetScript("OnUpdate", function()
@@ -181,6 +184,17 @@ function addonTable.MessagesMonitorMixin:OnLoad()
       end)
     end
   end, self)
+end
+
+function addonTable.MessagesMonitorMixin:SetInset()
+  if self.timestampFormat == "%X" then
+    self.sizingFontString:SetText("00:00:00")
+  elseif self.timestampFormat == "%H:%S" then
+    self.sizingFontString:SetText("00:00")
+  else
+    error("unknown format")
+  end
+  self.inset = self.sizingFontString:GetUnboundedStringWidth() + 10
 end
 
 function addonTable.MessagesMonitorMixin:ShowGMOTD()
@@ -226,8 +240,7 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
   elseif eventName == "GUILD_MOTD" then
     self:ShowGMOTD()
   elseif eventName == "UI_SCALE_CHANGED" then
-    self.sizingFontString:SetText("00:00:00")
-    self.inset = self.sizingFontString:GetUnboundedStringWidth() + 10
+    self:SetInset()
     self.heights = {}
   elseif eventName == "PLAYER_LOGIN" then
     local name, realm = UnitFullName("player")

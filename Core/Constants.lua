@@ -22,6 +22,7 @@ addonTable.Constants.Events = {
 
   "SettingChanged",
   "RefreshStateChange",
+  "InsetChanged"
 }
 
 addonTable.Constants.RefreshReason = {

@@ -1,11 +1,11 @@
----@class addonTableChatanator
+---@class addonTableChattynator
 local addonTable = select(2, ...)
 
-Chatanator = {
+Chattynator = {
   API = {},
 }
 
-function Chatanator.API.SetFilter(filterFunc)
+function Chattynator.API.SetFilter(filterFunc)
   addonTable.ChatFrame:SetFilter(filterFunc)
   addonTable.ChatFrame:Render()
 end

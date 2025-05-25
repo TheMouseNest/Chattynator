@@ -1,11 +1,11 @@
----@class addonTableChatanator
+---@class addonTableChattynator
 local addonTable = select(2, ...)
 addonTable.SlashCmd = {}
 
 function addonTable.SlashCmd.Initialize()
-  SlashCmdList["Chatanator"] = addonTable.SlashCmd.Handler
-  SLASH_Chatanator1 = "/chatanator"
-  SLASH_Chatanator2 = "/ctnr"
+  SlashCmdList["Chattynator"] = addonTable.SlashCmd.Handler
+  SLASH_Chattynator1 = "/chatanator"
+  SLASH_Chattynator2 = "/ctnr"
 end
 
 local INVALID_OPTION_VALUE = "Wrong config value type %s (required %s)"
@@ -51,7 +51,7 @@ function addonTable.SlashCmd.Config(optionName, value1, ...)
 end
 
 function addonTable.SlashCmd.Reset()
-  CHATANATOR_CONFIG = nil
+  CHATTYNATOR_CONFIG = nil
   ReloadUI()
 end
 

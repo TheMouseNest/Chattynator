@@ -1,4 +1,4 @@
----@class addonTableChatanator
+---@class addonTableChattynator
 local addonTable = select(2, ...)
 addonTable.Config = {}
 
@@ -109,7 +109,7 @@ end
 local function RawSet(name, value)
   local tree = {strsplit(".", name)}
   if addonTable.Config.CurrentProfile == nil then
-    error("CHATANATOR_CONFIG not initialized")
+    error("CHATTYNATOR_CONFIG not initialized")
   elseif not addonTable.Config.IsValidOption(tree[1]) then
     error("Invalid option '" .. name .. "'")
   elseif #tree == 1 then
@@ -174,8 +174,8 @@ local addedInstalledNestedToList = {}
 local installedNested = {}
 
 function addonTable.Config.Install(name, defaultValue)
-  if CHATANATOR_CONFIG == nil then
-    error("CHATANATOR_CONFIG not initialized")
+  if CHATTYNATOR_CONFIG == nil then
+    error("CHATTYNATOR_CONFIG not initialized")
   elseif name:find("%.") == nil then
     if addonTable.Config.CurrentProfile[name] == nil then
       addonTable.Config.CurrentProfile[name] = defaultValue
@@ -212,7 +212,7 @@ function addonTable.Config.ResetOne(name)
 end
 
 function addonTable.Config.Reset()
-  CHATANATOR_CONFIG = {
+  CHATTYNATOR_CONFIG = {
     Profiles = {
       DEFAULT = {},
     },
@@ -235,50 +235,50 @@ local function ImportDefaultsToProfile()
 end
 
 function addonTable.Config.InitializeData()
-  if CHATANATOR_CONFIG == nil then
+  if CHATTYNATOR_CONFIG == nil then
     addonTable.Config.Reset()
     return
   end
 
-  if CHATANATOR_CONFIG.Profiles == nil then
-    CHATANATOR_CONFIG = {
+  if CHATTYNATOR_CONFIG.Profiles == nil then
+    CHATTYNATOR_CONFIG = {
       Profiles = {
-        DEFAULT = CHATANATOR_CONFIG,
+        DEFAULT = CHATTYNATOR_CONFIG,
       },
       CharacterSpecific = {},
       Version = 1,
     }
   end
 
-  if CHATANATOR_CONFIG.Profiles.DEFAULT == nil then
-    CHATANATOR_CONFIG.Profiles.DEFAULT = {}
+  if CHATTYNATOR_CONFIG.Profiles.DEFAULT == nil then
+    CHATTYNATOR_CONFIG.Profiles.DEFAULT = {}
   end
-  if CHATANATOR_CONFIG.Profiles[CHATANATOR_CURRENT_PROFILE] == nil then
-    CHATANATOR_CURRENT_PROFILE = "DEFAULT"
+  if CHATTYNATOR_CONFIG.Profiles[CHATTYNATOR_CURRENT_PROFILE] == nil then
+    CHATTYNATOR_CURRENT_PROFILE = "DEFAULT"
   end
 
-  addonTable.Config.CurrentProfile = CHATANATOR_CONFIG.Profiles[CHATANATOR_CURRENT_PROFILE]
+  addonTable.Config.CurrentProfile = CHATTYNATOR_CONFIG.Profiles[CHATTYNATOR_CURRENT_PROFILE]
   ImportDefaultsToProfile()
 end
 
 function addonTable.Config.GetProfileNames()
-  return GetKeysArray(CHATANATOR_CONFIG.Profiles)
+  return GetKeysArray(CHATTYNATOR_CONFIG.Profiles)
 end
 
 function addonTable.Config.MakeProfile(newProfileName, clone)
   assert(tIndexOf(addonTable.Config.GetProfileNames(), newProfileName) == nil, "Existing Profile")
   if clone then
-    CHATANATOR_CONFIG.Profiles[newProfileName] = CopyTable(addonTable.Config.CurrentProfile)
+    CHATTYNATOR_CONFIG.Profiles[newProfileName] = CopyTable(addonTable.Config.CurrentProfile)
   else
-    CHATANATOR_CONFIG.Profiles[newProfileName] = {}
+    CHATTYNATOR_CONFIG.Profiles[newProfileName] = {}
   end
   addonTable.Config.ChangeProfile(newProfileName)
 end
 
 function addonTable.Config.DeleteProfile(profileName)
-  assert(profileName ~= "DEFAULT" and profileName ~= CHATANATOR_CURRENT_PROFILE)
+  assert(profileName ~= "DEFAULT" and profileName ~= CHATTYNATOR_CURRENT_PROFILE)
 
-  CHATANATOR_CONFIG.Profiles[profileName] = nil
+  CHATTYNATOR_CONFIG.Profiles[profileName] = nil
 end
 
 function addonTable.Config.ChangeProfile(newProfileName)
@@ -286,7 +286,7 @@ function addonTable.Config.ChangeProfile(newProfileName)
 
   local changedOptions = {}
   local refreshState = {}
-  local newProfile = CHATANATOR_CONFIG.Profiles[newProfileName]
+  local newProfile = CHATTYNATOR_CONFIG.Profiles[newProfileName]
 
   for name, value in pairs(addonTable.Config.CurrentProfile) do
     if value ~= newProfile[name] then
@@ -298,7 +298,7 @@ function addonTable.Config.ChangeProfile(newProfileName)
   tAppendAll(changedOptions, installedNested)
 
   addonTable.Config.CurrentProfile = newProfile
-  CHATANATOR_CURRENT_PROFILE = newProfileName
+  CHATTYNATOR_CURRENT_PROFILE = newProfileName
 
   ImportDefaultsToProfile()
 

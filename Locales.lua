@@ -1,4 +1,4 @@
----@class addonTableChatanator
+---@class addonTableChattynator
 local addonTable = select(2, ...)
 local Locales = {
   enUS = {},
@@ -14,11 +14,11 @@ local Locales = {
   itIT = {},
 }
 
-CHATANATOR_LOCALES = Locales
+CHATTYNATOR_LOCALES = Locales
 
 local L = Locales.enUS
 
-L["CHATANATOR"] = "Chatanator"
+L["CHATTYNATOR"] = "Chattynator"
 L["TO_OPEN_OPTIONS_X"] = "Access options with /ctnr"
 L["VERSION_COLON_X"] = "Version: %s"
 L["OPEN_OPTIONS"] = "Open Options"
@@ -32,7 +32,7 @@ L["CANT_POPOUT_THIS_CHANNEL"] = "Can't popout this channel"
 
 L["LAYOUT"] = "Layout"
 
-L["CUSTOMISE_CHATANATOR"] = "Customise Chatanator"
+L["CUSTOMISE_CHATTYNATOR"] = "Customise Chattynator"
 L["CTRL_C_TO_COPY"] = "Ctrl+C to copy"
 L["JOIN_THE_DISCORD"] = "Join the Discord"
 L["DISCORD_DESCRIPTION"] = "Updates, feature suggestions and support"
@@ -54,8 +54,8 @@ L["NEW_PROFILE_BLANK"] = "New Profile (blank)"
 L["CONFIRM_DELETE_PROFILE_X"] = "Are you sure you want to delete profile \"%s\"?"
 
 L["SLASH_RESET"] = "reset"
-L["SLASH_RESET_HELP"] = "Reset all Chatanator settings, then reload."
-L["SLASH_HELP"] = "Open the Chatanator settings."
+L["SLASH_RESET_HELP"] = "Reset all Chattynator settings, then reload."
+L["SLASH_HELP"] = "Open the Chattynator settings."
 L["SLASH_UNKNOWN_COMMAND"] = "Unknown command '%s'"
 
 local L = Locales.frFR

@@ -1,4 +1,4 @@
----@class addonTableChatanator
+---@class addonTableChattynator
 local addonTable = select(2, ...)
 
 
@@ -11,7 +11,7 @@ function addonTable.CustomiseDialog.Initialize()
   instructions:SetPoint("CENTER", optionsFrame)
   instructions:SetText(WHITE_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.TO_OPEN_OPTIONS_X))
 
-  local version = C_AddOns.GetAddOnMetadata("Chatanator", "Version")
+  local version = C_AddOns.GetAddOnMetadata("Chattynator", "Version")
   local versionText = optionsFrame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
   versionText:SetPoint("CENTER", optionsFrame, 0, 28)
   versionText:SetText(WHITE_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.VERSION_COLON_X:format(version)))
@@ -19,7 +19,7 @@ function addonTable.CustomiseDialog.Initialize()
   local header = optionsFrame:CreateFontString(nil, "ARTWORK", "GameFontNormalHuge3")
   header:SetScale(3)
   header:SetPoint("CENTER", optionsFrame, 0, 30)
-  header:SetText(LINK_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.CHATANATOR))
+  header:SetText(LINK_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.CHATTYNATOR))
 
   local template = "SharedButtonLargeTemplate"
   if not C_XMLUtil.GetTemplateInfo(template) then
@@ -39,7 +39,7 @@ function addonTable.CustomiseDialog.Initialize()
   optionsFrame.OnDefault = function() end
   optionsFrame.OnRefresh = function() end
 
-  local category = Settings.RegisterCanvasLayoutCategory(optionsFrame, addonTable.Locales.CHATANATOR)
-  category.ID = addonTable.Locales.CHATANATOR
+  local category = Settings.RegisterCanvasLayoutCategory(optionsFrame, addonTable.Locales.CHATTYNATOR)
+  category.ID = addonTable.Locales.CHATTYNATOR
   Settings.RegisterAddOnCategory(category)
 end

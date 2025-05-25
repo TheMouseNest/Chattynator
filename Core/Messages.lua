@@ -1,4 +1,4 @@
----@class addonTableChatanator
+---@class addonTableChattynator
 local addonTable = select(2, ...)
 
 ---@class MessagesMonitorMixin: Frame
@@ -25,19 +25,19 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   self.spacing = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_SPACING)
   self.timestampFormat = addonTable.Config.Get(addonTable.Config.Options.TIMESTAMP_FORMAT)
 
-  CHATANATOR_MESSAGE_LOG = CHATANATOR_MESSAGE_LOG or GetNewLog()
-  if CHATANATOR_MESSAGE_LOG.version ~= 1 then
-    CHATANATOR_MESSAGE_LOG = GetNewLog()
+  CHATTYNATOR_MESSAGE_LOG = CHATTYNATOR_MESSAGE_LOG or GetNewLog()
+  if CHATTYNATOR_MESSAGE_LOG.version ~= 1 then
+    CHATTYNATOR_MESSAGE_LOG = GetNewLog()
   end
-  CHATANATOR_MESSAGE_LOG.cleanIndex = CHATANATOR_MESSAGE_LOG.cleanIndex or 0
-  CHATANATOR_MESSAGE_LOG.cleanIndex = self:CleanStore(CHATANATOR_MESSAGE_LOG.current, CHATANATOR_MESSAGE_LOG.cleanIndex)
+  CHATTYNATOR_MESSAGE_LOG.cleanIndex = CHATTYNATOR_MESSAGE_LOG.cleanIndex or 0
+  CHATTYNATOR_MESSAGE_LOG.cleanIndex = self:CleanStore(CHATTYNATOR_MESSAGE_LOG.current, CHATTYNATOR_MESSAGE_LOG.cleanIndex)
 
-  self.store = CHATANATOR_MESSAGE_LOG.current
+  self.store = CHATTYNATOR_MESSAGE_LOG.current
   self.storeCount = #self.store
 
   self:UpdateStores()
 
-  self.messages = CopyTable(CHATANATOR_MESSAGE_LOG.current)
+  self.messages = CopyTable(CHATTYNATOR_MESSAGE_LOG.current)
   self.newMessageStartPoint = #self.messages + 1
   self.formatters = {}
   self.messageCount = #self.messages
@@ -131,7 +131,7 @@ function addonTable.MessagesMonitorMixin:OnLoad()
       return
     end
     local trace = debugstack(3, 1, 0)
-    if trace:find("Interface/AddOns/Chatanator") then
+    if trace:find("Interface/AddOns/Chattynator") then
       return
     end
 
@@ -332,19 +332,19 @@ function addonTable.MessagesMonitorMixin:UpdateStores()
   for i = 1, self.storeCount - conversionThreshold / 2 - 1 do
     table.insert(newStore, CopyTable(self.store[i]))
   end
-  if CHATANATOR_MESSAGE_LOG.cleanIndex <= #newStore then
-    self:CleanStore(newStore, CHATANATOR_MESSAGE_LOG.cleanIndex)
+  if CHATTYNATOR_MESSAGE_LOG.cleanIndex <= #newStore then
+    self:CleanStore(newStore, CHATTYNATOR_MESSAGE_LOG.cleanIndex)
   end
   local newCurrent = {}
   for i = self.messageCount - conversionThreshold / 2, self.messageCount do
     table.insert(newCurrent, self.store[i])
   end
-  table.insert(CHATANATOR_MESSAGE_LOG.historical, {
+  table.insert(CHATTYNATOR_MESSAGE_LOG.historical, {
     startTimestamp = newStore[1].timestamp,
     endTimestamp = newStore[#newStore].timestamp,
     data = C_EncodingUtil.SerializeJSON(newStore)
   })
-  CHATANATOR_MESSAGE_LOG.current = newCurrent
+  CHATTYNATOR_MESSAGE_LOG.current = newCurrent
   self.store = newCurrent
   self.storeCount = #self.store
 end

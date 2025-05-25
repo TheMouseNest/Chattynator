@@ -1,10 +1,10 @@
 ## Interface: 110100, 110105
-## Title: Chatanator
+## Title: Chattynator
 ## Version: @project-version@
 ## Author: plusmouse
-## IconTexture: Interface\AddOns\Chatanator\Assets\Logo.png
-## SavedVariables: CHATANATOR_CONFIG, CHATANATOR_MESSAGE_LOG
-## SavedVariablesPerCharacter: CHATANATOR_CURRENT_PROFILE, CHATANATOR_CHAT_LOG
+## IconTexture: Interface\AddOns\Chattynator\Assets\Logo.png
+## SavedVariables: CHATTYNATOR_CONFIG, CHATTYNATOR_MESSAGE_LOG
+## SavedVariablesPerCharacter: CHATTYNATOR_CURRENT_PROFILE
 
 ## Category-enUS: Chat
 ## Category-deDE: Chat

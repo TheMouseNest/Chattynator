@@ -1,4 +1,4 @@
 ---@meta
-ChatanatorHyperlinkHandler = CreateFrame("Frame")
+ChattynatorHyperlinkHandler = CreateFrame("Frame")
 
-CHATANATOR_MESSAGE_LOG = {}
+CHATTYNATOR_MESSAGE_LOG = {}

@@ -1,4 +1,4 @@
----@class addonTableChatanator
+---@class addonTableChattynator
 local addonTable = select(2, ...)
 
 addonTable.CallbackRegistry = CreateFromMixins(CallbackRegistryMixin)
@@ -29,7 +29,7 @@ function addonTable.Core.Initialize()
 
   addonTable.SlashCmd.Initialize()
 
-  ChatanatorHyperlinkHandler:SetScript("OnHyperlinkEnter", function(_, hyperlink)
+  ChattynatorHyperlinkHandler:SetScript("OnHyperlinkEnter", function(_, hyperlink)
     if hyperlink:match("battlepet:") or hyperlink:match("item:") then
       GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR_RIGHT")
       GameTooltip:SetHyperlink(hyperlink)
@@ -37,7 +37,7 @@ function addonTable.Core.Initialize()
     end
   end)
 
-  ChatanatorHyperlinkHandler:SetScript("OnHyperlinkLeave", function()
+  ChattynatorHyperlinkHandler:SetScript("OnHyperlinkLeave", function()
     GameTooltip:Hide()
   end)
 
@@ -49,7 +49,7 @@ function addonTable.Core.Initialize()
 
   addonTable.allChatFrames = {}
   for id, window in ipairs(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)) do
-    local chatFrame = CreateFrame("Frame", nil, ChatanatorHyperlinkHandler)
+    local chatFrame = CreateFrame("Frame", nil, ChattynatorHyperlinkHandler)
     chatFrame:SetID(id)
     if id == 1 then
       addonTable.ChatFrame = chatFrame
@@ -67,7 +67,7 @@ end
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("ADDON_LOADED")
 frame:SetScript("OnEvent", function(_, eventName, data)
-  if eventName == "ADDON_LOADED" and data == "Chatanator" then
+  if eventName == "ADDON_LOADED" and data == "Chattynator" then
     addonTable.Core.Initialize()
   end
 end)

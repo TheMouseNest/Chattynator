@@ -1,4 +1,4 @@
----@class addonTableChatanator
+---@class addonTableChattynator
 local addonTable = select(2, ...)
 
 ---@class ChatFrameMixin: Frame
@@ -49,7 +49,7 @@ function addonTable.ChatFrameMixin:OnLoad()
       frame.Timestamp:SetJustifyH("LEFT")
       frame.Timestamp:SetTextColor(0.5, 0.5, 0.5)
       frame.Bar = frame:CreateTexture(nil, "BACKGROUND")
-      frame.Bar:SetTexture("Interface/AddOns/Chatanator/Assets/Fade.png")
+      frame.Bar:SetTexture("Interface/AddOns/Chattynator/Assets/Fade.png")
       frame.Bar:SetPoint("RIGHT", frame.DisplayString, "LEFT", -4, 0)
       frame.Bar:SetPoint("TOP", 0, 0)
       --frame.Bar:SetPoint("BOTTOM", 0, 1 + 5)

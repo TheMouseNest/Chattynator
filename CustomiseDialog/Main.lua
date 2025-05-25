@@ -1,4 +1,4 @@
----@class addonTableChatanator
+---@class addonTableChattynator
 local addonTable = select(2, ...)
 
 local customisers = {}
@@ -25,19 +25,19 @@ local function SetupGeneral(parent)
     addonTable.Skins.AddFrame("InsetFrame", infoInset)
 
     local logo = infoInset:CreateTexture(nil, "ARTWORK")
-    logo:SetTexture("Interface\\AddOns\\Chatanator\\Assets\\Logo.png")
+    logo:SetTexture("Interface\\AddOns\\Chattynator\\Assets\\Logo.png")
     logo:SetSize(52, 52)
     logo:SetPoint("LEFT", 8, 0)
 
     local name = infoInset:CreateFontString(nil, "ARTWORK", "GameFontHighlightHuge")
-    name:SetText(addonTable.Locales.CHATANATOR)
+    name:SetText(addonTable.Locales.CHATTYNATOR)
     name:SetPoint("TOPLEFT", logo, "TOPRIGHT", 10, 0)
 
     local credit = infoInset:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
     credit:SetText(addonTable.Locales.BY_PLUSMOUSE)
     credit:SetPoint("BOTTOMLEFT", name, "BOTTOMRIGHT", 5, 0)
 
-    local discordLinkDialog = "Chatanator_General_Settings_Discord_Dialog"
+    local discordLinkDialog = "Chattynator_General_Settings_Discord_Dialog"
     StaticPopupDialogs[discordLinkDialog] = {
       text = addonTable.Locales.CTRL_C_TO_COPY,
       button1 = DONE,
@@ -117,7 +117,7 @@ local function SetupGeneral(parent)
 
     local clone = false
     local function ValidateAndCreate(profileName)
-      if profileName ~= "" and CHATANATOR_CONFIG.Profiles[profileName] == nil then
+      if profileName ~= "" and CHATTYNATOR_CONFIG.Profiles[profileName] == nil then
         addonTable.Config.MakeProfile(profileName, clone)
         profileDropdown.DropDown:GenerateMenu()
       end
@@ -155,11 +155,11 @@ local function SetupGeneral(parent)
       table.sort(profiles, function(a, b) return a:lower() < b:lower() end)
       for _, name in ipairs(profiles) do
         local button = rootDescription:CreateRadio(name ~= "DEFAULT" and name or LIGHTBLUE_FONT_COLOR:WrapTextInColorCode(DEFAULT), function()
-          return CHATANATOR_CURRENT_PROFILE == name
+          return CHATTYNATOR_CURRENT_PROFILE == name
         end, function()
           addonTable.Config.ChangeProfile(name)
         end)
-        if name ~= "DEFAULT" and name ~= CHATANATOR_CURRENT_PROFILE then
+        if name ~= "DEFAULT" and name ~= CHATTYNATOR_CURRENT_PROFILE then
           button:AddInitializer(function(button, description, menu)
             local delete = MenuTemplates.AttachAutoHideButton(button, "transmog-icon-remove")
             delete:SetPoint("RIGHT")
@@ -282,7 +282,7 @@ function addonTable.CustomiseDialog.Toggle()
     return
   end
 
-  local frame = CreateFrame("Frame", "ChatanatorCustomiseDialog" .. addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN), UIParent, "ButtonFrameTemplate")
+  local frame = CreateFrame("Frame", "ChattynatorCustomiseDialog" .. addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN), UIParent, "ButtonFrameTemplate")
   frame:SetToplevel(true)
   customisers[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)] = frame
   table.insert(UISpecialFrames, frame:GetName())
@@ -296,7 +296,7 @@ function addonTable.CustomiseDialog.Toggle()
   frame:EnableMouse(true)
   frame:SetScript("OnMouseWheel", function() end)
 
-  frame:SetTitle(addonTable.Locales.CUSTOMISE_CHATANATOR)
+  frame:SetTitle(addonTable.Locales.CUSTOMISE_CHATTYNATOR)
 
   local containers = {}
   local lastTab

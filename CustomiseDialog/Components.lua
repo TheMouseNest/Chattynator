@@ -124,7 +124,7 @@ function addonTable.CustomiseDialog.Components.GetSlider(parent, label, min, max
   holder.ValueText:SetJustifyH("LEFT")
   holder.ValueText:SetPoint("LEFT", holder, "RIGHT", -35, 0)
 
-  holder.Slider = CreateFrame("Slider", nil, holder, "OptionsSliderTemplate")
+  holder.Slider = CreateFrame("Slider", nil, holder, "UISliderTemplate")
   holder.Slider:SetPoint("LEFT", holder, "CENTER", -32, 0)
   holder.Slider:SetPoint("RIGHT", -45, 0)
   holder.Slider:SetHeight(20)

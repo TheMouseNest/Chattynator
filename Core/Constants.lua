@@ -8,6 +8,8 @@ addonTable.Constants = {
   --IsWrath = WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC,
   --IsEra = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC,
   IsClassic = WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE,
+
+  NewTabMarkup = CreateTextureMarkup("Interface/AddOns/Chattynator/Assets/NewTab.png", 40, 40, 15, 15, 0, 1, 0, 1)
 }
 if addonTable.Constants.IsRetail then
   addonTable.Constants.ButtonFrameOffset = 5

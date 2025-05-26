@@ -5,6 +5,9 @@ local GW
 local intensity = {r = 83.9/100, g = 82.7/100, b = 67.8/100}
 local hoverColor = {r = 1, g = 1, b = 1}
 
+local newTabMarkup = addonTable.Constants.NewTabMarkup
+local GW2NewTabMarkup = CreateTextureMarkup("Interface/AddOns/GW2_UI/textures/party/roleicon-healer", 40, 40, 14, 14, 0, 1, 0, 1, 0, 2)
+
 local function ConvertTags(tags)
   local res = {}
   for _, tag in ipairs(tags) do
@@ -54,15 +57,22 @@ local skinners = {
     end
     tab:GetFontString():GwSetFontTemplate(DAMAGE_TEXT_FONT, GW.TextSizeType.NORMAL)
     tab:GetFontString():SetTextColor(1, 1, 1)
-    tab:GetFontString():SetPoint("TOP", 0, -6)
+    tab:GetFontString():SetPoint("TOP", 0, -5)
     local tabPadding = 10
+    if tab:GetText() == newTabMarkup then
+      tab:SetText(GW2NewTabMarkup)
+    end
     if tab.minWidth then
       tab:SetWidth(tab:GetFontString():GetUnboundedStringWidth() + tabPadding)
     else
       tab:SetWidth(math.max(tab:GetFontString():GetUnboundedStringWidth(), 80) + tabPadding)
     end
 
-    hooksecurefunc(tab, "SetText", function()
+    local SetText = tab.SetText
+    hooksecurefunc(tab, "SetText", function(_, text)
+      if text == newTabMarkup then
+        SetText(tab, GW2NewTabMarkup)
+      end
       if tab.minWidth then
         tab:SetWidth(tab:GetFontString():GetUnboundedStringWidth() + tabPadding)
       else
@@ -114,8 +124,8 @@ local skinners = {
     if GW.settings.CHAT_USE_GW2_STYLE then
       local chatFont = GW.Libs.LSM:Fetch("font", "GW2_UI_Chat")
       local _, _, fontFlags = frame:GetFont()
-      frame:SetFont(chatFont, addonTable.Config.Get(addonTable.Config.FONT_SIZE), fontFlags)
-      _G[frame:GetName() .. "Header"]:SetFont(chatFont, addonTable.Config.Get(addonTable.Config.FONT_SIZE), fontFlags)
+      frame:SetFont(chatFont, addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT_SIZE), fontFlags)
+      _G[frame:GetName() .. "Header"]:SetFont(chatFont, addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT_SIZE), fontFlags)
     end
   end,
   ChatFrame = function(frame)
@@ -129,29 +139,39 @@ local skinners = {
     button:ClearNormalTexture()
     button:ClearPushedTexture()
     button:ClearHighlightTexture()
+    button.HoverIcon = button:CreateTexture(nil, "OVERLAY")
+    button.HoverIcon:Hide()
+    button.HoverIcon:SetSize(15, 15)
 
     button:HookScript("OnEnter", function()
-      button.Icon:SetVertexColor(hoverColor.r, hoverColor.g, hoverColor.b)
+      button.HoverIcon:Show()
     end)
     button:HookScript("OnLeave", function()
-      button.Icon:SetVertexColor(intensity.r, intensity.g, intensity.b)
+      button.HoverIcon:Hide()
     end)
 
     button:HookScript("OnMouseDown", function()
       button.Icon:AdjustPointsOffset(2, -2)
+      button.HoverIcon:AdjustPointsOffset(2, -2)
     end)
     button:HookScript("OnMouseUp", function()
       button.Icon:AdjustPointsOffset(-2, 2)
+      button.HoverIcon:AdjustPointsOffset(-2, 2)
     end)
 
     if tags.toasts then
       button.Icon = button:CreateTexture(nil, "ARTWORK")
       button.FriendsButton:GwKill()
-      button.Icon:SetTexture("Interface/AddOns/Chattynator/Assets/ChatSocial.png")
+      button:SetSize(32, 35)
+      button.Icon:SetTexture("Interface/AddOns/GW2_UI/textures/chat/SocialChatButton")
       button.Icon:SetDrawLayer("ARTWORK")
-      button.Icon:SetSize(12, 12)
+      button.Icon:SetSize(20, 20)
       button.Icon:ClearAllPoints()
       button.Icon:SetPoint("TOP", 0, -2)
+      button.HoverIcon:SetPoint("TOP", 0, -2)
+      button.HoverIcon:SetSize(20, 20)
+      button.HoverIcon:SetTexture("Interface/AddOns/GW2_UI/textures/chat/SocialChatButton-Highlight")
+      button.HoverIcon:SetBlendMode("ADD")
 
       button:HookScript("OnEnter", function()
         button.FriendCount:SetTextColor(hoverColor.r, hoverColor.g, hoverColor.b)
@@ -160,14 +180,19 @@ local skinners = {
         button.FriendCount:SetTextColor(intensity.r, intensity.g, intensity.b)
       end)
     elseif tags.channels then
-      button.Icon:SetTexture("Interface/Addons/Chattynator/Assets/ChatChannels.png")
+      button.Icon:SetTexture("Interface/AddOns/GW2_UI/textures/chat/channel_button_normal")
+      button.HoverIcon:SetTexture("Interface/AddOns/GW2_UI/textures/chat/channel_button_normal_highlight")
+      button.HoverIcon:SetBlendMode("ADD")
     elseif tags.menu then
       button.Icon = button:CreateTexture(nil, "ARTWORK")
-      button.Icon:SetTexture("Interface/AddOns/Chattynator/Assets/ChatMenu.png")
+      button.Icon:SetTexture("Interface/AddOns/GW2_UI/textures/chat/bubble_up")
+      button.HoverIcon:SetTexture("Interface/AddOns/GW2_UI/textures/chat/bubble_down")
+      button.HoverIcon:SetBlendMode("ADD")
       button.Icon:SetPoint("CENTER")
+      button.HoverIcon:SetPoint("CENTER")
       button.Icon:SetSize(15, 15)
     else
-      button.Icon = button:CreateTexture(nil, "OVERLAY")
+      button.Icon = button:CreateTexture(nil, "ARTWORK")
       if tags.search then
         button.Icon:SetTexture("Interface/AddOns/Chattynator/Assets/Search.png")
       elseif tags.copy then
@@ -177,10 +202,13 @@ local skinners = {
       elseif tags.scrollToEnd then
         button.Icon:SetTexture("Interface/AddOns/Chattynator/Assets/ScrollToBottom.png")
       end
+      button.Icon:SetVertexColor(intensity.r, intensity.g, intensity.b)
+      button.HoverIcon:SetTexture(button.Icon:GetTexture())
+      button.HoverIcon:SetVertexColor(hoverColor.r, hoverColor.g, hoverColor.b)
       button.Icon:SetPoint("CENTER")
+      button.HoverIcon:SetPoint("CENTER")
       button.Icon:SetSize(15, 15)
     end
-    button.Icon:SetVertexColor(intensity.r, intensity.g, intensity.b)
   end,
   TabButton = function(frame)
     if GW.HandleTabs then

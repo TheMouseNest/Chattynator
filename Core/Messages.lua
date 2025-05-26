@@ -274,6 +274,8 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
       data.recordedBy = addonTable.Data.CharacterName
     end
 
+    self:UpdateChannels()
+
     addonTable.CallbackRegistry:TriggerEvent("Render")
   else
     local channelName = self.channelMap[select(8, ...)]

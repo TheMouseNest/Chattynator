@@ -66,7 +66,47 @@ local L = Locales.deDE
 --@localization(locale="deDE", format="lua_additive_table")@
 
 local L = Locales.ruRU
---@localization(locale="ruRU", format="lua_additive_table")@
+--Translator ZamestoTV
+L["CHATTYNATOR"] = "Chattynator"
+L["TO_OPEN_OPTIONS_X"] = "Открыть настройки с помощью /ctnr"
+L["VERSION_COLON_X"] = "Версия: %s"
+L["OPEN_OPTIONS"] = "Открыть настройки"
+L["QUICK_CHAT"] = "Быстрый чат"
+L["COPY_CHAT"] = "Копировать чат"
+L["UNKNOWN"] = "НЕИЗВЕСТНО"
+L["SCROLL_TO_END"] = "Прокрутить до конца"
+L["NEW_TAB"] = "Новая вкладка"
+
+L["CANT_POPOUT_THIS_CHANNEL"] = "Нельзя выделить этот канал"
+
+L["LAYOUT"] = "Макет"
+
+L["CUSTOMISE_CHATTYNATOR"] = "Настроить Chattynator"
+L["CTRL_C_TO_COPY"] = "Ctrl+C для копирования"
+L["JOIN_THE_DISCORD"] = "Присоединяйтесь к Discord"
+L["DISCORD_DESCRIPTION"] = "Обновления, предложения функций и поддержка"
+L["BY_PLUSMOUSE"] = "от plusmouse"
+L["DEVELOPMENT_IS_TIME_CONSUMING"] = "|cff04cca4Разработка занимает огромное количество времени|r"
+L["DONATE"] = "Пожертвовать"
+L["LINK"] = "Ссылка"
+L["SHOW_COMBAT_LOG"] = "Показать журнал боя"
+L["LOCK_CHAT_POSITION"] = "Заблокировать положение чата"
+
+L["MESSAGE_SPACING"] = "Интервал между сообщениями"
+L["TIMESTAMP_FORMAT"] = "Формат времени"
+
+L["SKINS_DARK"] = "Темный"
+
+L["ENTER_PROFILE_NAME"] = "Введите имя профиля:"
+L["PROFILES"] = "Профили"
+L["NEW_PROFILE_CLONE"] = "Новый профиль (клонировать текущий)"
+L["NEW_PROFILE_BLANK"] = "Новый профиль (пустой)"
+L["CONFIRM_DELETE_PROFILE_X"] = "Вы уверены, что хотите удалить профиль \"%s\"?"
+
+L["SLASH_RESET"] = "сброс"
+L["SLASH_RESET_HELP"] = "Сбросить все настройки Chattynator, затем перезагрузить."
+L["SLASH_HELP"] = "Открыть настройки Chattynator."
+L["SLASH_UNKNOWN_COMMAND"] = "Неизвестная команда '%s'"
 
 local L = Locales.ptBR
 --@localization(locale="ptBR", format="lua_additive_table")@

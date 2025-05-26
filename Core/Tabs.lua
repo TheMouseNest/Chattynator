@@ -16,10 +16,14 @@ function addonTable.Core.GetTabsPool(parent)
         parent:SavePosition()
       end)
       function tabButton:SetSelected(state)
+        self:SetFlashing(false)
         self.selected = state
       end
       function tabButton:SetColor(r, g, b)
         self.color = {r = r, g = g, b = b}
+      end
+      function tabButton:SetFlashing(state)
+        self.flashing = state
       end
       addonTable.Skins.AddFrame("ChatTab", tabButton)
     end
@@ -103,6 +107,7 @@ function addonTable.Core.InitializeTabs(chatFrame)
 
   if chatFrame:GetID() == 1 and addonTable.Config.Get(addonTable.Config.Options.SHOW_COMBAT_LOG) then
     local combatLogButton = chatFrame.tabsPool:Acquire()
+    combatLogButton.filter = nil
     combatLogButton.minWidth = false
     combatLogButton:SetID(#allTabs + 1)
     combatLogButton:Show()
@@ -186,7 +191,7 @@ function addonTable.Core.InitializeTabs(chatFrame)
   for _, tab in ipairs(allTabs) do
     tab:SetSelected(false)
   end
-  chatFrame.tabs = allTabs
+  chatFrame.Tabs = allTabs
   local currentTab = chatFrame.tabIndex and math.min(chatFrame.tabIndex, #addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[chatFrame:GetID()].tabs) or 1
   allTabs[currentTab]:SetSelected(true)
   chatFrame:SetFilter(allTabs[currentTab].filter)

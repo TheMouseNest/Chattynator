@@ -19,6 +19,7 @@ function addonTable.ChatFrameMixin:OnLoad()
   self.heights = {}
 
   self.tabIndex = 1
+  self.Tabs = {}
 
   self.alphas = {}
 
@@ -66,7 +67,6 @@ function addonTable.ChatFrameMixin:OnLoad()
       end)
 
       frame.DisplayString:SetPoint("TOPLEFT", frame.Timestamp, "TOPRIGHT")
-      frame.DisplayString:SetWidth(self.currentStringWidth)
     end
     if not frame.debugAttached and not InCombatLockdown() then
       frame.debugAttached = true
@@ -95,9 +95,10 @@ function addonTable.ChatFrameMixin:OnLoad()
       frame.Bar:SetPoint("BOTTOM", 0, 1 + addonTable.Messages.spacing)
 
       frame.Timestamp:SetWidth(addonTable.Messages.inset)
+      frame.DisplayString:SetWidth(self.currentStringWidth)
+
       frame.DisplayString:SetFontObject(addonTable.Messages.font)
       frame.DisplayString:SetTextScale(addonTable.Messages.scalingFactor)
-      frame.DisplayString:SetWidth(self.currentStringWidth)
 
       frame.Timestamp:SetFontObject(addonTable.Messages.font)
       frame.Timestamp:SetTextScale(addonTable.Messages.scalingFactor)
@@ -152,7 +153,10 @@ function addonTable.ChatFrameMixin:OnLoad()
 
   self:RepositionBlizzardWidgets()
 
-  addonTable.CallbackRegistry:RegisterCallback("Render", self.Render, self)
+  addonTable.CallbackRegistry:RegisterCallback("Render", function(...)
+    self.ApplyFlashing(...)
+    self.Render(...)
+  end, self)
   addonTable.CallbackRegistry:RegisterCallback("ScrollToEndImmediate", function()
     self:SetTabSelected(self.tabIndex)
   end, self)
@@ -364,6 +368,26 @@ function addonTable.ChatFrameMixin:FilterMessages()
     data = addonTable.Messages:GetMessage(index)
   end
   return result1, result2
+end
+
+function addonTable.ChatFrameMixin:ApplyFlashing(newMessages)
+  if not newMessages then
+    return
+  end
+  local tabsMatching = {}
+  for index, tab in ipairs(self.Tabs) do
+    if tab.filter and FindInTableIf(newMessages, tab.filter) ~= nil then
+      tabsMatching[index] = true
+    end
+  end
+
+  if tabsMatching[self.tabIndex] then
+    return
+  end
+
+  for index in pairs(tabsMatching) do
+    self.Tabs[index]:SetFlashing(true)
+  end
 end
 
 function addonTable.ChatFrameMixin:Render(newMessages)

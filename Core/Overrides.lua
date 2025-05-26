@@ -24,7 +24,7 @@ function addonTable.Core.ApplyOverrides()
         table.insert(config.tabs, tabConfig)
         config.tabs[actualChatFrame.tabIndex].channels[channelName] = false
         addonTable.Core.InitializeTabs(actualChatFrame)
-        actualChatFrame.tabs[#config.tabs]:Click()
+        actualChatFrame.Tabs[#config.tabs]:Click()
       end)
     end)
   end)
@@ -52,7 +52,7 @@ function addonTable.Core.ApplyOverrides()
       table.insert(config.tabs, tabConfig)
       config.tabs[actualChatFrame.tabIndex].whispersTemp[chatTarget] = false
       addonTable.Core.InitializeTabs(actualChatFrame)
-      actualChatFrame.tabs[#config.tabs]:Click()
+      actualChatFrame.Tabs[#config.tabs]:Click()
       actualChatFrame = nil
     end
   end

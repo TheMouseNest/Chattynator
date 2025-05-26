@@ -111,6 +111,12 @@ local skinners = {
     _G[frame:GetName() .. "FocusLeft"]:GwKill()
     _G[frame:GetName() .. "FocusRight"]:GwKill()
     _G[frame:GetName() .. "FocusMid"]:GwKill()
+    if GW.settings.CHAT_USE_GW2_STYLE then
+      local chatFont = GW.Libs.LSM:Fetch("font", "GW2_UI_Chat")
+      local _, _, fontFlags = frame:GetFont()
+      frame:SetFont(chatFont, addonTable.Config.Get(addonTable.Config.FONT_SIZE), fontFlags)
+      _G[frame:GetName() .. "Header"]:SetFont(chatFont, addonTable.Config.Get(addonTable.Config.FONT_SIZE), fontFlags)
+    end
   end,
   ChatFrame = function(frame)
     frame.background = CreateFrame("Frame", nil, frame, "GwChatContainer")
@@ -273,45 +279,13 @@ local function SkinFrame(details)
   end
 end
 
-local function DisableGW2Defaults()
-  if GW.SetSetting then
-    GW.SetSetting("BAG_SHOW_EQUIPMENT_SET_NAME",  false)
-    GW.SetSetting("BAG_ITEM_JUNK_ICON_SHOW",  false)
-    GW.SetSetting("BAG_ITEM_UPGRADE_ICON_SHOW",  false)
-    -- overwrites border from baganator to always show something at least white
-    GW.SetSetting("BAG_ITEM_QUALITY_BORDER_SHOW",  true)
-    GW.SetSetting("BAG_PROFESSION_BAG_COLOR",  false)
-    GW.SetSetting("BAG_SHOW_ILVL",  false)
-  else
-    GW.settings.BAG_SHOW_EQUIPMENT_SET_NAME =  false
-    GW.settings.BAG_ITEM_JUNK_ICON_SHOW =  false
-    GW.settings.BAG_ITEM_UPGRADE_ICON_SHOW =  false
-    -- needs to be on otherwise hides border used in Chattynator
-    GW.settings.BAG_ITEM_QUALITY_BORDER_SHOW =  true
-    GW.settings.BAG_PROFESSION_BAG_COLOR =  false
-    GW.settings.BAG_SHOW_ILVL =  false
-  end
-end
-
-local function HideBagButtons()
-  MainMenuBarBackpackButton:SetParent(GW.HiddenFrame)
-  for i = 0, 3 do
-      _G["CharacterBag" .. i .. "Slot"]:SetParent(GW.HiddenFrame)
-  end
-  if CharacterReagentBag0Slot then
-    CharacterReagentBag0Slot:SetParent(GW.HiddenFrame)
-  end
-  if BagBarExpandToggle then
-    BagBarExpandToggle:SetParent(GW.HiddenFrame)
-  end
-end
-
 local function SetConstants()
   addonTable.Constants.ButtonFrameOffset = 0
 end
 
 local function LoadSkin()
   GW = GW2_ADDON
+  addonTable.Core.OverwriteDefaultFont("GW2_UI_Chat")
 end
 
 if addonTable.Skins.IsAddOnLoading("GW2_UI") then

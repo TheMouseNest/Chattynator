@@ -14,6 +14,14 @@ function addonTable.Core.GetFontByID(id)
   return fonts[id] or fonts["default"]
 end
 
+function addonTable.Core.OverwriteDefaultFont(id)
+  if not fonts[id] then
+    addonTable.Core.CreateFont(id)
+  end
+  fonts["default"] = fonts[id] or fonts["default"]
+  addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.MessageFont] = true})
+end
+
 function addonTable.Core.GetFontScalingFactor()
   return addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT_SIZE) / 14
 end

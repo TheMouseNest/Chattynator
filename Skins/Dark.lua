@@ -171,10 +171,7 @@ local skinners = {
         tab.Middle:SetAlpha(0.8)
       end
     end)
-    tab:HookScript("OnLeave", function()
-      tab:SetSelected(tab.selected)
-    end)
-    hooksecurefunc(tab, "SetSelected", function(_, state)
+    local function SetSelected(_, state)
       if state then
         tab.Left:SetAlpha(0.8)
         tab.Right:SetAlpha(0.8)
@@ -186,7 +183,11 @@ local skinners = {
         tab.Middle:SetAlpha(0.8)
         tab:SetAlpha(0.5)
       end
+    end
+    tab:HookScript("OnLeave", function()
+      SetSelected(tab, tab.selected)
     end)
+    hooksecurefunc(tab, "SetSelected", SetSelected)
     hooksecurefunc(tab, "SetColor", function(_, r, g, b)
       tab.Left:SetVertexColor(r, g, b)
       tab.Right:SetVertexColor(r, g, b)
@@ -227,6 +228,11 @@ local skinners = {
       tab.LeftFlash:SetShown(state)
       tab.RightFlash:SetShown(state)
       tab.MiddleFlash:SetShown(state)
+      if state then
+        tab:SetHitRectInsets(0, 0, -2, 0)
+      else
+        tab:SetHitRectInsets(0, 0, 0, 0)
+      end
     end)
   end,
   ResizeWidget = function(frame, tags)

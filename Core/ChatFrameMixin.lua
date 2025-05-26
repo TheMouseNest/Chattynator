@@ -34,6 +34,7 @@ function addonTable.ChatFrameMixin:OnLoad()
     self:UpdateWidth()
     self:Render()
   end)
+  self.updatedFrames = {}
   view:SetElementInitializer("Frame", function(frame, data)
     if not frame.initialized then
       frame.initialized = true
@@ -50,7 +51,6 @@ function addonTable.ChatFrameMixin:OnLoad()
       frame.Bar:SetTexture("Interface/AddOns/Chattynator/Assets/Fade.png")
       frame.Bar:SetPoint("RIGHT", frame.DisplayString, "LEFT", -4, 0)
       frame.Bar:SetPoint("TOP", 0, 0)
-      --frame.Bar:SetPoint("BOTTOM", 0, 1 + 5)
       frame.Bar:SetWidth(2)
 
       frame.FadeAnimation = frame:CreateAnimationGroup()
@@ -66,6 +66,7 @@ function addonTable.ChatFrameMixin:OnLoad()
       end)
 
       frame.DisplayString:SetPoint("TOPLEFT", frame.Timestamp, "TOPRIGHT")
+      frame.DisplayString:SetWidth(self.currentStringWidth)
     end
     if not frame.debugAttached and not InCombatLockdown() then
       frame.debugAttached = true
@@ -89,9 +90,18 @@ function addonTable.ChatFrameMixin:OnLoad()
       frame:SetPropagateMouseClicks(true)
       frame:SetPropagateMouseMotion(true)
     end
-    frame.Bar:SetPoint("BOTTOM", 0, 1 + addonTable.Messages.spacing)
-    frame.Timestamp:SetWidth(addonTable.Messages.inset)
-    frame.DisplayString:SetWidth(self.currentStringWidth)
+    -- Prevent setting the font settings every time (which is bad for performance)
+    if not self.updatedFrames[frame] then
+      frame.Bar:SetPoint("BOTTOM", 0, 1 + addonTable.Messages.spacing)
+
+      frame.Timestamp:SetWidth(addonTable.Messages.inset)
+      frame.DisplayString:SetFontObject(addonTable.Messages.font)
+      frame.DisplayString:SetTextScale(addonTable.Messages.scalingFactor)
+
+      frame.Timestamp:SetFontObject(addonTable.Messages.font)
+      frame.Timestamp:SetTextScale(addonTable.Messages.scalingFactor)
+      self.updatedFrames[frame] = true
+    end
     frame.data = data
     frame.Timestamp:SetText(date(addonTable.Messages.timestampFormat, data.timestamp))
     frame.DisplayString:SetText(data.text)
@@ -108,6 +118,12 @@ function addonTable.ChatFrameMixin:OnLoad()
   self.ScrollBox:GetScrollTarget():SetPropagateMouseClicks(true)
   self.ScrollBox:GetScrollTarget():SetPropagateMouseMotion(true)
   self.ScrollBox:SetPanExtent(50)
+
+  addonTable.CallbackRegistry:RegisterCallback("MessageDisplayChanged", function()
+    DevTool:AddData("mdc")
+    self:UpdateWidth()
+    self.updatedFrames = {}
+  end)
 
   -- Preserve location when scrolling up
   hooksecurefunc(self.ScrollBox, "scrollInternal", function()
@@ -160,9 +176,6 @@ function addonTable.ChatFrameMixin:OnLoad()
       self:SetSize(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].size))
     end
   end)
-  addonTable.CallbackRegistry:RegisterCallback("InsetChanged", function()
-    self:UpdateWidth()
-  end)
 end
 
 function addonTable.ChatFrameMixin:UpdateWidth()
@@ -170,7 +183,8 @@ function addonTable.ChatFrameMixin:UpdateWidth()
   addonTable.Messages:RegisterWidth(width)
   addonTable.Messages:UnregisterWidth(self.currentStringWidth)
   self.currentStringWidth = width
-  self.key = addonTable.Messages.font .. " " .. width
+  self.key = width
+  self.updatedFrames = {}
 end
 
 function addonTable.ChatFrameMixin:SavePosition()

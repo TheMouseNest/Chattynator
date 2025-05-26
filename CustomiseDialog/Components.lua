@@ -149,7 +149,7 @@ function addonTable.CustomiseDialog.Components.GetSlider(parent, label, min, max
   holder:SetScript("OnMouseWheel", function(_, delta)
     if holder.Slider:IsEnabled() then
       holder.Slider:SetValue(holder.Slider:GetValue() + delta)
-      holder.callback(holder.Slider:GetValue())
+      callback(holder.Slider:GetValue())
     end
   end)
 

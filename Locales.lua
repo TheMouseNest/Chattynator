@@ -31,6 +31,7 @@ L["NEW_TAB"] = "New tab"
 L["CANT_POPOUT_THIS_CHANNEL"] = "Can't popout this channel"
 
 L["LAYOUT"] = "Layout"
+L["FONT"] = "Font"
 
 L["CUSTOMISE_CHATTYNATOR"] = "Customise Chattynator"
 L["CTRL_C_TO_COPY"] = "Ctrl+C to copy"
@@ -45,6 +46,9 @@ L["LOCK_CHAT_POSITION"] = "Lock chat position"
 
 L["MESSAGE_SPACING"] = "Message spacing"
 L["TIMESTAMP_FORMAT"] = "Timestamp format"
+
+L["MESSAGE_FONT"] = "Message font"
+L["MESSAGE_FONT_SIZE"] = "Message font size"
 
 L["SKINS_DARK"] = "Dark"
 

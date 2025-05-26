@@ -76,6 +76,9 @@ local settings = {
   MESSAGE_SPACING = {key = "message_spacing", default = 5},
   TIMESTAMP_FORMAT = {key = "timestamp_format", default = "%X"},
 
+  MESSAGE_FONT = {key = "message_font", default = "default", refresh = {addonTable.Constants.RefreshReason.MessageFont}},
+  MESSAGE_FONT_SIZE = {key = "message_font_size", default = 14, refresh = {addonTable.Constants.RefreshReason.MessageFont}},
+
   ENABLE_COMBAT_MESSAGES = {key = "enable_combat_messages", default = false},
   DEBUG = {key = "debug", default = false},
 }

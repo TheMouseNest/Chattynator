@@ -18,6 +18,10 @@
 ## Category-zhCN: 聊天
 ## Category-zhTW: 對話
 
+Libs/LibStub/LibStub.lua
+Libs/CallbackHandler-1.0/CallbackHandler-1.0.lua
+Libs/LibSharedMedia-3.0/lib.xml
+
 Locales.lua
 
 Core/Objects.lua
@@ -28,6 +32,7 @@ Core/Utilities.lua
 Core/HyperlinkHandler.xml
 Core/ChatFrameMixin.lua
 Core/Tabs.lua
+Core/Fonts.lua
 Core/Messages.lua
 Core/Overrides.lua
 Core/Initialize.lua

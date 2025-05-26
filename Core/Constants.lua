@@ -22,11 +22,11 @@ addonTable.Constants.Events = {
 
   "SettingChanged",
   "RefreshStateChange",
-  "InsetChanged"
+  "MessageDisplayChanged"
 }
 
 addonTable.Constants.RefreshReason = {
   Tabs = 1,
-  Font = 2,
+  MessageFont = 2,
   Locked = 3,
 }

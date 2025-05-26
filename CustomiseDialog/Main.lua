@@ -255,6 +255,52 @@ local function SetupLayout(parent)
   return container
 end
 
+local function SetupFont(parent)
+  local LibSharedMedia = LibStub("LibSharedMedia-3.0")
+
+  local container = CreateFrame("Frame", nil, parent)
+
+  local allFrames = {}
+
+  local fontDropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.MESSAGE_FONT)
+  fontDropdown:SetPoint("TOP")
+  table.insert(allFrames, fontDropdown)
+
+  local fontSize
+  fontSize = addonTable.CustomiseDialog.Components.GetSlider(container, addonTable.Locales.MESSAGE_FONT_SIZE, 2, 40, "%spx", function()
+    addonTable.Config.Set(addonTable.Config.Options.MESSAGE_FONT_SIZE, fontSize:GetValue())
+  end)
+  fontSize:SetPoint("TOP", fontDropdown, "BOTTOM")
+
+  container:SetScript("OnShow", function()
+    local fontValues = CopyTable(LibSharedMedia:List("font"))
+    local fontLabels = CopyTable(LibSharedMedia:List("font"))
+    table.insert(fontValues, 1, "default")
+    table.insert(fontLabels, 1, DEFAULT)
+
+    fontDropdown.DropDown:SetupMenu(function(_, rootDescription)
+      for index, label in ipairs(fontLabels) do
+        local radio = rootDescription:CreateRadio(label,
+          function()
+            return addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT) == fontValues[index]
+          end,
+          function()
+            addonTable.Config.Set(addonTable.Config.Options.MESSAGE_FONT, fontValues[index])
+          end
+        )
+        radio:AddInitializer(function(button, elementDescription, menu)
+          button.fontString:SetFontObject(addonTable.Core.GetFontByID(fontValues[index]))
+        end)
+      end
+      rootDescription:SetScrollMode(20 * 20)
+    end)
+
+    fontSize:SetValue(addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT_SIZE))
+  end)
+
+  return container
+end
+
 local function SetupFilters(parent)
   local filters = addonTable.CustomiseDialog.SetupTabFilters(parent)
 
@@ -272,6 +318,7 @@ end
 local TabSetups = {
   {name = GENERAL, callback = SetupGeneral},
   {name = addonTable.Locales.LAYOUT, callback = SetupLayout},
+  {name = addonTable.Locales.FONT, callback = SetupFont},
   {name = FILTERS, callback = SetupFilters},
 }
 

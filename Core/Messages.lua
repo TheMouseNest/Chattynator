@@ -14,16 +14,18 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   self.spacing = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_SPACING)
   self.timestampFormat = addonTable.Config.Get(addonTable.Config.Options.TIMESTAMP_FORMAT)
 
-  self.font = "ChatFontNormal"
+  self.fontKey = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT)
+  self.font = addonTable.Core.GetFontByID(self.fontKey)
+  self.scalingFactor = addonTable.Core.GetFontScalingFactor()
   self.widths = {}
 
-  self.sizingFontString = self:CreateFontString(nil, "BACKGROUND", self.font)
+  self.inset = 0
+
+  self.sizingFontString = self:CreateFontString(nil, "BACKGROUND")
 
   self.sizingFontString:SetNonSpaceWrap(true)
   self.sizingFontString:SetWordWrap(true)
   self.sizingFontString:Hide()
-
-  self:SetInset()
 
   CHATTYNATOR_MESSAGE_LOG = CHATTYNATOR_MESSAGE_LOG or GetNewLog()
   if CHATTYNATOR_MESSAGE_LOG.version ~= 1 then
@@ -179,14 +181,28 @@ function addonTable.MessagesMonitorMixin:OnLoad()
       renderNeeded = true
     end
     if renderNeeded and self:GetScript("OnUpdate") == nil then
+      addonTable.CallbackRegistry:TriggerEvent("MessageDisplayChanged")
       self:SetScript("OnUpdate", function()
         addonTable.CallbackRegistry:TriggerEvent("Render")
       end)
     end
   end, self)
+
+  addonTable.CallbackRegistry:RegisterCallback("RefreshStateChange", function(_, state)
+    if state[addonTable.Constants.RefreshReason.MessageFont] then
+      self.font = addonTable.Core.GetFontByID(addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT))
+      self.scalingFactor = addonTable.Core.GetFontScalingFactor()
+      self:SetInset()
+      self.heights = {}
+      addonTable.CallbackRegistry:TriggerEvent("MessageDisplayChanged")
+      addonTable.CallbackRegistry:TriggerEvent("Render")
+    end
+  end)
 end
 
 function addonTable.MessagesMonitorMixin:SetInset()
+  self.sizingFontString:SetFontObject(self.font)
+  self.sizingFontString:SetTextScale(self.scalingFactor)
   if self.timestampFormat == "%X" then
     self.sizingFontString:SetText("00:00:00")
   elseif self.timestampFormat == "%H:%M" then
@@ -242,7 +258,16 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
   elseif eventName == "UI_SCALE_CHANGED" then
     self:SetInset()
     self.heights = {}
+    addonTable.CallbackRegistry:TriggerEvent("MessageDisplayChanged")
   elseif eventName == "PLAYER_LOGIN" then
+    local oldFontKey = self.fontKey
+    self.fontKey = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT)
+    self.font = addonTable.Core.GetFontByID(self.fontKey)
+    self.scalingFactor = addonTable.Core.GetFontScalingFactor()
+    if oldFontKey ~= self.fontKey then
+      self.widths = {}
+    end
+    self:SetInset()
     local name, realm = UnitFullName("player")
     addonTable.Data.CharacterName = name .. "-" .. realm
     for _, data in ipairs(self.awaitingRecorderSet) do
@@ -283,7 +308,7 @@ function addonTable.MessagesMonitorMixin:RegisterWidth(width)
   width = math.floor(width)
   self.widths[width] = (self.widths[width] or 0) + 1
   if self.widths[width] == 1 then
-    local key = self.font .. " " .. width
+    local key = width
     for index, height in pairs(self.heights) do
       self.sizingFontString:SetWidth(width + 0.1)
       self.sizingFontString:SetText(self.messages[index].text)
@@ -330,7 +355,7 @@ function addonTable.MessagesMonitorMixin:GetMessageHeight(reverseIndex)
       self.sizingFontString:SetText(self.messages[index].text)
       local basicHeight = (self.sizingFontString:GetLineHeight() + self.sizingFontString:GetSpacing()) * self.sizingFontString:GetNumLines()
       local stringHeight = self.sizingFontString:GetStringHeight()
-      height[self.font .. " " .. width] = math.max(basicHeight, stringHeight, self.sizingFontString:GetLineHeight())
+      height[width] = math.max(basicHeight, stringHeight, self.sizingFontString:GetLineHeight())
     end
   end
   return self.heights[index]

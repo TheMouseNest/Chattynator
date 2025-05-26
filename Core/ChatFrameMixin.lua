@@ -121,7 +121,6 @@ function addonTable.ChatFrameMixin:OnLoad()
   self.ScrollBox:SetPanExtent(50)
 
   addonTable.CallbackRegistry:RegisterCallback("MessageDisplayChanged", function()
-    DevTool:AddData("mdc")
     self:UpdateWidth()
     self.updatedFrames = {}
   end)

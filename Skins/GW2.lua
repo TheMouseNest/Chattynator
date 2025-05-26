@@ -2,8 +2,8 @@
 local addonTable = select(2, ...)
 local GW
 
-local intensity = 0.8
-local hoverColor = {r = 59/255, g = 210/255, b = 237/255}
+local intensity = {r = 83.9/100, g = 82.7/100, b = 67.8/100}
+local hoverColor = {r = 1, g = 1, b = 1}
 
 local function ConvertTags(tags)
   local res = {}
@@ -119,20 +119,16 @@ local skinners = {
     frame.background:Show()
   end,
   ChatButton = function(button, tags)
-    button:SetSize(26, 28)
-    button:SetNormalTexture("Interface/AddOns/Chattynator/Assets/ChatButton.png")
-    button:GetNormalTexture():SetVertexColor(0.15, 0.15, 0.15)
-    button:GetNormalTexture():SetDrawLayer("BACKGROUND")
-    button:SetPushedTexture("Interface/AddOns/Chattynator/Assets/ChatButton.png")
-    button:GetPushedTexture():SetVertexColor(0.05, 0.05, 0.05)
-    button:GetPushedTexture():SetDrawLayer("BACKGROUND")
+    button:SetSize(26, 28);
+    button:ClearNormalTexture()
+    button:ClearPushedTexture()
     button:ClearHighlightTexture()
 
     button:HookScript("OnEnter", function()
       button.Icon:SetVertexColor(hoverColor.r, hoverColor.g, hoverColor.b)
     end)
     button:HookScript("OnLeave", function()
-      button.Icon:SetVertexColor(intensity, intensity, intensity)
+      button.Icon:SetVertexColor(intensity.r, intensity.g, intensity.b)
     end)
 
     button:HookScript("OnMouseDown", function()
@@ -146,7 +142,6 @@ local skinners = {
       button.Icon = button:CreateTexture(nil, "ARTWORK")
       button.FriendsButton:GwKill()
       button.Icon:SetTexture("Interface/AddOns/Chattynator/Assets/ChatSocial.png")
-      button.Icon:SetVertexColor(intensity, intensity, intensity)
       button.Icon:SetDrawLayer("ARTWORK")
       button.Icon:SetSize(12, 12)
       button.Icon:ClearAllPoints()
@@ -156,15 +151,13 @@ local skinners = {
         button.FriendCount:SetTextColor(hoverColor.r, hoverColor.g, hoverColor.b)
       end)
       button:HookScript("OnLeave", function()
-        button.FriendCount:SetTextColor(intensity, intensity, intensity)
+        button.FriendCount:SetTextColor(intensity.r, intensity.g, intensity.b)
       end)
     elseif tags.channels then
       button.Icon:SetTexture("Interface/Addons/Chattynator/Assets/ChatChannels.png")
-      button.Icon:SetVertexColor(intensity, intensity, intensity)
     elseif tags.menu then
       button.Icon = button:CreateTexture(nil, "ARTWORK")
       button.Icon:SetTexture("Interface/AddOns/Chattynator/Assets/ChatMenu.png")
-      button.Icon:SetVertexColor(intensity, intensity, intensity)
       button.Icon:SetPoint("CENTER")
       button.Icon:SetSize(15, 15)
     else
@@ -180,8 +173,8 @@ local skinners = {
       end
       button.Icon:SetPoint("CENTER")
       button.Icon:SetSize(15, 15)
-      button.Icon:SetVertexColor(intensity, intensity, intensity)
     end
+    button.Icon:SetVertexColor(intensity.r, intensity.g, intensity.b)
   end,
   TabButton = function(frame)
     if GW.HandleTabs then

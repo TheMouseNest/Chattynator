@@ -97,6 +97,7 @@ function addonTable.ChatFrameMixin:OnLoad()
       frame.Timestamp:SetWidth(addonTable.Messages.inset)
       frame.DisplayString:SetFontObject(addonTable.Messages.font)
       frame.DisplayString:SetTextScale(addonTable.Messages.scalingFactor)
+      frame.DisplayString:SetWidth(self.currentStringWidth)
 
       frame.Timestamp:SetFontObject(addonTable.Messages.font)
       frame.Timestamp:SetTextScale(addonTable.Messages.scalingFactor)

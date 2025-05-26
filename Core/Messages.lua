@@ -355,7 +355,7 @@ function addonTable.MessagesMonitorMixin:UpdateStores()
   table.insert(CHATTYNATOR_MESSAGE_LOG.historical, {
     startTimestamp = newStore[1].timestamp,
     endTimestamp = newStore[#newStore].timestamp,
-    data = C_EncodingUtil.SerializeJSON(newStore)
+    data = C_EncodingUtil and C_EncodingUtil.SerializeJSON(newStore) or {}
   })
   CHATTYNATOR_MESSAGE_LOG.current = newCurrent
   self.store = newCurrent
@@ -425,6 +425,7 @@ end
 local ignore = {
   ["ADDON"] = true,
   ["SYSTEM"] = true,
+  ["CHANNEL"] = true,
   ["DUMP"] = true,
   ["BN_INLINE_TOAST_ALERT"] = true,
 }

@@ -91,7 +91,8 @@ end
 
 function addonTable.CustomiseDialog.SetupTabFilters(parent)
   local container = CreateFrame("Frame", nil, parent)
-  local tab = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[1].tabs[1]
+  local windowIndex, tabIndex = 1, 1
+  local tab = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[windowIndex].tabs[tabIndex]
 
   local allFrames = {}
   local filtersHeader = addonTable.CustomiseDialog.Components.GetHeader(container, addonTable.Locales.MESSAGE_TYPES)
@@ -177,16 +178,34 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
   end
   container:SetSize(500, 500)
 
-  function container:ShowSettings(windowIndex, tabIndex)
+  local function UpdateHeader()
+    filtersHeader.text:SetText(addonTable.Locales.MESSAGE_TYPES .. " (" .. addonTable.Locales.WINDOW_X:format(windowIndex) .. ", " .. addonTable.Locales.TAB_X:format(_G[tab.name] or tab.name) .. ")")
+  end
+
+  function container:ShowSettings(newWindowIndex, newTabIndex)
+    windowIndex = newWindowIndex
+    tabIndex = newTabIndex
     local windows = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)
     tab = windows[windowIndex].tabs[tabIndex]
-    filtersHeader.text:SetText(addonTable.Locales.MESSAGE_TYPES .. " (" .. addonTable.Locales.WINDOW_X:format(windowIndex) .. ", " .. addonTable.Locales.TAB_X:format(_G[tab.name] or tab.name) .. ")")
+    UpdateHeader()
     for _, f in ipairs(allFrames) do
       if f.DropDown then
         f:SetValue()
       end
     end
   end
+
+  addonTable.CallbackRegistry:RegisterCallback("RefreshStateChange", function(_, state)
+    if state[addonTable.Constants.RefreshReason.Tabs] then
+      local windowData = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[windowIndex]
+      local tabData = windowData and windowData.tabs[tabIndex]
+      if not tabData then
+        container:ShowSettings(1, 1)
+      else
+        UpdateHeader()
+      end
+    end
+  end)
 
   return container
 end

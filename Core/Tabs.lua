@@ -38,6 +38,37 @@ local function DisableCombatLog(chatFrame)
   chatFrame.ScrollBox:Show()
 end
 
+local function RenameTab(windowIndex, tabIndex, newName)
+  local windowData = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[windowIndex]
+  if not windowData then
+    return
+  end
+  local tabData = windowData.tabs[tabIndex]
+  if not tabData then
+    return
+  end
+
+  tabData.name = newName
+  addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+end
+
+local renameDialog = "Chattynator_RenameTabDialog"
+StaticPopupDialogs[renameDialog] = {
+  text = "",
+  button1 = ACCEPT,
+  button2 = CANCEL,
+  hasEditBox = 1,
+  OnAccept = function(self, data)
+    RenameTab(data.window, data.tab, self.editBox:GetText())
+  end,
+  EditBoxOnEnterPressed = function(self, data)
+    RenameTab(data.window, data.tab, self:GetText())
+    self:GetParent():Hide()
+  end,
+  EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
+  hideOnEscape = 1,
+}
+
 function addonTable.Core.InitializeTabs(chatFrame)
   local forceSelected = false
   if not chatFrame.tabsPool then
@@ -90,8 +121,11 @@ function addonTable.Core.InitializeTabs(chatFrame)
         end
         tabButton:SetSelected(true)
         addonTable.CallbackRegistry:TriggerEvent("TabSelected", chatFrame:GetID(), tabButton:GetID())
-      elseif mouseButton == "RightButton" and (tab.isTemporary or not addonTable.Config.Get(addonTable.Config.Options.LOCKED)) and (chatFrame:GetID() ~= 1 or tabButton:GetID() ~= 1) then
-        MenuUtil.CreateContextMenu(tabButton, function(menu, rootDescription)
+      elseif mouseButton == "RightButton" and (tab.isTemporary or not addonTable.Config.Get(addonTable.Config.Options.LOCKED)) then
+        MenuUtil.CreateContextMenu(tabButton, function(_, rootDescription)
+          rootDescription:CreateButton(addonTable.Locales.RENAME_TAB, function()
+            StaticPopup_Show(renameDialog, nil, nil, {window = chatFrame:GetID(), tab = tabButton:GetID()})
+          end)
           if tabButton:GetID() ~= 1 then
             rootDescription:CreateButton(addonTable.Locales.MOVE_TO_NEW_WINDOW, function()
               local newChatFrame = addonTable.Core.MakeChatFrame()
@@ -104,11 +138,11 @@ function addonTable.Core.InitializeTabs(chatFrame)
               addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
             end)
           end
-          if tabButton:GetID() == 1 then
+          if tabButton:GetID() == 1 and chatFrame:GetID() ~= 1 then
             rootDescription:CreateButton(addonTable.Locales.CLOSE_WINDOW, function()
               addonTable.Core.DeleteChatFrame(chatFrame:GetID())
             end)
-          else
+          elseif tabButton:GetID() ~= 1 then
             rootDescription:CreateButton(addonTable.Locales.CLOSE_TAB, function()
               table.remove(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[chatFrame:GetID()].tabs, index)
               addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})

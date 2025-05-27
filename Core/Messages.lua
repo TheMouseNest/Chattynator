@@ -449,7 +449,7 @@ function addonTable.MessagesMonitorMixin:SetIncomingType(eventType)
   self.incomingType = eventType
 end
 
-local ignore = {
+local ignoreTypes = {
   ["ADDON"] = true,
   ["SYSTEM"] = true,
   ["CHANNEL"] = true,
@@ -457,8 +457,12 @@ local ignore = {
   ["BN_INLINE_TOAST_ALERT"] = true,
 }
 
+local ignoreEvents = {
+  ["GUILD_MOTD"] = true,
+}
+
 function addonTable.MessagesMonitorMixin:ShouldLog(data)
-  return not ignore[data.typeInfo.type]
+  return not ignoreTypes[data.typeInfo.type] and not ignoreEvents[data.typeInfo.event]
 end
 
 function addonTable.MessagesMonitorMixin:AddMessage(text, r, g, b, id, _, _, _, _, Formatter)

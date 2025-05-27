@@ -5,8 +5,8 @@ local customisers = {}
 local filtersToRefresh = {}
 addonTable.CallbackRegistry:RegisterCallback("TabSelected", function(_, windowIndex, tabIndex)
   for _, frame in ipairs(filtersToRefresh) do
-    if frame and frame:IsShown() and windowIndex == 1 then
-      frame:ShowSettings(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[1].tabs[addonTable.allChatFrames[1].tabIndex])
+    if frame and frame:IsShown() then
+      frame:ShowSettings(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[windowIndex].tabs[tabIndex])
     end
   end
 end)

@@ -39,7 +39,9 @@ local function DisableCombatLog(chatFrame)
 end
 
 function addonTable.Core.InitializeTabs(chatFrame)
+  local forceSelected = false
   if not chatFrame.tabsPool then
+    forceSelected = true
     chatFrame.tabsPool = addonTable.Core.GetTabsPool(chatFrame)
   else -- Might have shown combat log at some point
     DisableCombatLog(chatFrame)
@@ -220,6 +222,8 @@ function addonTable.Core.InitializeTabs(chatFrame)
   if currentTab ~= chatFrame.tabIndex then
     chatFrame:SetTabSelected(currentTab)
     chatFrame:Render()
+    addonTable.CallbackRegistry:TriggerEvent("TabSelected", chatFrame:GetID(), currentTab)
+  elseif forceSelected then
+    addonTable.CallbackRegistry:TriggerEvent("TabSelected", chatFrame:GetID(), currentTab)
   end
-  addonTable.CallbackRegistry:TriggerEvent("TabSelected", chatFrame:GetID(), currentTab)
 end

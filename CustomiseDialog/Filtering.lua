@@ -64,38 +64,106 @@ local LAYOUT = {
   }
 }
 
+local order = {
+  {CHAT, "MESSAGES"},
+  {CHANNELS, nil},
+  {CREATURE, "OTHER_CREATURE"},
+  {COMBAT, "OTHER_COMBAT"},
+  {PVP, "OTHER_PVP"},
+  {SYSTEM, "OTHER_SYSTEM"},
+}
+
 function addonTable.CustomiseDialog.SetupTabFilters(parent)
   local container = CreateFrame("Frame", nil, parent)
+  local tab = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[1].tabs[1]
 
-  container.checkboxes = {}
-  local lastCB
-  for _, data in ipairs(LAYOUT.MESSAGES) do
-    local cb = addonTable.CustomiseDialog.Components.GetCheckbox(container, data[2] or _G[data[1]] or UNKNOWN, nil, function(enabled)
-      container.tabData.groups[data[1]] = enabled
-      addonTable.CallbackRegistry:TriggerEvent("ScrollToEndImmediate")
-      addonTable.CallbackRegistry:TriggerEvent("Render")
-    end)
-    cb:SetHeight(30)
-    container.checkboxes[data[1]] = cb
-    if lastCB then
-      cb:SetPoint("TOP", lastCB, "BOTTOM")
+  local allFrames = {}
+  local filtersHeader = addonTable.CustomiseDialog.Components.GetHeader(container, addonTable.Locales.MESSAGE_TYPES_TO_INCLUDE)
+  filtersHeader:SetPoint("TOP")
+  table.insert(allFrames, filtersHeader)
+
+  for _, entry in ipairs(order) do
+    local dropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, entry[1])
+    dropdown:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
+    dropdown.DropDown:SetDefaultText(addonTable.Locales.NONE_SELECTED)
+    table.insert(allFrames, dropdown)
+    local fields = LAYOUT[entry[2]]
+    if not fields then
+      fields = {}
+      local map, count = addonTable.Messages:GetChannels()
+      for index = 1, count do
+        if map[index] then
+          table.insert(fields, {map[index], map[index]})
+        end
+      end
+      dropdown.DropDown:SetupMenu(function(_, rootDescription)
+        if tab.invert then
+          for _, f in ipairs(fields) do
+            rootDescription:CreateCheckbox(f[2] or _G[f[1]],
+              function()
+                return tab.channels[f[1]] ~= false
+              end, function()
+                if tab.channels[f[1]] == nil then
+                  tab.channels[f[1]] = false
+                else
+                  tab.channels[f[1]] = not tab.channels[f[1]]
+                end
+                addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+              end
+            )
+          end
+        else
+          for _, f in ipairs(fields) do
+            rootDescription:CreateCheckbox(f[2] or _G[f[1]],
+              function()
+                return tab.channels[f[1]] == true
+              end, function()
+                tab.channels[f[1]] = not tab.channels[f[1]]
+                addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+              end
+            )
+          end
+        end
+      end)
     else
-      cb:SetPoint("TOP")
+      dropdown.DropDown:SetupMenu(function(_, rootDescription)
+        if tab.invert then
+          for _, f in ipairs(fields) do
+            rootDescription:CreateCheckbox(f[2] or _G[f[1]],
+              function()
+                return tab.groups[f[1]] ~= false
+              end, function()
+                if tab.groups[f[1]] == nil then
+                  tab.groups[f[1]] = false
+                else
+                  tab.groups[f[1]] = not tab.groups[f[1]]
+                end
+                addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+              end
+            )
+          end
+        else
+          for _, f in ipairs(fields) do
+            rootDescription:CreateCheckbox(f[2] or _G[f[1]],
+              function()
+                return tab.groups[f[1]] == true
+              end, function()
+                tab.groups[f[1]] = not tab.groups[f[1]]
+                addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+              end
+            )
+          end
+        end
+      end)
     end
-    lastCB = cb
   end
   container:SetSize(500, 500)
 
   function container:ShowSettings(tabData)
-    container.tabData = tabData
-
-    if tabData.invert then
-      for group, checkbox in pairs(container.checkboxes) do
-        checkbox:SetValue(tabData.groups[group] ~= false)
-      end
-    else
-      for group, checkbox in pairs(container.checkboxes) do
-        checkbox:SetValue(tabData.groups[group] == true)
+    tab = tabData
+    for _, f in ipairs(allFrames) do
+      if f.DropDown then
+        f:SetValue()
       end
     end
   end

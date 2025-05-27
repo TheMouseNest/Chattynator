@@ -426,13 +426,13 @@ function addonTable.MessagesMonitorMixin:UpdateChannels()
   self.defaultChannels = {}
 
   self.channelMap = {}
-  self.maxDisplay = 0
+  self.maxDisplayChannels = 0
   for i = 1, GetNumDisplayChannels() do
     local name, isHeader, _, channelNumber, _, _, category = GetChannelDisplayInfo(i)
     if not isHeader then
       if channelNumber then
         self.channelMap[channelNumber] = name
-        self.maxDisplay = math.max(self.maxDisplay, channelNumber)
+        self.maxDisplayChannels = math.max(self.maxDisplayChannels, channelNumber)
       end
 
       if category ~= "CHANNEL_CATEGORY_CUSTOM" or select(4, GetChannelName(name)) then
@@ -443,7 +443,7 @@ function addonTable.MessagesMonitorMixin:UpdateChannels()
 end
 
 function addonTable.MessagesMonitorMixin:GetChannels()
-  return self.channelMap, self.maxDisplay
+  return self.channelMap, self.maxDisplayChannels
 end
 
 function addonTable.MessagesMonitorMixin:SetIncomingType(eventType)

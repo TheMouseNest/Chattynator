@@ -177,14 +177,15 @@ function addonTable.MessagesMonitorMixin:OnLoad()
     elseif settingName == addonTable.Config.Options.TIMESTAMP_FORMAT then
       self.timestampFormat = addonTable.Config.Get(addonTable.Config.Options.TIMESTAMP_FORMAT)
       self:SetInset()
-      addonTable.CallbackRegistry:TriggerEvent("InsetChanged")
       renderNeeded = true
     end
-    if renderNeeded and self:GetScript("OnUpdate") == nil then
+    if renderNeeded then
       addonTable.CallbackRegistry:TriggerEvent("MessageDisplayChanged")
-      self:SetScript("OnUpdate", function()
-        addonTable.CallbackRegistry:TriggerEvent("Render")
-      end)
+      if self:GetScript("OnUpdate") == nil then
+        self:SetScript("OnUpdate", function()
+          addonTable.CallbackRegistry:TriggerEvent("Render")
+        end)
+      end
     end
   end, self)
 

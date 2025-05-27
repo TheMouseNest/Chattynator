@@ -241,10 +241,10 @@ local skinners = {
     tex:SetTexture("Interface/AddOns/Chattynator/Assets/resize.png")
     tex:SetAllPoints()
     frame:SetScript("OnEnter", function()
-      tex:SetVertexColor(59/255, 210/255, 237/255)
+      tex:SetVertexColor(hoverColor.r, hoverColor.g, hoverColor.b)
     end)
     frame:SetScript("OnLeave", function()
-      tex:SetVertexColor(1, 1, 1)
+      tex:SetVertexColor(intensity, intensity, intensity)
     end)
   end,
 }

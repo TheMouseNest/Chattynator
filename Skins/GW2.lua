@@ -304,6 +304,18 @@ local skinners = {
     tex:SetTexture("Interface/AddOns/GW2_UI/textures/party/manage-group-bg")
     frame.tex = tex
   end,
+  ResizeWidget = function(frame, tags)
+    local tex = frame:CreateTexture(nil, "ARTWORK")
+    tex:SetVertexColor(intensity.r, intensity.g, intensity.b)
+    tex:SetTexture("Interface/AddOns/Chattynator/Assets/resize.png")
+    tex:SetAllPoints()
+    frame:SetScript("OnEnter", function()
+      tex:SetVertexColor(hoverColor.r, hoverColor.g, hoverColor.b)
+    end)
+    frame:SetScript("OnLeave", function()
+      tex:SetVertexColor(intensity.r, intensity.g, intensity.b)
+    end)
+  end,
 }
 
 local function SkinFrame(details)

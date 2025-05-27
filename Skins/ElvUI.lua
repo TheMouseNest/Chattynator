@@ -183,6 +183,18 @@ local skinners = {
     frame:StripTextures()
     frame:SetTemplate('Transparent')
   end,
+  ResizeWidget = function(frame, tags)
+    local tex = frame:CreateTexture(nil, "ARTWORK")
+    tex:SetVertexColor(intensity, intensity, intensity)
+    tex:SetTexture("Interface/AddOns/Chattynator/Assets/resize.png")
+    tex:SetAllPoints()
+    frame:SetScript("OnEnter", function()
+      tex:SetVertexColor(59/255, 210/255, 237/255)
+    end)
+    frame:SetScript("OnLeave", function()
+      tex:SetVertexColor(1, 1, 1)
+    end)
+  end,
 }
 
 local function SkinFrame(details)

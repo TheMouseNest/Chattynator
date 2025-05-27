@@ -27,6 +27,9 @@ L["COPY_CHAT"] = "Copy Chat"
 L["UNKNOWN"] = "UNKNOWN"
 L["SCROLL_TO_END"] = "Scroll to end"
 L["NEW_TAB"] = "New tab"
+L["MOVE_TO_NEW_WINDOW"] = "Move to new window"
+L["CLOSE_TAB"] = "Close tab"
+L["CLOSE_WINDOW"] = "Close window"
 
 L["CANT_POPOUT_THIS_CHANNEL"] = "Can't popout this channel"
 

@@ -96,20 +96,25 @@ function addonTable.Core.Initialize()
   addonTable.Skins.Initialize()
 
   addonTable.allChatFrames = {}
-  for id, window in ipairs(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)) do
-    local chatFrame = CreateFrame("Frame", nil, ChattynatorHyperlinkHandler)
-    chatFrame:SetID(id)
-    if id == 1 then
-      addonTable.ChatFrame = chatFrame
+  addonTable.ChatFramePool = CreateFramePool("Frame", ChattynatorHyperlinkHandler, nil, nil, false, function(frame)
+    if not frame.OnLoad then
+      Mixin(frame, addonTable.ChatFrameMixin)
+      frame:OnLoad()
     end
-    Mixin(chatFrame, addonTable.ChatFrameMixin)
-    chatFrame:OnLoad()
+  end)
+  for id, window in ipairs(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)) do
+    local chatFrame = addonTable.ChatFramePool:Acquire()
+    chatFrame:SetID(id)
+    chatFrame:Reset()
     chatFrame:Show()
     table.insert(addonTable.allChatFrames, chatFrame)
   end
 
   addonTable.Core.ApplyOverrides()
   addonTable.CustomiseDialog.Initialize()
+end
+
+function addonTable.Core.GetChatFrame(id)
 end
 
 local frame = CreateFrame("Frame")

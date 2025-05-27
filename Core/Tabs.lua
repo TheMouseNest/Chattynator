@@ -7,7 +7,10 @@ function addonTable.Core.GetTabsPool(parent)
       tabButton:RegisterForClicks("LeftButtonUp", "RightButtonUp")
       tabButton:RegisterForDrag("LeftButton")
       tabButton:SetScript("OnDragStart", function()
-        if not addonTable.Config.Get(addonTable.Config.Options.LOCKED) then
+        if addonTable.Config.Get(addonTable.Config.Options.LOCKED) then
+          return
+        end
+        if tabButton:GetID() == 1 then
           parent:StartMoving()
         end
       end)
@@ -45,11 +48,11 @@ function addonTable.Core.InitializeTabs(chatFrame)
   local allTabs = {}
   local lastButton
   for index, tab in ipairs(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[chatFrame:GetID()].tabs) do
-    local button = chatFrame.tabsPool:Acquire()
-    button.minWidth = false
-    button:SetID(index)
-    button:Show()
-    button:SetText(_G[tab.name] or tab.name or UNKNOWN)
+    local tabButton = chatFrame.tabsPool:Acquire()
+    tabButton.minWidth = false
+    tabButton:SetID(index)
+    tabButton:Show()
+    tabButton:SetText(_G[tab.name] or tab.name or UNKNOWN)
     local tabColor = CreateColorFromRGBHexString(tab.tabColor)
     local bgColor = CreateColorFromRGBHexString(tab.backgroundColor)
     local filter
@@ -69,40 +72,65 @@ function addonTable.Core.InitializeTabs(chatFrame)
           tab.channels[data.typeInfo.channel and data.typeInfo.channel.name]
       end
     end
-    button.filter = filter
-    button.bgColor = bgColor
-    button:SetScript("OnClick", function(_, mouseButton)
+    tabButton.filter = filter
+    tabButton.bgColor = bgColor
+    tabButton:SetScript("OnClick", function(_, mouseButton)
       if chatFrame:GetID() == 1 then
         DisableCombatLog(chatFrame)
       end
       if mouseButton == "LeftButton" then
         chatFrame:SetFilter(filter)
         chatFrame:SetBackgroundColor(bgColor.r, bgColor.g, bgColor.b)
-        chatFrame:SetTabSelected(button:GetID())
+        chatFrame:SetTabSelected(tabButton:GetID())
         chatFrame:Render()
         for _, otherTab in ipairs(allTabs) do
           otherTab:SetSelected(false)
         end
-        button:SetSelected(true)
-        addonTable.CallbackRegistry:TriggerEvent("TabSelected", chatFrame:GetID(), button:GetID())
-      elseif mouseButton == "RightButton" and (tab.isTemporary or not addonTable.Config.Get(addonTable.Config.Options.LOCKED)) then
-        MenuUtil.CreateContextMenu(button, function(menu, rootDescription)
-          rootDescription:CreateButton(CLOSE, function()
-            table.remove(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[chatFrame:GetID()].tabs, index)
-            addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
-          end)
+        tabButton:SetSelected(true)
+        addonTable.CallbackRegistry:TriggerEvent("TabSelected", chatFrame:GetID(), tabButton:GetID())
+      elseif mouseButton == "RightButton" and (tab.isTemporary or not addonTable.Config.Get(addonTable.Config.Options.LOCKED)) and (chatFrame:GetID() ~= 1 or tabButton:GetID() ~= 1) then
+        MenuUtil.CreateContextMenu(tabButton, function(menu, rootDescription)
+          if tabButton:GetID() ~= 1 then
+            rootDescription:CreateButton(addonTable.Locales.MOVE_TO_NEW_WINDOW, function()
+              local newChatFrame = addonTable.ChatFramePool:Acquire()
+              table.insert(addonTable.allChatFrames, newChatFrame)
+              newChatFrame:SetID(#addonTable.allChatFrames)
+              newChatFrame:Show()
+
+              local windows = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)
+              local newConfig = addonTable.Config.GetEmptyWindowConfig()
+              table.insert(newConfig.tabs, windows[tabButton:GetParent():GetID()].tabs[tabButton:GetID()])
+              table.insert(windows, newConfig)
+              table.remove(windows[tabButton:GetParent():GetID()].tabs, tabButton:GetID())
+              newChatFrame:Reset()
+              newChatFrame:Render()
+              addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+            end)
+          end
+          if tabButton:GetID() == 1 then
+            rootDescription:CreateButton(addonTable.Locales.CLOSE_WINDOW, function()
+              table.remove(addonTable.Config.Get(addonTable.Config.Options.WINDOWS), chatFrame:GetID())
+              chatFrame:SetID(0)
+              addonTable.ChatFramePool:Release(chatFrame)
+            end)
+          else
+            rootDescription:CreateButton(addonTable.Locales.CLOSE_TAB, function()
+              table.remove(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[chatFrame:GetID()].tabs, index)
+              addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+            end)
+          end
         end)
       end
     end)
 
     if lastButton == nil then
-      button:SetPoint("BOTTOMLEFT", chatFrame, "TOPLEFT", 32, -22)
+      tabButton:SetPoint("BOTTOMLEFT", chatFrame, "TOPLEFT", 32, -22)
     else
-      button:SetPoint("LEFT", lastButton, "RIGHT", 10, 0)
+      tabButton:SetPoint("LEFT", lastButton, "RIGHT", 10, 0)
     end
-    button:SetColor(tabColor.r, tabColor.g, tabColor.b)
-    table.insert(allTabs, button)
-    lastButton = button
+    tabButton:SetColor(tabColor.r, tabColor.g, tabColor.b)
+    table.insert(allTabs, tabButton)
+    lastButton = tabButton
   end
 
   if chatFrame:GetID() == 1 and addonTable.Config.Get(addonTable.Config.Options.SHOW_COMBAT_LOG) then

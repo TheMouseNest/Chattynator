@@ -13,24 +13,6 @@ function addonTable.ChatFrameMixin:OnLoad()
   self:SetResizeBounds(400, 270)
   self:SetClampedToScreen(true)
 
-  local function SetPosition()
-    self:SetPoint(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].position))
-  end
-  local state = pcall(SetPosition)
-  if not state then
-    self:SetPoint("CENTER", UIParent)
-  end
-  self:SetSize(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].size))
-
-
-  self.filterFunc = nil
-  self.heights = {}
-
-  self.tabIndex = 1
-  self.Tabs = {}
-
-  self.alphas = {}
-
   self.ScrollBox = CreateFrame("Frame", nil, self, "WowScrollBoxList")
   local view = CreateScrollBoxListLinearView()
   view:SetElementExtentCalculator(function(index)
@@ -119,8 +101,6 @@ function addonTable.ChatFrameMixin:OnLoad()
     frame.FadeAnimation:Stop()
     frame:SetAlpha(self.alphas[data] or 0)
   end)
-  self.ScrollBox:SetPoint("TOPLEFT", 34, -27)
-  self.ScrollBox:SetPoint("BOTTOMRIGHT", 0, 38)
   self.ScrollBox:SetInterpolateScroll(true)
   self.ScrollBox:Init(view)
   self.ScrollBox:SetHyperlinkPropagateToParent(true)
@@ -128,6 +108,9 @@ function addonTable.ChatFrameMixin:OnLoad()
   self.ScrollBox:GetScrollTarget():SetPropagateMouseClicks(true)
   self.ScrollBox:GetScrollTarget():SetPropagateMouseMotion(true)
   self.ScrollBox:SetPanExtent(50)
+
+  self.ScrollBox:SetPoint("TOPLEFT", 34, -27)
+  self.ScrollBox:SetPoint("BOTTOMRIGHT", 0, 38)
 
   addonTable.CallbackRegistry:RegisterCallback("MessageDisplayChanged", function()
     self:UpdateWidth()
@@ -159,20 +142,21 @@ function addonTable.ChatFrameMixin:OnLoad()
   addonTable.Skins.AddFrame("ResizeWidget", self.resizeWidget)
   self.resizeWidget:SetShown(not addonTable.Config.Get(addonTable.Config.Options.LOCKED))
 
-  self:RepositionBlizzardWidgets()
-
   addonTable.CallbackRegistry:RegisterCallback("Render", function(...)
+    if self:GetID() == 0 then
+      return
+    end
     self.ApplyFlashing(...)
     self.Render(...)
   end, self)
-  addonTable.CallbackRegistry:RegisterCallback("ScrollToEndImmediate", function()
-    self:SetTabSelected(self.tabIndex)
+  addonTable.CallbackRegistry:RegisterCallback("ScrollToEndImmediate", function(_, windowID)
+    if windowID == self:GetID() then
+      self:SetTabSelected(self.tabIndex)
+    end
   end, self)
 
-  addonTable.Core.InitializeTabs(self)
-
   addonTable.CallbackRegistry:RegisterCallback("RefreshStateChange", function(_, refreshState)
-    if refreshState[addonTable.Constants.RefreshReason.Tabs] then
+    if self:GetID() ~= 0 and refreshState[addonTable.Constants.RefreshReason.Tabs] then
       addonTable.Core.InitializeTabs(self)
     end
     if refreshState[addonTable.Constants.RefreshReason.Locked] then
@@ -181,6 +165,9 @@ function addonTable.ChatFrameMixin:OnLoad()
   end)
 
   addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
+    if self:GetID() == 0 then
+      return
+    end
     if settingName == addonTable.Config.Options.WINDOWS then
       self:SetPoint(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].position))
       self:SetSize(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].size))
@@ -188,6 +175,30 @@ function addonTable.ChatFrameMixin:OnLoad()
   end)
 
   addonTable.Skins.AddFrame("ChatFrame", self)
+end
+
+function addonTable.ChatFrameMixin:Reset()
+  local function SetPosition()
+    self:SetPoint(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].position))
+  end
+  local state = pcall(SetPosition)
+  if not state then
+    self:SetPoint("CENTER", UIParent)
+  end
+  self:SetSize(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].size))
+
+  self.filterFunc = nil
+  self.heights = {}
+
+  self.tabIndex = 1
+  self.Tabs = {}
+
+  self.alphas = {}
+
+  self:RepositionBlizzardWidgets() -- Only does stuff if self:GetID() is 1
+  self:UpdateWidth()
+
+  addonTable.Core.InitializeTabs(self)
 end
 
 function addonTable.ChatFrameMixin:UpdateWidth()
@@ -243,17 +254,10 @@ function addonTable.ChatFrameMixin:UpdateAlphas()
 end
 
 function addonTable.ChatFrameMixin:RepositionBlizzardWidgets()
-  if self:GetID() ~= 1 then
+  if self.arrangedButtons then
     return
   end
-
-  -- We use the default edit box rather than instantiating our own so that the keyboard shortcuts to open it work
-  ChatFrame1EditBox:SetParent(self)
-  ChatFrame1EditBox:ClearAllPoints()
-  ChatFrame1EditBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, 32)
-  ChatFrame1EditBox:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, 32)
-  addonTable.Skins.AddFrame("ChatEditBox", ChatFrame1EditBox)
-
+  self.arrangedButtons = true
   local function ArrangeButtons(buttons)
     local lastButton
     for _, b in ipairs(buttons) do
@@ -268,56 +272,67 @@ function addonTable.ChatFrameMixin:RepositionBlizzardWidgets()
   end
   local buttons = {}
 
-  if QuickJoinToastButton then
-    QuickJoinToastButton:SetParent(self)
-    QuickJoinToastButton:SetScript("OnMouseDown", nil)
-    QuickJoinToastButton:SetScript("OnMouseUp", nil)
-    QuickJoinToastButton:ClearAllPoints()
-    QuickJoinToastButton:SetPoint("RIGHT", self.ScrollBox, "LEFT", -5, 0)
-    QuickJoinToastButton:SetPoint("TOP", 0, -2)
-    QuickJoinToastButton:SetFrameStrata("HIGH")
-    local SetPoint = QuickJoinToastButton.SetPoint
-    hooksecurefunc(QuickJoinToastButton, "SetPoint", function(_, _, frame)
-      if frame ~= self.ScrollBox then
-        QuickJoinToastButton:SetParent(self)
-        QuickJoinToastButton:ClearAllPoints()
-        SetPoint(QuickJoinToastButton, "RIGHT", self.ScrollBox, "LEFT", -5, 0)
-        SetPoint(QuickJoinToastButton, "TOP", 0, -2)
-      end
+  if self:GetID() == 1 and not addonTable.Data.BlizzardButtonsAssigned then
+    addonTable.Data.BlizzardButtonsAssigned = true
+
+    -- We use the default edit box rather than instantiating our own so that the keyboard shortcuts to open it work
+    ChatFrame1EditBox:SetParent(self)
+    ChatFrame1EditBox:ClearAllPoints()
+    ChatFrame1EditBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, 32)
+    ChatFrame1EditBox:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, 32)
+    addonTable.Skins.AddFrame("ChatEditBox", ChatFrame1EditBox)
+
+    if QuickJoinToastButton then
+      QuickJoinToastButton:SetParent(self)
+      QuickJoinToastButton:SetScript("OnMouseDown", nil)
+      QuickJoinToastButton:SetScript("OnMouseUp", nil)
+      QuickJoinToastButton:ClearAllPoints()
+      QuickJoinToastButton:SetPoint("RIGHT", self.ScrollBox, "LEFT", -5, 0)
+      QuickJoinToastButton:SetPoint("TOP", 0, -2)
+      QuickJoinToastButton:SetFrameStrata("HIGH")
+      local SetPoint = QuickJoinToastButton.SetPoint
+      hooksecurefunc(QuickJoinToastButton, "SetPoint", function(_, _, frame)
+        if frame ~= self.ScrollBox then
+          QuickJoinToastButton:SetParent(self)
+          QuickJoinToastButton:ClearAllPoints()
+          SetPoint(QuickJoinToastButton, "RIGHT", self.ScrollBox, "LEFT", -5, 0)
+          SetPoint(QuickJoinToastButton, "TOP", 0, -2)
+        end
+      end)
+      addonTable.Skins.AddFrame("ChatButton", QuickJoinToastButton, {"toasts"})
+    end
+
+    ChatFrameChannelButton:SetParent(self)
+    ChatFrameChannelButton:ClearAllPoints()
+    ChatFrameChannelButton:SetScript("OnMouseDown", nil)
+    ChatFrameChannelButton:SetScript("OnMouseUp", nil)
+    addonTable.Skins.AddFrame("ChatButton", ChatFrameChannelButton, {"channels"})
+    table.insert(buttons, ChatFrameChannelButton)
+
+    ChatFrameToggleVoiceDeafenButton:SetParent(self)
+    ChatFrameToggleVoiceDeafenButton:ClearAllPoints()
+    ChatFrameToggleVoiceDeafenButton:SetPoint("LEFT", ChatFrameChannelButton, "RIGHT", 2, 0)
+    addonTable.Skins.AddFrame("ChatButton", ChatFrameToggleVoiceDeafenButton, {"voiceChatNoAudio"})
+    addonTable.Skins.AddFrame("ChatButton", ChatFrameToggleVoiceMuteButton, {"voiceChatMuteMic"})
+
+    ChatFrameMenuButton:SetParent(self)
+    ChatFrameMenuButton:ClearAllPoints()
+    ChatFrameMenuButton:SetScript("OnMouseDown", nil)
+    ChatFrameMenuButton:SetScript("OnMouseUp", nil)
+    addonTable.Skins.AddFrame("ChatButton", ChatFrameMenuButton, {"menu"})
+    table.insert(buttons, ChatFrameMenuButton)
+
+    ChatFrameMenuButton:SetScript("OnEnter", function()
+      GameTooltip:SetOwner(ChatFrameMenuButton, "ANCHOR_RIGHT")
+      GameTooltip:SetText(WHITE_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.QUICK_CHAT))
+      GameTooltip:Show()
     end)
-    addonTable.Skins.AddFrame("ChatButton", QuickJoinToastButton, {"toasts"})
+    ChatFrameMenuButton:SetScript("OnLeave", function()
+      GameTooltip:Hide()
+    end)
+
+    addonTable.Skins.AddFrame("ChatButton", ChatFrameMenuButton, {"menu"})
   end
-
-  ChatFrameChannelButton:SetParent(self)
-  ChatFrameChannelButton:ClearAllPoints()
-  ChatFrameChannelButton:SetScript("OnMouseDown", nil)
-  ChatFrameChannelButton:SetScript("OnMouseUp", nil)
-  addonTable.Skins.AddFrame("ChatButton", ChatFrameChannelButton, {"channels"})
-  table.insert(buttons, ChatFrameChannelButton)
-
-  ChatFrameToggleVoiceDeafenButton:SetParent(self)
-  ChatFrameToggleVoiceDeafenButton:ClearAllPoints()
-  ChatFrameToggleVoiceDeafenButton:SetPoint("LEFT", ChatFrameChannelButton, "RIGHT", 2, 0)
-  addonTable.Skins.AddFrame("ChatButton", ChatFrameToggleVoiceDeafenButton, {"voiceChatNoAudio"})
-  addonTable.Skins.AddFrame("ChatButton", ChatFrameToggleVoiceMuteButton, {"voiceChatMuteMic"})
-
-  ChatFrameMenuButton:SetParent(self)
-  ChatFrameMenuButton:ClearAllPoints()
-  ChatFrameMenuButton:SetScript("OnMouseDown", nil)
-  ChatFrameMenuButton:SetScript("OnMouseUp", nil)
-  addonTable.Skins.AddFrame("ChatButton", ChatFrameMenuButton, {"menu"})
-  table.insert(buttons, ChatFrameMenuButton)
-
-  ChatFrameMenuButton:SetScript("OnEnter", function()
-    GameTooltip:SetOwner(ChatFrameMenuButton, "ANCHOR_RIGHT")
-    GameTooltip:SetText(WHITE_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.QUICK_CHAT))
-    GameTooltip:Show()
-  end)
-  ChatFrameMenuButton:SetScript("OnLeave", function()
-    GameTooltip:Hide()
-  end)
-
-  addonTable.Skins.AddFrame("ChatButton", ChatFrameMenuButton, {"menu"})
 
   local function MakeButton(tooltipText)
     local button = CreateFrame("Button", nil, self)

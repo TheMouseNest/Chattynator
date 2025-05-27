@@ -12,6 +12,14 @@ function addonTable.Config.GetEmptyTabConfig(name)
   }
 end
 
+function addonTable.Config.GetEmptyWindowConfig()
+  return {
+    position = {"CENTER", "UIParent", "CENTER", 0, 0},
+    size = {500, 270},
+    tabs = {}
+  }
+end
+
 local settings = {
   ROWS_LIMIT = {key = "rows_limit", default = 200},
   WINDOWS = {key = "windows", default = {

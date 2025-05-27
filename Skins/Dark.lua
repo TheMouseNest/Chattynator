@@ -40,7 +40,6 @@ local skinners = {
       button.FriendsButton:ClearAllPoints()
       button.FriendsButton:SetPoint("TOP", 0, -2)
     elseif tags.channels then
-      button.Icon:SetTexture("Interface/Addons/Chattynator/Assets/ChatChannels.png")
       hooksecurefunc(button, "SetIconToState", function(self, state)
         button:SetNormalTexture("Interface/AddOns/Chattynator/Assets/ChatButton.png")
         button:GetNormalTexture():SetVertexColor(0.15, 0.15, 0.15)
@@ -61,12 +60,23 @@ local skinners = {
         end
       end)
       button:HookScript("OnEnter", function()
-        button.Icon:SetTextColor(hoverColor.r, hoverColor.g, hoverColor.b)
+        button.Icon:SetVertexColor(hoverColor.r, hoverColor.g, hoverColor.b)
       end)
       button:HookScript("OnLeave", function()
         button:UpdateVisibleState()
       end)
       button:UpdateVisibleState()
+    elseif tags.voiceChatNoAudio or tags.voiceChatMuteMic then
+      hooksecurefunc(button, "SetIconToState", function(self, state)
+        button:SetNormalTexture("Interface/AddOns/Chattynator/Assets/ChatButton.png")
+        button:GetNormalTexture():SetVertexColor(0.15, 0.15, 0.15)
+        button:GetNormalTexture():SetDrawLayer("BACKGROUND")
+        button:SetPushedTexture("Interface/AddOns/Chattynator/Assets/ChatButton.png")
+        button:GetPushedTexture():SetVertexColor(0.05, 0.05, 0.05)
+        button:GetPushedTexture():SetDrawLayer("BACKGROUND")
+        button.Icon:ClearAllPoints()
+        button.Icon:SetPoint("CENTER")
+      end)
     elseif tags.menu then
       button.Icon = button:CreateTexture(nil, "ARTWORK")
       button.Icon:SetTexture("Interface/AddOns/Chattynator/Assets/ChatMenu.png")

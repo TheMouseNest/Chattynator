@@ -3,6 +3,7 @@ local addonTable = select(2, ...)
 
 local intensity = 1
 local hoverColor
+local voiceActiveColor = {r = 33/255, g = 209/255, b = 45/255}
 local flashTabColor = {r = 247/255, g = 222/255, b = 61/255}
 
 local E
@@ -82,8 +83,36 @@ local skinners = {
         button.FriendCount:SetTextColor(intensity, intensity, intensity)
       end)
     elseif tags.channels then
-      button.Icon:SetTexture("Interface/Addons/Chattynator/Assets/ChatChannels.png")
-      button.Icon:SetVertexColor(intensity, intensity, intensity)
+      hooksecurefunc(button, "SetIconToState", function(self, state)
+        button:ClearNormalTexture()
+        button:ClearPushedTexture()
+        button:ClearHighlightTexture()
+        if state then
+          button.Icon:SetTexture("Interface/Addons/Chattynator/Assets/ChatChannelsVC.png")
+          button.Icon:SetVertexColor(voiceActiveColor.r, voiceActiveColor.g, voiceActiveColor.b)
+        else
+          button.Icon:SetTexture("Interface/Addons/Chattynator/Assets/ChatChannels.png")
+          button.Icon:SetVertexColor(intensity, intensity, intensity)
+        end
+        if button:IsMouseOver() then
+          button:GetScript("OnEnter")(button)
+        end
+      end)
+      button:HookScript("OnEnter", function()
+        button.Icon:SetVertexColor(hoverColor.r, hoverColor.g, hoverColor.b)
+      end)
+      button:HookScript("OnLeave", function()
+        button:UpdateVisibleState()
+      end)
+      button:UpdateVisibleState()
+    elseif tags.voiceChatNoAudio or tags.voiceChatMuteMic then
+      hooksecurefunc(button, "SetIconToState", function(self, state)
+        button:ClearNormalTexture()
+        button:ClearHighlightTexture()
+        button:ClearPushedTexture()
+        button.Icon:ClearAllPoints()
+        button.Icon:SetPoint("CENTER")
+      end)
     elseif tags.menu then
       button.Icon = button:CreateTexture(nil, "ARTWORK")
       button.Icon:SetTexture("Interface/AddOns/Chattynator/Assets/ChatMenu.png")

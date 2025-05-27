@@ -68,17 +68,33 @@ local order = {
   {CHAT, "MESSAGES"},
   {CHANNELS, nil},
   {CREATURE, "OTHER_CREATURE"},
-  {COMBAT, "OTHER_COMBAT"},
+  {addonTable.Locales.REWARDS, "OTHER_COMBAT"},
   {PVP, "OTHER_PVP"},
   {SYSTEM, "OTHER_SYSTEM"},
 }
+
+local function GetChatColor(group)
+  local info = ChatTypeInfo[group]
+  if not info then
+    for _, event in ipairs(ChatTypeGroup[group]) do
+      info = ChatTypeInfo[(event:gsub("CHAT_MSG_", ""))]
+      if info then
+        break
+      end
+    end
+  end
+  if not info then
+    return CreateColor(1, 1, 1)
+  end
+  return CreateColor(info.r, info.g, info.b)
+end
 
 function addonTable.CustomiseDialog.SetupTabFilters(parent)
   local container = CreateFrame("Frame", nil, parent)
   local tab = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[1].tabs[1]
 
   local allFrames = {}
-  local filtersHeader = addonTable.CustomiseDialog.Components.GetHeader(container, addonTable.Locales.MESSAGE_TYPES_TO_INCLUDE)
+  local filtersHeader = addonTable.CustomiseDialog.Components.GetHeader(container, addonTable.Locales.MESSAGE_TYPES)
   filtersHeader:SetPoint("TOP")
   table.insert(allFrames, filtersHeader)
 
@@ -129,7 +145,8 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
       dropdown.DropDown:SetupMenu(function(_, rootDescription)
         if tab.invert then
           for _, f in ipairs(fields) do
-            rootDescription:CreateCheckbox(f[2] or _G[f[1]],
+              local color = GetChatColor(f[1])
+              rootDescription:CreateCheckbox(color:WrapTextInColorCode(f[2] or _G[f[1]]),
               function()
                 return tab.groups[f[1]] ~= false
               end, function()
@@ -144,7 +161,8 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
           end
         else
           for _, f in ipairs(fields) do
-            rootDescription:CreateCheckbox(f[2] or _G[f[1]],
+              local color = GetChatColor(f[1])
+              rootDescription:CreateCheckbox(color:WrapTextInColorCode(f[2] or _G[f[1]]),
               function()
                 return tab.groups[f[1]] == true
               end, function()
@@ -159,8 +177,10 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
   end
   container:SetSize(500, 500)
 
-  function container:ShowSettings(tabData)
-    tab = tabData
+  function container:ShowSettings(windowIndex, tabIndex)
+    local windows = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)
+    tab = windows[windowIndex].tabs[tabIndex]
+    filtersHeader.text:SetText(addonTable.Locales.MESSAGE_TYPES .. " (" .. addonTable.Locales.WINDOW_X:format(windowIndex) .. ", " .. addonTable.Locales.TAB_X:format(_G[tab.name] or tab.name) .. ")")
     for _, f in ipairs(allFrames) do
       if f.DropDown then
         f:SetValue()

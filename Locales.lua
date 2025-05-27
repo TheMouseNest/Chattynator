@@ -55,8 +55,11 @@ L["MESSAGE_FONT_SIZE"] = "Message font size"
 
 L["SKINS_DARK"] = "Dark"
 
-L["MESSAGE_TYPES_TO_INCLUDE"] = "Message types to include"
+L["MESSAGE_TYPES"] = "Message types"
 L["NONE_SELECTED"] = "None Selected"
+L["REWARDS"] = "Rewards"
+L["WINDOW_X"] = "Window %s"
+L["TAB_X"] = "%s Tab"
 
 L["ENTER_PROFILE_NAME"] = "Enter Profile Name:"
 L["PROFILES"] = "Profiles"

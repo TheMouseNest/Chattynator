@@ -6,7 +6,7 @@ local filtersToRefresh = {}
 addonTable.CallbackRegistry:RegisterCallback("TabSelected", function(_, windowIndex, tabIndex)
   for _, frame in ipairs(filtersToRefresh) do
     if frame and frame:IsShown() then
-      frame:ShowSettings(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[windowIndex].tabs[tabIndex])
+      frame:ShowSettings(windowIndex, tabIndex)
     end
   end
 end)
@@ -306,10 +306,10 @@ local function SetupFilters(parent)
 
   table.insert(filtersToRefresh, filters)
 
-  filters:ShowSettings(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[1].tabs[addonTable.allChatFrames[1].tabIndex])
+  filters:ShowSettings(1, 1)
 
   filters:HookScript("OnShow", function()
-    filters:ShowSettings(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[1].tabs[addonTable.allChatFrames[1].tabIndex])
+    filters:ShowSettings(1, 1)
   end)
 
   return filters
@@ -336,6 +336,16 @@ function addonTable.CustomiseDialog.Toggle()
   frame:SetSize(600, 700)
   frame:SetPoint("CENTER")
   frame:Raise()
+
+  frame:SetMovable(true)
+  frame:SetScript("OnDragStart", function()
+    frame:StartMoving()
+    frame:SetUserPlaced(false)
+  end)
+  frame:SetScript("OnDragStart", function()
+    frame:StopMovingOrSizing()
+    frame:SetUserPlaced(false)
+  end)
 
   ButtonFrameTemplate_HidePortrait(frame)
   ButtonFrameTemplate_HideButtonBar(frame)

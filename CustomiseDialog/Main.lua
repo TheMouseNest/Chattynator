@@ -345,8 +345,6 @@ function addonTable.CustomiseDialog.Toggle()
 
   frame:SetTitle(addonTable.Locales.CUSTOMISE_CHATTYNATOR)
 
-  addonTable.Skins.AddFrame("ButtonFrame", frame, {"customise"})
-
   local containers = {}
   local lastTab
   local Tabs = {}
@@ -387,4 +385,6 @@ function addonTable.CustomiseDialog.Toggle()
       PanelTemplates_SetTab(frame, tIndexOf(containers, shownContainer))
     end
   end)
+
+  addonTable.Skins.AddFrame("ButtonFrame", frame, {"customise"})
 end

@@ -163,8 +163,6 @@ function addonTable.ChatFrameMixin:OnLoad()
 
   addonTable.Core.InitializeTabs(self)
 
-  addonTable.Skins.AddFrame("ChatFrame", self)
-
   addonTable.CallbackRegistry:RegisterCallback("RefreshStateChange", function(_, refreshState)
     if refreshState[addonTable.Constants.RefreshReason.Tabs] then
       addonTable.Core.InitializeTabs(self)
@@ -180,6 +178,8 @@ function addonTable.ChatFrameMixin:OnLoad()
       self:SetSize(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].size))
     end
   end)
+
+  addonTable.Skins.AddFrame("ChatFrame", self)
 end
 
 function addonTable.ChatFrameMixin:UpdateWidth()
@@ -244,6 +244,7 @@ function addonTable.ChatFrameMixin:RepositionBlizzardWidgets()
   ChatFrame1EditBox:ClearAllPoints()
   ChatFrame1EditBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, 32)
   ChatFrame1EditBox:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, 32)
+  self.editBox = ChatFrame1EditBox
   addonTable.Skins.AddFrame("ChatEditBox", ChatFrame1EditBox)
 
   local function ArrangeButtons(buttons)

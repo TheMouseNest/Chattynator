@@ -202,15 +202,19 @@ local skinners = {
       if tags.search then
         button.Icon:SetTexture("Interface/AddOns/Chattynator/Assets/Search.png")
       elseif tags.copy then
-        button.Icon:SetTexture("Interface/AddOns/Chattynator/Assets/Copy.png")
+        button.Icon:SetTexture("Interface/AddOns/GW2_UI/textures/uistuff/maximize_button")
       elseif tags.settings then
-        button.Icon:SetTexture("Interface/AddOns/Chattynator/Assets/SettingsCog.png")
+        button.Icon:SetTexture("Interface/AddOns/GW2_UI/textures/icons/MainMenuMicroButton-Down")
+        button.HoverIcon:SetTexture("Interface/AddOns/GW2_UI/textures/icons/MainMenuMicroButton-Up")
       elseif tags.scrollToEnd then
         button.Icon:SetTexture("Interface/AddOns/Chattynator/Assets/ScrollToBottom.png")
+        button.HoverIcon:SetTexture("Interface/AddOns/GW2_UI/textures/uistuff/arrowdown_down")
       end
       button.Icon:SetVertexColor(intensity.r, intensity.g, intensity.b)
-      button.HoverIcon:SetTexture(button.Icon:GetTexture())
-      button.HoverIcon:SetVertexColor(hoverColor.r, hoverColor.g, hoverColor.b)
+      if button.HoverIcon:GetTexture() == nil then
+        button.HoverIcon:SetTexture(button.Icon:GetTexture())
+        button.HoverIcon:SetVertexColor(hoverColor.r, hoverColor.g, hoverColor.b)
+      end
       button.Icon:SetPoint("CENTER")
       button.HoverIcon:SetPoint("CENTER")
       button.Icon:SetSize(15, 15)
@@ -239,7 +243,7 @@ local skinners = {
   end,
   TopTabButton = function(frame)
     if GW.HandleTabs then
-      GW.HandleTabs(frame, true)
+      GW.HandleTabs(frame, "bottom")
     else
       (frame.GwStripTextures or frame.StripTextures)(frame)
       ;(frame.GwSkinButton or frame.SkinButton)(frame, false, true, false, false, false, false)
@@ -307,7 +311,7 @@ local skinners = {
   ResizeWidget = function(frame, tags)
     local tex = frame:CreateTexture(nil, "ARTWORK")
     tex:SetVertexColor(intensity.r, intensity.g, intensity.b)
-    tex:SetTexture("Interface/AddOns/Chattynator/Assets/resize.png")
+    tex:SetTexture("Interface/AddOns/GW2_UI/textures/uistuff/resize")
     tex:SetAllPoints()
     frame:SetScript("OnEnter", function()
       tex:SetVertexColor(hoverColor.r, hoverColor.g, hoverColor.b)

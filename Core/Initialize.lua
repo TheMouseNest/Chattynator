@@ -30,7 +30,7 @@ function addonTable.Core.Initialize()
   addonTable.SlashCmd.Initialize()
 
   ChattynatorHyperlinkHandler:SetScript("OnHyperlinkEnter", function(_, hyperlink)
-    if hyperlink:match("battlepet:") or hyperlink:match("item:") then
+    if hyperlink:match("battlepet:") or hyperlink:match("item:") or hyperlink:match("achievement:") then
       GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR_RIGHT")
       GameTooltip:SetHyperlink(hyperlink)
       GameTooltip:Show()

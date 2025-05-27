@@ -5,7 +5,6 @@ Chattynator = {
   API = {},
 }
 
-function Chattynator.API.SetFilter(filterFunc)
-  addonTable.ChatFrame:SetFilter(filterFunc)
-  addonTable.ChatFrame:Render()
+function Chattynator.API.GetHyperlinkHandler()
+  return ChattynatorHyperlinkHandler
 end

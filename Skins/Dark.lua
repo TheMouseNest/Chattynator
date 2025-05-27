@@ -3,6 +3,7 @@ local addonTable = select(2, ...)
 
 local intensity = 0.8
 local hoverColor = {r = 59/255, g = 210/255, b = 237/255}
+local voiceActiveColor = {r = 33/255, g = 209/255, b = 45/255}
 local flashTabColor = {r = 247/255, g = 222/255, b = 61/255}
 
 local skinners = {
@@ -38,16 +39,34 @@ local skinners = {
       button.FriendsButton:SetSize(12, 12)
       button.FriendsButton:ClearAllPoints()
       button.FriendsButton:SetPoint("TOP", 0, -2)
-
-      button:HookScript("OnEnter", function()
-        button.FriendCount:SetTextColor(hoverColor.r, hoverColor.g, hoverColor.b)
-      end)
-      button:HookScript("OnLeave", function()
-        button.FriendCount:SetTextColor(intensity, intensity, intensity)
-      end)
     elseif tags.channels then
       button.Icon:SetTexture("Interface/Addons/Chattynator/Assets/ChatChannels.png")
-      button.Icon:SetVertexColor(intensity, intensity, intensity)
+      hooksecurefunc(button, "SetIconToState", function(self, state)
+        button:SetNormalTexture("Interface/AddOns/Chattynator/Assets/ChatButton.png")
+        button:GetNormalTexture():SetVertexColor(0.15, 0.15, 0.15)
+        button:GetNormalTexture():SetDrawLayer("BACKGROUND")
+        button:SetPushedTexture("Interface/AddOns/Chattynator/Assets/ChatButton.png")
+        button:GetPushedTexture():SetVertexColor(0.05, 0.05, 0.05)
+        button:GetPushedTexture():SetDrawLayer("BACKGROUND")
+        button:ClearHighlightTexture()
+        if state then
+          button.Icon:SetTexture("Interface/Addons/Chattynator/Assets/ChatChannelsVC.png")
+          button.Icon:SetVertexColor(voiceActiveColor.r, voiceActiveColor.g, voiceActiveColor.b)
+        else
+          button.Icon:SetTexture("Interface/Addons/Chattynator/Assets/ChatChannels.png")
+          button.Icon:SetVertexColor(intensity, intensity, intensity)
+        end
+        if button:IsMouseOver() then
+          button:GetScript("OnEnter")(button)
+        end
+      end)
+      button:HookScript("OnEnter", function()
+        button.Icon:SetTextColor(hoverColor.r, hoverColor.g, hoverColor.b)
+      end)
+      button:HookScript("OnLeave", function()
+        button:UpdateVisibleState()
+      end)
+      button:UpdateVisibleState()
     elseif tags.menu then
       button.Icon = button:CreateTexture(nil, "ARTWORK")
       button.Icon:SetTexture("Interface/AddOns/Chattynator/Assets/ChatMenu.png")

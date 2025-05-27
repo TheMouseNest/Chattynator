@@ -178,17 +178,59 @@ local skinners = {
       button.HoverIcon:SetSize(20, 20)
       button.HoverIcon:SetTexture("Interface/AddOns/GW2_UI/textures/chat/SocialChatButton-Highlight")
       button.HoverIcon:SetBlendMode("ADD")
-
-      button:HookScript("OnEnter", function()
-        button.FriendCount:SetTextColor(hoverColor.r, hoverColor.g, hoverColor.b)
-      end)
-      button:HookScript("OnLeave", function()
-        button.FriendCount:SetTextColor(intensity.r, intensity.g, intensity.b)
-      end)
     elseif tags.channels then
-      button.Icon:SetTexture("Interface/AddOns/GW2_UI/textures/chat/channel_button_normal")
-      button.HoverIcon:SetTexture("Interface/AddOns/GW2_UI/textures/chat/channel_button_normal_highlight")
-      button.HoverIcon:SetBlendMode("ADD")
+      button.Flash:SetSize(15, 15)
+      hooksecurefunc(button, "SetIconToState", function(self, joined)
+        button:ClearNormalTexture()
+        button:ClearPushedTexture()
+        button:ClearHighlightTexture()
+        if joined then
+          self.Icon:SetTexture("Interface/AddOns/GW2_UI/textures/chat/channel_button_vc")
+          self.HoverIcon:SetTexture("Interface/AddOns/GW2_UI/textures/chat/channel_button_vc_highlight")
+          self.Flash:SetTexture("Interface/AddOns/GW2_UI/textures/chat/channel_button_vc_highlight")
+        else
+          self.Icon:SetTexture("Interface/AddOns/GW2_UI/textures/chat/channel_button_normal")
+          self.HoverIcon:SetTexture("Interface/AddOns/GW2_UI/textures/chat/channel_button_normal_highlight")
+          self.Flash:SetTexture("Interface/AddOns/GW2_UI/textures/chat/channel_button_normal_highlight")
+        end
+      end)
+      button:UpdateVisibleState()
+    elseif tags.voiceChatNoAudio then
+      button:SetWidth(20)
+      hooksecurefunc(button, "SetIconToState", function(self, deafened)
+        button:ClearNormalTexture()
+        button:ClearPushedTexture()
+        button:ClearHighlightTexture()
+        if deafened then
+            self.Icon:SetTexture("Interface/AddOns/GW2_UI/textures/chat/channel_vc_sound_off")
+            self.HoverIcon:SetTexture("Interface/AddOns/GW2_UI/textures/chat/channel_vc_sound_off_highlight")
+        else
+            self.Icon:SetTexture("Interface/AddOns/GW2_UI/textures/chat/channel_vc_sound_on")
+            self.HoverIcon:SetTexture("Interface/AddOns/GW2_UI/textures/chat/channel_vc_sound_on_highlight")
+        end
+      end)
+      button:UpdateVisibleState()
+    elseif tags.voiceChatMuteMic then
+      button:SetWidth(20)
+      hooksecurefunc(button, "SetIconToState", function(self, state)
+        button:ClearNormalTexture()
+        button:ClearPushedTexture()
+        button:ClearHighlightTexture()
+        if state == MUTE_SILENCE_STATE_NONE then -- mic on
+          self.Icon:SetTexture("Interface/AddOns/GW2_UI/textures/chat/channel_vc_mic_on")
+          self.HoverIcon:SetTexture("Interface/AddOns/GW2_UI/textures/chat/channel_vc_mic_on_highlight")
+        elseif state == MUTE_SILENCE_STATE_MUTE then -- mic off
+          self.Icon:SetTexture("Interface/AddOns/GW2_UI/textures/chat/channel_vc_mic_off")
+          self.HoverIcon:SetTexture("Interface/AddOns/GW2_UI/textures/chat/channel_vc_mic_off_highlight")
+        elseif state == MUTE_SILENCE_STATE_SILENCE then -- mic silenced on
+          self.Icon:SetTexture("Interface/AddOns/GW2_UI/textures/chat/channel_vc_mic_silenced_on")
+          self.HoverIcon:SetTexture("Interface/AddOns/GW2_UI/textures/chat/channel_vc_mic_silenced_on_highlight")
+        elseif state == MUTE_SILENCE_STATE_MUTE_AND_SILENCE then -- mic silenced off
+          self.Icon:SetTexture("Interface/AddOns/GW2_UI/textures/chat/channel_vc_mic_silenced_off")
+          self.HoverIcon:SetTexture("Interface/AddOns/GW2_UI/textures/chat/channel_vc_mic_silenced_off_highlight")
+        end
+      end)
+      button:UpdateVisibleState()
     elseif tags.menu then
       button.Icon = button:CreateTexture(nil, "ARTWORK")
       button.Icon:SetTexture("Interface/AddOns/GW2_UI/textures/chat/bubble_up")

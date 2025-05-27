@@ -291,6 +291,12 @@ function addonTable.ChatFrameMixin:RepositionBlizzardWidgets()
   addonTable.Skins.AddFrame("ChatButton", ChatFrameChannelButton, {"channels"})
   table.insert(buttons, ChatFrameChannelButton)
 
+  ChatFrameToggleVoiceDeafenButton:SetParent(self)
+  ChatFrameToggleVoiceDeafenButton:ClearAllPoints()
+  ChatFrameToggleVoiceDeafenButton:SetPoint("LEFT", ChatFrameChannelButton, "RIGHT", 2, 0)
+  addonTable.Skins.AddFrame("ChatButton", ChatFrameToggleVoiceDeafenButton, {"voiceChatNoAudio"})
+  addonTable.Skins.AddFrame("ChatButton", ChatFrameToggleVoiceMuteButton, {"voiceChatMuteMic"})
+
   ChatFrameMenuButton:SetParent(self)
   ChatFrameMenuButton:ClearAllPoints()
   ChatFrameMenuButton:SetScript("OnMouseDown", nil)

@@ -12,8 +12,15 @@ function addonTable.ChatFrameMixin:OnLoad()
   self:SetResizable(true)
   self:SetClampedToScreen(true)
 
-  self:SetPoint(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].position))
+  local function SetPosition()
+    self:SetPoint(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].position))
+  end
+  local state = pcall(SetPosition)
+  if not state then
+    self:SetPoint("CENTER", UIParent)
+  end
   self:SetSize(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].size))
+
 
   self.filterFunc = nil
   self.heights = {}
@@ -244,7 +251,6 @@ function addonTable.ChatFrameMixin:RepositionBlizzardWidgets()
   ChatFrame1EditBox:ClearAllPoints()
   ChatFrame1EditBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, 32)
   ChatFrame1EditBox:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, 32)
-  self.editBox = ChatFrame1EditBox
   addonTable.Skins.AddFrame("ChatEditBox", ChatFrame1EditBox)
 
   local function ArrangeButtons(buttons)

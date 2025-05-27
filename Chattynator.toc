@@ -41,6 +41,7 @@ Core/API.lua
 
 Skins/Main.lua
 Skins/Dark.lua
+Skins/ElvUI.lua
 Skins/GW2.lua
 
 CustomiseDialog/Initialize.lua

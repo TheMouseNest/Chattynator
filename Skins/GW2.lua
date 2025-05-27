@@ -133,7 +133,7 @@ local skinners = {
     frame.background:SetPoint("TOPLEFT", 0, -22)
     frame.background:SetPoint("BOTTOMRIGHT")
     frame.background:Show()
-    if frame.editBox then
+    if frame:GetID() == 1 then
       frame:SetClampRectInsets(0, 0, 0, -16)
       if frame:GetBottom() < 16 then
         frame:AdjustPointsOffset(0, 16 - frame:GetBottom())

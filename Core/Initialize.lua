@@ -29,8 +29,55 @@ function addonTable.Core.Initialize()
 
   addonTable.SlashCmd.Initialize()
 
+  local validLinks = {
+    achievement = true,
+    --addon = true,
+    api = true,
+    azessence = true,
+    battlepet = true,
+    battlePetAbil = true,
+    calendarEvent = true,
+    channel = true,
+    clubFinder = true,
+    clubTicket = true,
+    community = true,
+    conduit = true,
+    currency = true,
+    death = true,
+    dungeonScore = true,
+    enchant = true,
+    garrfollower = true,
+    garrfollowerability = true,
+    garrmission = true,
+    instancelock = true,
+    item = true,
+    journal = true,
+    keystone = true,
+    levelup = true,
+    lootHistory = true,
+    mawpower = true,
+    outfit = true,
+    player = true,
+    playerCommunity = true,
+    BNplayer = true,
+    BNplayerCommunity = true,
+    quest = true,
+    spell = true,
+    storecategory = true,
+    talent = true,
+    talentbuild = true,
+    trade = true,
+    transmogappearance = true,
+    transmogillusion = true,
+    transmogset = true,
+    unit = true,
+    urlIndex = true,
+    worldmap = true,
+  }
+
   ChattynatorHyperlinkHandler:SetScript("OnHyperlinkEnter", function(_, hyperlink)
-    if hyperlink:match("battlepet:") or hyperlink:match("item:") or hyperlink:match("achievement:") then
+    local type = hyperlink:match("^(.-):")
+    if validLinks[type] then
       GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR_RIGHT")
       GameTooltip:SetHyperlink(hyperlink)
       GameTooltip:Show()

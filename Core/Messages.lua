@@ -63,7 +63,7 @@ function addonTable.MessagesMonitorMixin:OnLoad()
     "UI_SCALE_CHANGED",
 
     "PLAYER_ENTERING_WORLD",
-    "SETTINGS_LOADED",
+    --"SETTINGS_LOADED", (taints)
     "UPDATE_CHAT_COLOR",
     "UPDATE_CHAT_WINDOWS",
     "CHANNEL_UI_UPDATE",
@@ -72,7 +72,7 @@ function addonTable.MessagesMonitorMixin:OnLoad()
     "CHAT_MSG_COMMUNITIES_CHANNEL",
     "CLUB_REMOVED",
     "UPDATE_INSTANCE_INFO",
-    --"UPDATE_CHAT_COLOR_NAME_BY_CLASS",
+    --"UPDATE_CHAT_COLOR_NAME_BY_CLASS", (errors)
     "CHAT_SERVER_DISCONNECTED",
     "CHAT_SERVER_RECONNECTED",
     "BN_CONNECTED",

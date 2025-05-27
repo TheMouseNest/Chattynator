@@ -10,6 +10,7 @@ function addonTable.ChatFrameMixin:OnLoad()
   self:SetHyperlinkPropagateToParent(true)
   self:SetMovable(true)
   self:SetResizable(true)
+  self:SetResizeBounds(400, 270)
   self:SetClampedToScreen(true)
 
   local function SetPosition()

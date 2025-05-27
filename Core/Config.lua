@@ -17,7 +17,7 @@ local settings = {
   WINDOWS = {key = "windows", default = {
     {
       position = {"BOTTOMLEFT", "UIParent", "BOTTOMLEFT", 0, 40},
-      size = {500, 260},
+      size = {500, 270},
       tabs = {
         {
           name = "GENERAL",

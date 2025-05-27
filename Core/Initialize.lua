@@ -102,7 +102,7 @@ function addonTable.Core.Initialize()
       frame:OnLoad()
     end
   end)
-  for id, window in ipairs(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)) do
+  for id, window in pairs(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)) do
     local chatFrame = addonTable.ChatFramePool:Acquire()
     chatFrame:SetID(id)
     chatFrame:Reset()
@@ -114,7 +114,26 @@ function addonTable.Core.Initialize()
   addonTable.CustomiseDialog.Initialize()
 end
 
-function addonTable.Core.GetChatFrame(id)
+function addonTable.Core.MakeChatFrame()
+  local newChatFrame = addonTable.ChatFramePool:Acquire()
+  table.insert(addonTable.allChatFrames, newChatFrame)
+  local windows = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)
+  local newConfig = addonTable.Config.GetEmptyWindowConfig()
+  table.insert(newConfig.tabs, addonTable.Config.GetEmptyTabConfig(GENERAL))
+  table.insert(windows, newConfig)
+  newChatFrame:SetID(#windows)
+  newChatFrame:Show()
+
+  return newChatFrame
+end
+
+function addonTable.Core.DeleteChatFrame(id)
+  addonTable.ChatFramePool:Release(addonTable.allChatFrames[id])
+  table.remove(addonTable.Config.Get(addonTable.Config.Options.WINDOWS), id)
+  table.remove(addonTable.allChatFrames, id)
+  for index, frame in ipairs(addonTable.allChatFrames) do
+    frame:SetID(index)
+  end
 end
 
 local frame = CreateFrame("Frame")

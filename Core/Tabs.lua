@@ -92,16 +92,11 @@ function addonTable.Core.InitializeTabs(chatFrame)
         MenuUtil.CreateContextMenu(tabButton, function(menu, rootDescription)
           if tabButton:GetID() ~= 1 then
             rootDescription:CreateButton(addonTable.Locales.MOVE_TO_NEW_WINDOW, function()
-              local newChatFrame = addonTable.ChatFramePool:Acquire()
-              table.insert(addonTable.allChatFrames, newChatFrame)
-              newChatFrame:SetID(#addonTable.allChatFrames)
-              newChatFrame:Show()
+              local newChatFrame = addonTable.Core.MakeChatFrame()
 
               local windows = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)
-              local newConfig = addonTable.Config.GetEmptyWindowConfig()
-              table.insert(newConfig.tabs, windows[tabButton:GetParent():GetID()].tabs[tabButton:GetID()])
-              table.insert(windows, newConfig)
-              table.remove(windows[tabButton:GetParent():GetID()].tabs, tabButton:GetID())
+              windows[newChatFrame:GetID()].tabs[1] = windows[chatFrame:GetID()].tabs[tabButton:GetID()]
+              table.remove(windows[chatFrame:GetID()].tabs, tabButton:GetID())
               newChatFrame:Reset()
               newChatFrame:Render()
               addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
@@ -109,9 +104,7 @@ function addonTable.Core.InitializeTabs(chatFrame)
           end
           if tabButton:GetID() == 1 then
             rootDescription:CreateButton(addonTable.Locales.CLOSE_WINDOW, function()
-              table.remove(addonTable.Config.Get(addonTable.Config.Options.WINDOWS), chatFrame:GetID())
-              chatFrame:SetID(0)
-              addonTable.ChatFramePool:Release(chatFrame)
+              addonTable.Core.DeleteChatFrame(chatFrame:GetID())
             end)
           else
             rootDescription:CreateButton(addonTable.Locales.CLOSE_TAB, function()

@@ -147,7 +147,7 @@ local skinners = {
     button:ClearHighlightTexture()
     button.HoverIcon = button:CreateTexture(nil, "OVERLAY")
     button.HoverIcon:Hide()
-    button.HoverIcon:SetSize(15, 15)
+    button.HoverIcon:SetSize(18, 18)
 
     button:HookScript("OnEnter", function()
       button.HoverIcon:Show()
@@ -179,7 +179,7 @@ local skinners = {
       button.HoverIcon:SetTexture("Interface/AddOns/GW2_UI/textures/chat/SocialChatButton-Highlight")
       button.HoverIcon:SetBlendMode("ADD")
     elseif tags.channels then
-      button.Flash:SetSize(15, 15)
+      button.Flash:SetSize(18, 18)
       hooksecurefunc(button, "SetIconToState", function(self, joined)
         button:ClearNormalTexture()
         button:ClearPushedTexture()
@@ -238,11 +238,16 @@ local skinners = {
       button.HoverIcon:SetBlendMode("ADD")
       button.Icon:SetPoint("CENTER")
       button.HoverIcon:SetPoint("CENTER")
-      button.Icon:SetSize(15, 15)
+      button.Icon:SetSize(18, 18)
     else
       button.Icon = button:CreateTexture(nil, "ARTWORK")
+      button.Icon:SetSize(18, 18)
       if tags.search then
         button.Icon:SetTexture("Interface/AddOns/Chattynator/Assets/Search.png")
+        button.Icon:SetSize(15, 15)
+        button.HoverIcon:SetTexture(button.Icon:GetTexture())
+        button.HoverIcon:SetVertexColor(hoverColor.r, hoverColor.g, hoverColor.b)
+        button.HoverIcon:SetSize(15, 15)
       elseif tags.copy then
         button.Icon:SetTexture("Interface/AddOns/GW2_UI/textures/uistuff/maximize_button")
       elseif tags.settings then
@@ -253,13 +258,8 @@ local skinners = {
         button.HoverIcon:SetTexture("Interface/AddOns/GW2_UI/textures/uistuff/arrowdown_down")
       end
       button.Icon:SetVertexColor(intensity.r, intensity.g, intensity.b)
-      if button.HoverIcon:GetTexture() == nil then
-        button.HoverIcon:SetTexture(button.Icon:GetTexture())
-        button.HoverIcon:SetVertexColor(hoverColor.r, hoverColor.g, hoverColor.b)
-      end
       button.Icon:SetPoint("CENTER")
       button.HoverIcon:SetPoint("CENTER")
-      button.Icon:SetSize(15, 15)
     end
   end,
   TabButton = function(frame)

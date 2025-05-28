@@ -53,7 +53,7 @@ function addonTable.CustomiseDialog.Components.GetHeader(parent, text)
   return holder
 end
 
-function addonTable.CustomiseDialog.Components.GetTab(parent)
+function addonTable.CustomiseDialog.Components.GetTab(parent, text)
   local tab
   if addonTable.Constants.IsRetail then
     tab = CreateFrame("Button", nil, parent, "PanelTopTabButtonTemplate")
@@ -68,6 +68,8 @@ function addonTable.CustomiseDialog.Components.GetTab(parent)
       PanelTemplates_DeselectTab(self)
     end)
   end
+  tab:SetText(text)
+  tab:GetScript("OnShow")(tab)
   addonTable.Skins.AddFrame("TopTabButton", tab)
   return tab
 end

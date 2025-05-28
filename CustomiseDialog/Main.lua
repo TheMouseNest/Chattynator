@@ -365,7 +365,7 @@ function addonTable.CustomiseDialog.Toggle()
     tabContainer:SetPoint("TOPLEFT", 0 + addonTable.Constants.ButtonFrameOffset, -65)
     tabContainer:SetPoint("BOTTOMRIGHT")
 
-    local tabButton = addonTable.CustomiseDialog.Components.GetTab(frame)
+    local tabButton = addonTable.CustomiseDialog.Components.GetTab(frame, setup.name)
     if lastTab then
       tabButton:SetPoint("LEFT", lastTab, "RIGHT", 5, 0)
     else
@@ -381,7 +381,6 @@ function addonTable.CustomiseDialog.Toggle()
       PanelTemplates_SelectTab(tabButton)
       tabContainer:Show()
     end)
-    tabButton:SetText(setup.name)
     tabContainer:Hide()
 
     table.insert(Tabs, tabButton)

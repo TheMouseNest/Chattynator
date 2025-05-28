@@ -147,31 +147,35 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
       dropdown.DropDown:SetupMenu(function(_, rootDescription)
         if tab.invert then
           for _, f in ipairs(fields) do
+            if ChatTypeGroup[f[1]] then
               local color = GetChatColor(f[1])
               rootDescription:CreateCheckbox(color:WrapTextInColorCode(f[2] or _G[f[1]]),
-              function()
-                return tab.groups[f[1]] ~= false
-              end, function()
-                if tab.groups[f[1]] == nil then
-                  tab.groups[f[1]] = false
-                else
-                  tab.groups[f[1]] = not tab.groups[f[1]]
+                function()
+                  return tab.groups[f[1]] ~= false
+                end, function()
+                  if tab.groups[f[1]] == nil then
+                    tab.groups[f[1]] = false
+                  else
+                    tab.groups[f[1]] = not tab.groups[f[1]]
+                  end
+                  addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
                 end
-                addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
-              end
-            )
+              )
+            end
           end
         else
           for _, f in ipairs(fields) do
+            if ChatTypeGroup[f[1]] then
               local color = GetChatColor(f[1])
               rootDescription:CreateCheckbox(color:WrapTextInColorCode(f[2] or _G[f[1]]),
-              function()
-                return tab.groups[f[1]] == true
-              end, function()
-                tab.groups[f[1]] = not tab.groups[f[1]]
-                addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
-              end
-            )
+                function()
+                  return tab.groups[f[1]] == true
+                end, function()
+                  tab.groups[f[1]] = not tab.groups[f[1]]
+                  addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+                end
+              )
+            end
           end
         end
       end)

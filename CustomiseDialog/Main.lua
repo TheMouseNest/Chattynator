@@ -228,10 +228,12 @@ local function SetupLayout(parent)
     local entries = {
       "HH:MM:SS",
       "HH:MM",
+      "HH:MM AM/PM",
     }
     local values = {
       "%X",
       "%H:%M",
+      "%I:%M %p",
     }
     timestampDropdown:Init(entries, values)
   end

@@ -469,6 +469,10 @@ function addonTable.MessagesMonitorMixin:ShouldLog(data)
   return not ignoreTypes[data.typeInfo.type] and not ignoreEvents[data.typeInfo.event]
 end
 
+function addonTable.MessagesMonitorMixin:GetFont() -- Compatibility with any emoji filters
+  return self.font and _G[self.font]:GetFont()
+end
+
 function addonTable.MessagesMonitorMixin:AddMessage(text, r, g, b, id, _, _, _, _, Formatter)
   local data = {
     text = text,

@@ -48,7 +48,7 @@ L["DEVELOPMENT_IS_TIME_CONSUMING"] = "|cff04cca4Development takes a huge amount 
 L["DONATE"] = "Donate"
 L["LINK"] = "Link"
 L["SHOW_COMBAT_LOG"] = "Show Combat Log"
-L["LOCK_CHAT_POSITION"] = "Lock chat position"
+L["LOCK_CHAT"] = "Lock chat"
 
 L["MESSAGE_SPACING"] = "Message spacing"
 L["TIMESTAMP_FORMAT"] = "Timestamp format"

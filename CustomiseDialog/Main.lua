@@ -211,7 +211,7 @@ local function SetupLayout(parent)
   messageSpacing:SetPoint("TOP")
   table.insert(allFrames, messageSpacing)
 
-  local locked = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.LOCK_CHAT_POSITION, 28, function(state)
+  local locked = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.LOCK_CHAT, 28, function(state)
     addonTable.Config.Set(addonTable.Config.Options.LOCKED, state)
   end)
   locked.option = addonTable.Config.Options.LOCKED

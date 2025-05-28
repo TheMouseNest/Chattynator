@@ -301,20 +301,20 @@ function addonTable.ChatFrameMixin:RepositionBlizzardWidgets()
         end
       end)
       addonTable.Skins.AddFrame("ChatButton", QuickJoinToastButton, {"toasts"})
+
+      ChatFrameChannelButton:SetParent(self)
+      ChatFrameChannelButton:ClearAllPoints()
+      ChatFrameChannelButton:SetScript("OnMouseDown", nil)
+      ChatFrameChannelButton:SetScript("OnMouseUp", nil)
+      addonTable.Skins.AddFrame("ChatButton", ChatFrameChannelButton, {"channels"})
+      table.insert(buttons, ChatFrameChannelButton)
+
+      ChatFrameToggleVoiceDeafenButton:SetParent(self)
+      ChatFrameToggleVoiceDeafenButton:ClearAllPoints()
+      ChatFrameToggleVoiceDeafenButton:SetPoint("LEFT", ChatFrameChannelButton, "RIGHT", 2, 0)
+      addonTable.Skins.AddFrame("ChatButton", ChatFrameToggleVoiceDeafenButton, {"voiceChatNoAudio"})
+      addonTable.Skins.AddFrame("ChatButton", ChatFrameToggleVoiceMuteButton, {"voiceChatMuteMic"})
     end
-
-    ChatFrameChannelButton:SetParent(self)
-    ChatFrameChannelButton:ClearAllPoints()
-    ChatFrameChannelButton:SetScript("OnMouseDown", nil)
-    ChatFrameChannelButton:SetScript("OnMouseUp", nil)
-    addonTable.Skins.AddFrame("ChatButton", ChatFrameChannelButton, {"channels"})
-    table.insert(buttons, ChatFrameChannelButton)
-
-    ChatFrameToggleVoiceDeafenButton:SetParent(self)
-    ChatFrameToggleVoiceDeafenButton:ClearAllPoints()
-    ChatFrameToggleVoiceDeafenButton:SetPoint("LEFT", ChatFrameChannelButton, "RIGHT", 2, 0)
-    addonTable.Skins.AddFrame("ChatButton", ChatFrameToggleVoiceDeafenButton, {"voiceChatNoAudio"})
-    addonTable.Skins.AddFrame("ChatButton", ChatFrameToggleVoiceMuteButton, {"voiceChatMuteMic"})
 
     ChatFrameMenuButton:SetParent(self)
     ChatFrameMenuButton:ClearAllPoints()

@@ -41,7 +41,7 @@ local skinners = {
     if tags.customise then
       AddHeader(frame, "Interface/AddOns/GW2_UI/textures/character/settings-window-icon")
       frame.Tabs[1]:SetPoint("TOPLEFT", 65, -25)
-      frame:ookScript("OnShow", function(self)
+      frame:HookScript("OnShow", function(self)
         if not enableHooks then
           return
         end

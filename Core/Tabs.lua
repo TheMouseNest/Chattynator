@@ -208,7 +208,7 @@ function addonTable.Core.InitializeTabs(chatFrame)
             ShowUIPanel(ChatConfigFrame)
           end)
           if not addonTable.Config.Get(addonTable.Config.Options.LOCKED) then
-            rootDescription:CreateButton(CLOSE, function()
+            rootDescription:CreateButton(addonTable.Locales.CLOSE_TAB, function()
               addonTable.Config.Set(addonTable.Config.Options.SHOW_COMBAT_LOG, false)
             end)
           end

@@ -5,6 +5,8 @@ local GW
 local intensity = {r = 83.9/100, g = 82.7/100, b = 67.8/100}
 local hoverColor = {r = 1, g = 1, b = 1}
 
+local enableHooks = true
+
 local newTabMarkup = addonTable.Constants.NewTabMarkup
 local GW2NewTabMarkup = CreateTextureMarkup("Interface/AddOns/GW2_UI/textures/party/roleicon-healer", 40, 40, 14, 14, 0, 1, 0, 1, 0, 2)
 
@@ -39,7 +41,10 @@ local skinners = {
     if tags.customise then
       AddHeader(frame, "Interface/AddOns/GW2_UI/textures/character/settings-window-icon")
       frame.Tabs[1]:SetPoint("TOPLEFT", 65, -25)
-      frame:HookScript("OnShow", function(self)
+      frame:ookScript("OnShow", function(self)
+        if not enableHooks then
+          return
+        end
         local tabsWidth = self.Tabs[#self.Tabs]:GetRight() - self.Tabs[1]:GetLeft()
 
         self:SetWidth(math.max(self:GetWidth(), tabsWidth + 90))
@@ -70,6 +75,9 @@ local skinners = {
 
     local SetText = tab.SetText
     hooksecurefunc(tab, "SetText", function(_, text)
+      if not enableHooks then
+        return
+      end
       if text == newTabMarkup then
         SetText(tab, GW2NewTabMarkup)
       end
@@ -106,6 +114,9 @@ local skinners = {
     tab.Middle:SetVertexColor(1, 1, 1, 1)
 
     hooksecurefunc(tab, "SetSelected", function(_, state)
+      if not enableHooks then
+        return
+      end
       tab.Left:SetShown(state)
       tab.Right:SetShown(state)
       tab.Middle:SetShown(state)
@@ -150,17 +161,29 @@ local skinners = {
     button.HoverIcon:SetSize(18, 18)
 
     button:HookScript("OnEnter", function()
+      if not enableHooks then
+        return
+      end
       button.HoverIcon:Show()
     end)
     button:HookScript("OnLeave", function()
+      if not enableHooks then
+        return
+      end
       button.HoverIcon:Hide()
     end)
 
     button:HookScript("OnMouseDown", function()
+      if not enableHooks then
+        return
+      end
       button.Icon:AdjustPointsOffset(2, -2)
       button.HoverIcon:AdjustPointsOffset(2, -2)
     end)
     button:HookScript("OnMouseUp", function()
+      if not enableHooks then
+        return
+      end
       button.Icon:AdjustPointsOffset(-2, 2)
       button.HoverIcon:AdjustPointsOffset(-2, 2)
     end)
@@ -181,6 +204,9 @@ local skinners = {
     elseif tags.channels then
       button.Flash:SetSize(18, 18)
       hooksecurefunc(button, "SetIconToState", function(self, joined)
+        if not enableHooks then
+          return
+        end
         button:ClearNormalTexture()
         button:ClearPushedTexture()
         button:ClearHighlightTexture()
@@ -198,6 +224,9 @@ local skinners = {
     elseif tags.voiceChatNoAudio then
       button:SetWidth(20)
       hooksecurefunc(button, "SetIconToState", function(self, deafened)
+        if not enableHooks then
+          return
+        end
         button:ClearNormalTexture()
         button:ClearPushedTexture()
         button:ClearHighlightTexture()
@@ -213,6 +242,9 @@ local skinners = {
     elseif tags.voiceChatMuteMic then
       button:SetWidth(20)
       hooksecurefunc(button, "SetIconToState", function(self, state)
+        if not enableHooks then
+          return
+        end
         button:ClearNormalTexture()
         button:ClearPushedTexture()
         button:ClearHighlightTexture()
@@ -272,12 +304,21 @@ local skinners = {
         -- Work around GW2 bug on retail where the hover texture doesn't hide
         -- properly
         frame:HookScript("OnDisable", function()
+          if not enableHooks then
+            return
+          end
           frame.hover:SetAlpha(0)
         end)
         frame:HookScript("OnShow", function()
+          if not enableHooks then
+            return
+          end
           frame.hover:SetAlpha(0)
         end)
         frame:HookScript("OnEnable", function()
+          if not enableHooks then
+            return
+          end
           frame.hover:SetAlpha(0)
         end)
       end
@@ -293,9 +334,15 @@ local skinners = {
         -- Work around GW2 bug on retail where the hover texture doesn't hide
         -- properly
         frame:HookScript("OnDisable", function()
+          if not enableHooks then
+            return
+          end
           frame.hover:SetAlpha(0)
         end)
         frame:HookScript("OnEnable", function()
+          if not enableHooks then
+            return
+          end
           frame.hover:SetAlpha(0)
         end)
       end

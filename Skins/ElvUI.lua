@@ -1,6 +1,8 @@
 ---@class addonTableChattynator
 local addonTable = select(2, ...)
 
+local enableHooks = true
+
 local intensity = 1
 local hoverColor
 local voiceActiveColor = {r = 33/255, g = 209/255, b = 45/255}
@@ -54,16 +56,28 @@ local skinners = {
     button:ClearHighlightTexture()
 
     button:HookScript("OnEnter", function()
+      if not enableHooks then
+        return
+      end
       button.Icon:SetVertexColor(hoverColor.r, hoverColor.g, hoverColor.b)
     end)
     button:HookScript("OnLeave", function()
+      if not enableHooks then
+        return
+      end
       button.Icon:SetVertexColor(intensity, intensity, intensity)
     end)
 
     button:HookScript("OnMouseDown", function()
+      if not enableHooks then
+        return
+      end
       button.Icon:AdjustPointsOffset(2, -2)
     end)
     button:HookScript("OnMouseUp", function()
+      if not enableHooks then
+        return
+      end
       button.Icon:AdjustPointsOffset(-2, 2)
     end)
 
@@ -77,13 +91,22 @@ local skinners = {
       button.FriendsButton:SetPoint("TOP", 0, -2)
 
       button:HookScript("OnEnter", function()
+        if not enableHooks then
+          return
+        end
         button.FriendCount:SetTextColor(hoverColor.r, hoverColor.g, hoverColor.b)
       end)
       button:HookScript("OnLeave", function()
+        if not enableHooks then
+          return
+        end
         button.FriendCount:SetTextColor(intensity, intensity, intensity)
       end)
     elseif tags.channels then
       hooksecurefunc(button, "SetIconToState", function(self, state)
+        if not enableHooks then
+          return
+        end
         button:ClearNormalTexture()
         button:ClearPushedTexture()
         button:ClearHighlightTexture()
@@ -99,14 +122,23 @@ local skinners = {
         end
       end)
       button:HookScript("OnEnter", function()
+        if not enableHooks then
+          return
+        end
         button.Icon:SetVertexColor(hoverColor.r, hoverColor.g, hoverColor.b)
       end)
       button:HookScript("OnLeave", function()
+        if not enableHooks then
+          return
+        end
         button:UpdateVisibleState()
       end)
       button:UpdateVisibleState()
     elseif tags.voiceChatNoAudio or tags.voiceChatMuteMic then
       hooksecurefunc(button, "SetIconToState", function(self, state)
+        if not enableHooks then
+          return
+        end
         button:ClearNormalTexture()
         button:ClearHighlightTexture()
         button:ClearPushedTexture()
@@ -150,6 +182,9 @@ local skinners = {
     local SetText = tab.SetText
     local text = tab:GetText()
     hooksecurefunc(tab, "SetText", function(_, cleanText)
+      if not enableHooks then
+        return
+      end
       text = cleanText
       if tab.minWidth then
         tab:SetWidth(tab:GetFontString():GetUnboundedStringWidth() + tabPadding)
@@ -158,6 +193,9 @@ local skinners = {
       end
     end)
     hooksecurefunc(tab, "SetSelected", function(_, state)
+      if not enableHooks then
+        return
+      end
       if state then
         tab:GetFontString():SetTextColor(1, 1, 1)
         if CH.db.tabSelector ~= 'NONE' then

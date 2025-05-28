@@ -48,7 +48,7 @@ function addonTable.Skins.Initialize()
     end
   end)
 
-  --[[addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
+  addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
     if settingName == addonTable.Config.Options.CURRENT_SKIN then
       local currentSkinKey = addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)
       for key, skin in pairs(addonTable.Skins.availableSkins) do
@@ -56,8 +56,6 @@ function addonTable.Skins.Initialize()
           addonTable.Config.Get(addonTable.Config.Options.DISABLED_SKINS)[key] = currentSkinKey ~= key
         end
       end
-      local bagsShown = addonTable.ViewManagement.GetBackpackFrame():IsShown()
-      local lastCharacter = addonTable.ViewManagement.GetBackpackFrame().lastCharacter
       currentSkin = addonTable.Skins.availableSkins[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)]
       currentSkinner = currentSkin.skinner
       currentSkin.constants()
@@ -66,12 +64,9 @@ function addonTable.Skins.Initialize()
         currentSkin.initialized = true
       end
       addonTable.ViewManagement.GenerateFrameGroup(currentSkinKey)
-      if bagsShown then
-        addonTable.CallbackRegistry:TriggerEvent("BagShow", lastCharacter)
-      end
-      addonTable.CallbackRegistry:TriggerEvent("ShowCustomise")
+      addonTable.CustomiseDialog.Toggle()
     end
-  end)]]
+  end)
 end
 
 function addonTable.Skins.AddFrame(regionType, region, tags)

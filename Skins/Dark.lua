@@ -1,6 +1,8 @@
 ---@class addonTableChattynator
 local addonTable = select(2, ...)
 
+local enableHooks = true
+
 local intensity = 0.8
 local hoverColor = {r = 59/255, g = 210/255, b = 237/255}
 local voiceActiveColor = {r = 33/255, g = 209/255, b = 45/255}
@@ -18,16 +20,28 @@ local skinners = {
     button:ClearHighlightTexture()
 
     button:HookScript("OnEnter", function()
+      if not enableHooks then
+        return
+      end
       button.Icon:SetVertexColor(hoverColor.r, hoverColor.g, hoverColor.b)
     end)
     button:HookScript("OnLeave", function()
+      if not enableHooks then
+        return
+      end
       button.Icon:SetVertexColor(intensity, intensity, intensity)
     end)
 
     button:HookScript("OnMouseDown", function()
+      if not enableHooks then
+        return
+      end
       button.Icon:AdjustPointsOffset(2, -2)
     end)
     button:HookScript("OnMouseUp", function()
+      if not enableHooks then
+        return
+      end
       button.Icon:AdjustPointsOffset(-2, 2)
     end)
 
@@ -41,6 +55,9 @@ local skinners = {
       button.FriendsButton:SetPoint("TOP", 0, -2)
     elseif tags.channels then
       hooksecurefunc(button, "SetIconToState", function(self, state)
+        if not enableHooks then
+          return
+        end
         button:SetNormalTexture("Interface/AddOns/Chattynator/Assets/ChatButton.png")
         button:GetNormalTexture():SetVertexColor(0.15, 0.15, 0.15)
         button:GetNormalTexture():SetDrawLayer("BACKGROUND")
@@ -60,14 +77,23 @@ local skinners = {
         end
       end)
       button:HookScript("OnEnter", function()
+        if not enableHooks then
+          return
+        end
         button.Icon:SetVertexColor(hoverColor.r, hoverColor.g, hoverColor.b)
       end)
       button:HookScript("OnLeave", function()
+        if not enableHooks then
+          return
+        end
         button:UpdateVisibleState()
       end)
       button:UpdateVisibleState()
     elseif tags.voiceChatNoAudio or tags.voiceChatMuteMic then
       hooksecurefunc(button, "SetIconToState", function(self, state)
+        if not enableHooks then
+          return
+        end
         button:SetNormalTexture("Interface/AddOns/Chattynator/Assets/ChatButton.png")
         button:GetNormalTexture():SetVertexColor(0.15, 0.15, 0.15)
         button:GetNormalTexture():SetDrawLayer("BACKGROUND")
@@ -112,6 +138,9 @@ local skinners = {
       frame.background:SetVertexColor(frame.backgroundColor.r, frame.backgroundColor.g, frame.backgroundColor.b)
     end
     hooksecurefunc(frame, "SetBackgroundColor", function(_, r, g, b)
+      if not enableHooks then
+        return
+      end
       frame.background:SetVertexColor(r, g, b)
     end)
   end,
@@ -181,6 +210,9 @@ local skinners = {
       tab:SetWidth(math.max(tab:GetFontString():GetUnboundedStringWidth(), 80) + tabPadding)
     end
     hooksecurefunc(tab, "SetText", function()
+      if not enableHooks then
+        return
+      end
       if tab.minWidth then
         tab:SetWidth(tab:GetFontString():GetUnboundedStringWidth() + tabPadding)
       else
@@ -189,6 +221,9 @@ local skinners = {
     end)
     tab:GetFontString():SetPoint("TOP", 0, -5)
     tab:HookScript("OnEnter", function()
+      if not enableHooks then
+        return
+      end
       if tab.selected then
         tab.Left:SetAlpha(1)
         tab.Right:SetAlpha(1)
@@ -201,6 +236,9 @@ local skinners = {
       end
     end)
     local function SetSelected(_, state)
+      if not enableHooks then
+        return
+      end
       if state then
         tab.Left:SetAlpha(0.8)
         tab.Right:SetAlpha(0.8)
@@ -214,10 +252,16 @@ local skinners = {
       end
     end
     tab:HookScript("OnLeave", function()
+      if not enableHooks then
+        return
+      end
       SetSelected(tab, tab.selected)
     end)
     hooksecurefunc(tab, "SetSelected", SetSelected)
     hooksecurefunc(tab, "SetColor", function(_, r, g, b)
+      if not enableHooks then
+        return
+      end
       tab.Left:SetVertexColor(r, g, b)
       tab.Right:SetVertexColor(r, g, b)
       tab.Middle:SetVertexColor(r, g, b)
@@ -253,6 +297,9 @@ local skinners = {
     alpha3:SetDuration(0.8)
     alpha3:SetOrder(1)
     hooksecurefunc(tab, "SetFlashing", function(_, state)
+      if not enableHooks then
+        return
+      end
       tab.FlashAnimation:SetPlaying(state)
       tab.LeftFlash:SetShown(state)
       tab.RightFlash:SetShown(state)

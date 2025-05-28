@@ -111,6 +111,7 @@ function addonTable.Core.Initialize()
   end
 
   addonTable.Core.ApplyOverrides()
+  addonTable.Core.InitializeChatCommandLogging()
   addonTable.CustomiseDialog.Initialize()
 end
 

@@ -4,7 +4,7 @@
 ## Author: plusmouse
 ## IconTexture: Interface\AddOns\Chattynator\Assets\Logo.png
 ## SavedVariables: CHATTYNATOR_CONFIG, CHATTYNATOR_MESSAGE_LOG
-## SavedVariablesPerCharacter: CHATTYNATOR_CURRENT_PROFILE
+## SavedVariablesPerCharacter: CHATTYNATOR_CURRENT_PROFILE, CHATTYNATOR_COMMAND_HISTORY
 
 ## Category-enUS: Chat
 ## Category-deDE: Chat
@@ -37,6 +37,7 @@ Core/Messages.lua
 Core/Overrides.lua
 Core/Initialize.lua
 Core/SlashCmd.lua
+Core/CommandHistory.lua
 Core/API.lua
 
 Skins/Main.lua

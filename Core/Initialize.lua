@@ -128,6 +128,7 @@ function addonTable.Core.MakeChatFrame()
 end
 
 function addonTable.Core.DeleteChatFrame(id)
+  addonTable.allChatFrames[id]:SetID(0)
   addonTable.ChatFramePool:Release(addonTable.allChatFrames[id])
   table.remove(addonTable.Config.Get(addonTable.Config.Options.WINDOWS), id)
   table.remove(addonTable.allChatFrames, id)

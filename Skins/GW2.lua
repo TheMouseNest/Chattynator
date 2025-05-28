@@ -427,6 +427,12 @@ end
 local function LoadSkin()
   GW = GW2_ADDON
   addonTable.Core.OverwriteDefaultFont("GW2_UI_Chat")
+
+  addonTable.Messages:AddLiveModifier(function(data)
+    if data.typeInfo.channel then
+      data.text = data.text:gsub("|Hchannel:channel(.-)|h(.-)|h", "|Hchannel:channel%1|h|cffd0d0d0%2|r|h")
+    end
+  end)
 end
 
 if addonTable.Skins.IsAddOnLoading("GW2_UI") then

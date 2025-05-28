@@ -14,6 +14,8 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   self.spacing = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_SPACING)
   self.timestampFormat = addonTable.Config.Get(addonTable.Config.Options.TIMESTAMP_FORMAT)
 
+  self.liveModifiers = {}
+
   self.fontKey = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT)
   self.font = addonTable.Core.GetFontByID(self.fontKey)
   self.scalingFactor = addonTable.Core.GetFontScalingFactor()
@@ -42,6 +44,7 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   self.messages = CopyTable(CHATTYNATOR_MESSAGE_LOG.current)
   self.newMessageStartPoint = #self.messages + 1
   self.formatters = {}
+  self.messagesProcessed = {}
   self.messageCount = #self.messages
 
   self.awaitingRecorderSet = {}
@@ -119,6 +122,7 @@ function addonTable.MessagesMonitorMixin:OnLoad()
       if id == lineID then
         found = true
         message.text = message.Formatter(C_ChatInfo.GetChatLineText(lineID))
+        self.messagesProcessed[index] = nil
         break
       end
     end
@@ -275,7 +279,8 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
     local name, realm = UnitFullName("player")
     addonTable.Data.CharacterName = name .. "-" .. realm
     for _, data in ipairs(self.awaitingRecorderSet) do
-      data.recordedBy = addonTable.Data.CharacterName
+      data[1].recordedBy = addonTable.Data.CharacterName
+      self.messagesProcessed[data[2]] = nil
     end
 
     self:UpdateChannels()
@@ -290,6 +295,32 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
       channel = channelName and {name = channelName, isDefault = self.defaultChannels[channelName]} or nil,
     })
     ChatFrame_OnEvent(self, eventName, ...)
+  end
+end
+
+function addonTable.MessagesMonitorMixin:AddLiveModifier(func)
+  local index = tIndexOf(self.liveModifiers, func)
+  if not index then
+    self.messagesProcessed = {}
+    table.insert(self.liveModifiers, func)
+    if self:GetScript("OnUpdate") == nil then
+      self:SetScript("OnUpdate", function()
+        addonTable.CallbackRegistry:TriggerEvent("Render")
+      end)
+    end
+  end
+end
+
+function addonTable.MessagesMonitorMixin:RemoveLiveModifier(func)
+  local index = tIndexOf(self.liveModifiers, func)
+  if index then
+    self.messagesProcessed = {}
+    table.remove(self.liveModifiers, index)
+    if self:GetScript("OnUpdate") == nil then
+      self:SetScript("OnUpdate", function()
+        addonTable.CallbackRegistry:TriggerEvent("Render")
+      end)
+    end
   end
 end
 
@@ -348,17 +379,29 @@ end
 
 function addonTable.MessagesMonitorMixin:GetMessage(reverseIndex)
   local index = self.messageCount - reverseIndex + 1
-  return self.messages[index]
+  if not self.messages[index] then
+    return
+  end
+  if self.messagesProcessed[index] then
+    return self.messagesProcessed[index]
+  end
+  local new = CopyTable(self.messages[index])
+  for _, func in ipairs(self.liveModifiers) do
+    func(new)
+  end
+  self.heights[index] = nil
+  self.messagesProcessed[index] = new
+  return new
 end
 
 function addonTable.MessagesMonitorMixin:GetMessageHeight(reverseIndex)
   local index = self.messageCount - reverseIndex + 1
-  if not self.heights[index] and self.messages[index] then
+  if not self.heights[index] and self.messagesProcessed[index] then
     local height = {}
     self.heights[index] = height
     for width in pairs(self.widths) do
       self.sizingFontString:SetWidth(width + 0.1)
-      self.sizingFontString:SetText(self.messages[index].text)
+      self.sizingFontString:SetText(self.messagesProcessed[index].text)
       local basicHeight = (self.sizingFontString:GetLineHeight() + self.sizingFontString:GetSpacing()) * self.sizingFontString:GetNumLines()
       local stringHeight = self.sizingFontString:GetStringHeight()
       height[width] = math.max(basicHeight, stringHeight, self.sizingFontString:GetLineHeight())
@@ -401,13 +444,16 @@ function addonTable.MessagesMonitorMixin:ReduceMessages()
   local oldMessages = self.messages
   local oldHeights = self.heights
   local oldFormatters = self.formatters
+  local oldProcessed = self.messagesProcessed
   self.messages = {}
   self.heights = {}
   self.formatters = {}
+  self.messagesProcessed = {}
   for i = self.messageCount - conversionThreshold / 2, self.messageCount do
     table.insert(self.messages, oldMessages[i])
     self.heights[#self.messages] = oldHeights[i]
     self.formatters[#self.messages] = oldFormatters[i]
+    self.messagesProcessed[#self.messages] = oldProcessed[i]
   end
   self.newMessageStartPoint = self.newMessageStartPoint - (#oldMessages - #self.messages)
   self.messageCount = #self.messages
@@ -483,7 +529,7 @@ function addonTable.MessagesMonitorMixin:AddMessage(text, r, g, b, id, _, _, _, 
     recordedBy = addonTable.Data.CharacterName or "",
   }
   if addonTable.Data.CharacterName == nil then
-    table.insert(self.awaitingRecorderSet, data)
+    table.insert(self.awaitingRecorderSet, {data, self.messageCount + 1})
   end
   self.incomingType = nil
   table.insert(self.messages, data)

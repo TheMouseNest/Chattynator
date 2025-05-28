@@ -377,7 +377,7 @@ function addonTable.MessagesMonitorMixin:UpdateStores()
     self:CleanStore(newStore, CHATTYNATOR_MESSAGE_LOG.cleanIndex)
   end
   local newCurrent = {}
-  for i = self.messageCount - conversionThreshold / 2, self.messageCount do
+  for i = self.storeCount - conversionThreshold / 2, self.storeCount do
     table.insert(newCurrent, self.store[i])
   end
   table.insert(CHATTYNATOR_MESSAGE_LOG.historical, {

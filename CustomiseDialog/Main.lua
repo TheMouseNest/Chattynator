@@ -2,14 +2,6 @@
 local addonTable = select(2, ...)
 
 local customisers = {}
-local filtersToRefresh = {}
-addonTable.CallbackRegistry:RegisterCallback("TabSelected", function(_, windowIndex, tabIndex)
-  for _, frame in ipairs(filtersToRefresh) do
-    if frame and frame:IsShown() then
-      frame:ShowSettings(windowIndex, tabIndex)
-    end
-  end
-end)
 
 local function SetupGeneral(parent)
   local container = CreateFrame("Frame", nil, parent)
@@ -301,25 +293,10 @@ local function SetupFont(parent)
   return container
 end
 
-local function SetupFilters(parent)
-  local filters = addonTable.CustomiseDialog.SetupTabFilters(parent)
-
-  table.insert(filtersToRefresh, filters)
-
-  filters:ShowSettings(1, 1)
-
-  filters:HookScript("OnShow", function()
-    filters:ShowSettings(1, 1)
-  end)
-
-  return filters
-end
-
 local TabSetups = {
   {name = GENERAL, callback = SetupGeneral},
   {name = addonTable.Locales.LAYOUT, callback = SetupLayout},
   {name = addonTable.Locales.FONT, callback = SetupFont},
-  {name = FILTERS, callback = SetupFilters},
 }
 
 function addonTable.CustomiseDialog.Toggle()

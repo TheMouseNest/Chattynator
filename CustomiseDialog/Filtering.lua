@@ -214,3 +214,47 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
 
   return container
 end
+
+local customisers = {}
+function addonTable.CustomiseDialog.ToggleTabFilters(windowIndex, tabIndex)
+  if customisers[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)] then
+    local frame = customisers[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)]
+    frame:Show()
+    frame.filters:ShowSettings(windowIndex, tabIndex)
+    return
+  end
+
+  local frame = CreateFrame("Frame", "ChattynatorCustomiseTabDialog" .. addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN), UIParent, "ButtonFrameTemplate")
+  frame:SetToplevel(true)
+  customisers[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)] = frame
+  table.insert(UISpecialFrames, frame:GetName())
+  frame:SetSize(600, 700)
+  frame:SetPoint("CENTER")
+  frame:Raise()
+
+  frame:SetMovable(true)
+  frame:SetClampedToScreen(true)
+  frame:RegisterForDrag("LeftButton")
+  frame:SetScript("OnDragStart", function()
+    frame:StartMoving()
+    frame:SetUserPlaced(false)
+  end)
+  frame:SetScript("OnDragStop", function()
+    frame:StopMovingOrSizing()
+    frame:SetUserPlaced(false)
+  end)
+
+  ButtonFrameTemplate_HidePortrait(frame)
+  ButtonFrameTemplate_HideButtonBar(frame)
+  frame.Inset:Hide()
+  frame:EnableMouse(true)
+  frame:SetScript("OnMouseWheel", function() end)
+
+  frame:SetTitle(addonTable.Locales.CUSTOMISE_CHATTYNATOR_TAB)
+
+  frame.filters = addonTable.CustomiseDialog.SetupTabFilters(frame)
+  frame.filters:SetPoint("TOPLEFT", 0 + addonTable.Constants.ButtonFrameOffset, -35)
+  frame.filters:SetPoint("BOTTOMRIGHT")
+
+  frame.filters:ShowSettings(windowIndex, tabIndex)
+end

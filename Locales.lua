@@ -38,6 +38,7 @@ L["LAYOUT"] = "Layout"
 L["FONT"] = "Font"
 
 L["CUSTOMISE_CHATTYNATOR"] = "Customise Chattynator"
+L["CUSTOMISE_CHATTYNATOR_TAB"] = "Customise Chattynator Tab"
 L["CTRL_C_TO_COPY"] = "Ctrl+C to copy"
 L["JOIN_THE_DISCORD"] = "Join the Discord"
 L["DISCORD_DESCRIPTION"] = "Updates, feature suggestions and support"

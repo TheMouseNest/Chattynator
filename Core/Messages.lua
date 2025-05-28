@@ -163,6 +163,7 @@ function addonTable.MessagesMonitorMixin:OnLoad()
     ChatFrame_CheckAddChannel = function(_, _, channelID)
       return true or ChatFrame_AddChannel(self, C_ChatInfo.GetChannelShortcutForChannelID(channelID)) ~= nil
     end,
+    ChatFrame_UpdateDefaultChatTarget = function() end,
   }
 
   setmetatable(env, {__index = _G, __newindex = _G})

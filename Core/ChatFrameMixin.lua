@@ -10,7 +10,7 @@ function addonTable.ChatFrameMixin:OnLoad()
   self:SetHyperlinkPropagateToParent(true)
   self:SetMovable(true)
   self:SetResizable(true)
-  self:SetResizeBounds(400, addonTable.Constants.IsRetail and 270 or 240)
+  self:SetResizeBounds(240, 140)
   self:SetClampedToScreen(true)
 
   self.ScrollBox = CreateFrame("Frame", nil, self, "WowScrollBoxList")
@@ -20,6 +20,7 @@ function addonTable.ChatFrameMixin:OnLoad()
   end)
   self.currentStringWidth = 0
   self:SetScript("OnSizeChanged", function()
+    self:UpdateButtons()
     self:SavePosition()
     self:SaveSize()
     self:UpdateWidth()
@@ -185,6 +186,8 @@ function addonTable.ChatFrameMixin:OnLoad()
     end
   end)
 
+  addonTable.CallbackRegistry:RegisterCallback("SkinLoaded", self.UpdateButtons, self)
+
   addonTable.Skins.AddFrame("ChatFrame", self)
 end
 
@@ -281,7 +284,7 @@ function addonTable.ChatFrameMixin:RepositionBlizzardWidgets()
       lastButton = b
     end
   end
-  local buttons = {}
+  self.buttons = {}
 
   if self:GetID() == 1 and not addonTable.Data.BlizzardButtonsAssigned then
     addonTable.Data.BlizzardButtonsAssigned = true
@@ -317,7 +320,7 @@ function addonTable.ChatFrameMixin:RepositionBlizzardWidgets()
       ChatFrameChannelButton:SetScript("OnMouseDown", nil)
       ChatFrameChannelButton:SetScript("OnMouseUp", nil)
       addonTable.Skins.AddFrame("ChatButton", ChatFrameChannelButton, {"channels"})
-      table.insert(buttons, ChatFrameChannelButton)
+      table.insert(self.buttons, ChatFrameChannelButton)
 
       ChatFrameToggleVoiceDeafenButton:SetParent(self)
       ChatFrameToggleVoiceDeafenButton:ClearAllPoints()
@@ -331,7 +334,7 @@ function addonTable.ChatFrameMixin:RepositionBlizzardWidgets()
     ChatFrameMenuButton:SetScript("OnMouseDown", nil)
     ChatFrameMenuButton:SetScript("OnMouseUp", nil)
     addonTable.Skins.AddFrame("ChatButton", ChatFrameMenuButton, {"menu"})
-    table.insert(buttons, ChatFrameMenuButton)
+    table.insert(self.buttons, ChatFrameMenuButton)
 
     ChatFrameMenuButton:SetScript("OnEnter", function()
       GameTooltip:SetOwner(ChatFrameMenuButton, "ANCHOR_RIGHT")
@@ -360,16 +363,16 @@ function addonTable.ChatFrameMixin:RepositionBlizzardWidgets()
   end
 
   self.SearchButton = MakeButton(SEARCH)
-  table.insert(buttons, self.SearchButton)
+  table.insert(self.buttons, self.SearchButton)
   addonTable.Skins.AddFrame("ChatButton", self.SearchButton, {"search"})
   self.CopyButton = MakeButton(addonTable.Locales.COPY_CHAT)
-  table.insert(buttons, self.CopyButton)
+  table.insert(self.buttons, self.CopyButton)
   addonTable.Skins.AddFrame("ChatButton", self.CopyButton, {"copy"})
   self.SettingsButton = MakeButton(addonTable.Locales.GLOBAL_SETTINGS)
   self.SettingsButton:SetScript("OnClick", function()
     addonTable.CustomiseDialog.Toggle()
   end)
-  table.insert(buttons, self.SettingsButton)
+  table.insert(self.buttons, self.SettingsButton)
   addonTable.Skins.AddFrame("ChatButton", self.SettingsButton, {"settings"})
 
   self.ScrollToBottomButton = MakeButton(addonTable.Locales.SCROLL_TO_END)
@@ -379,7 +382,7 @@ function addonTable.ChatFrameMixin:RepositionBlizzardWidgets()
   end)
   addonTable.Skins.AddFrame("ChatButton", self.ScrollToBottomButton, {"scrollToEnd"})
 
-  ArrangeButtons(buttons)
+  ArrangeButtons(self.buttons)
 end
 
 function addonTable.ChatFrameMixin:SetFilter(func)
@@ -412,6 +415,15 @@ function addonTable.ChatFrameMixin:FilterMessages()
     data = addonTable.Messages:GetMessage(index)
   end
   return result1, result2
+end
+
+function addonTable.ChatFrameMixin:UpdateButtons()
+  local heightAvailable = self.ScrollBox:GetHeight() - 8 - self.ScrollToBottomButton:GetHeight() - 2
+  local currentHeight = 0
+  for _, b in ipairs(self.buttons) do
+    currentHeight = currentHeight + b:GetHeight() + 5
+    b:SetShown(currentHeight <= heightAvailable)
+  end
 end
 
 function addonTable.ChatFrameMixin:ApplyFlashing(newMessages)

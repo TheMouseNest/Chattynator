@@ -173,11 +173,10 @@ local skinners = {
     if tab:GetFontString() == nil then
       tab:SetText(" ")
     end
-    local tabPadding = 30
     if tab.minWidth then
-      tab:SetWidth(tab:GetFontString():GetUnboundedStringWidth() + tabPadding)
+      tab:SetWidth(tab:GetFontString():GetUnboundedStringWidth() + addonTable.Constants.TabPadding)
     else
-      tab:SetWidth(math.max(tab:GetFontString():GetUnboundedStringWidth(), 80) + tabPadding)
+      tab:SetWidth(math.max(tab:GetFontString():GetUnboundedStringWidth(), addonTable.Constants.MinTabWidth) + addonTable.Constants.TabPadding)
     end
     local SetText = tab.SetText
     local text = tab:GetText()
@@ -187,9 +186,9 @@ local skinners = {
       end
       text = cleanText
       if tab.minWidth then
-        tab:SetWidth(tab:GetFontString():GetUnboundedStringWidth() + tabPadding)
+        tab:SetWidth(tab:GetFontString():GetUnboundedStringWidth() + addonTable.Constants.TabPadding)
       else
-        tab:SetWidth(math.max(tab:GetFontString():GetUnboundedStringWidth(), 80) + tabPadding)
+        tab:SetWidth(math.max(tab:GetFontString():GetUnboundedStringWidth(), addonTable.Constants.MinTabWidth) + addonTable.Constants.TabPadding)
       end
     end)
     hooksecurefunc(tab, "SetSelected", function(_, state)

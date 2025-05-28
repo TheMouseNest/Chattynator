@@ -9,7 +9,9 @@ addonTable.Constants = {
   --IsEra = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC,
   IsClassic = WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE,
 
-  NewTabMarkup = CreateTextureMarkup("Interface/AddOns/Chattynator/Assets/NewTab.png", 40, 40, 15, 15, 0, 1, 0, 1)
+  NewTabMarkup = CreateTextureMarkup("Interface/AddOns/Chattynator/Assets/NewTab.png", 40, 40, 15, 15, 0, 1, 0, 1),
+  MinTabWidth = 20,
+  TabPadding = 30,
 }
 if addonTable.Constants.IsRetail then
   addonTable.Constants.ButtonFrameOffset = 5
@@ -24,7 +26,9 @@ addonTable.Constants.Events = {
 
   "SettingChanged",
   "RefreshStateChange",
-  "MessageDisplayChanged"
+  "MessageDisplayChanged",
+
+  "SkinLoaded",
 }
 
 addonTable.Constants.RefreshReason = {

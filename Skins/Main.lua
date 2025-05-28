@@ -46,6 +46,7 @@ function addonTable.Skins.Initialize()
     for _, details in ipairs(addonTable.Skins.allFrames) do
       xpcall(currentSkinner, CallErrorHandler, details)
     end
+    addonTable.CallbackRegistry:TriggerEvent("SkinLoaded")
   end)
 
   addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
@@ -65,6 +66,7 @@ function addonTable.Skins.Initialize()
       end
       addonTable.ViewManagement.GenerateFrameGroup(currentSkinKey)
       addonTable.CustomiseDialog.Toggle()
+      addonTable.CallbackRegistry:TriggerEvent("SkinLoaded")
     end
   end)
 end

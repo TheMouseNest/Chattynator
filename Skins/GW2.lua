@@ -70,9 +70,9 @@ local skinners = {
       tab:SetText(GW2NewTabMarkup)
     end
     if tab.minWidth then
-      tab:SetWidth(tab:GetFontString():GetUnboundedStringWidth() + tabPadding)
+      tab:SetWidth(tab:GetFontString():GetUnboundedStringWidth() + addonTable.Constants.TabPadding)
     else
-      tab:SetWidth(math.max(tab:GetFontString():GetUnboundedStringWidth(), 80) + tabPadding)
+      tab:SetWidth(math.max(tab:GetFontString():GetUnboundedStringWidth(), addonTable.Constants.MinTabWidth) + addonTable.Constants.TabPadding)
     end
 
     local SetText = tab.SetText
@@ -84,9 +84,9 @@ local skinners = {
         SetText(tab, GW2NewTabMarkup)
       end
       if tab.minWidth then
-        tab:SetWidth(tab:GetFontString():GetUnboundedStringWidth() + tabPadding)
+        tab:SetWidth(tab:GetFontString():GetUnboundedStringWidth() + addonTable.Constants.TabPadding)
       else
-        tab:SetWidth(math.max(tab:GetFontString():GetUnboundedStringWidth(), 80) + tabPadding)
+        tab:SetWidth(math.max(tab:GetFontString():GetUnboundedStringWidth(), addonTable.Constants.MinTabWidth) + addonTable.Constants.TabPadding)
       end
     end)
 

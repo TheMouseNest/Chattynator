@@ -10,7 +10,7 @@ function addonTable.ChatFrameMixin:OnLoad()
   self:SetHyperlinkPropagateToParent(true)
   self:SetMovable(true)
   self:SetResizable(true)
-  self:SetResizeBounds(400, 270)
+  self:SetResizeBounds(400, addonTable.Constants.IsRetail and 270 or 240)
   self:SetClampedToScreen(true)
 
   self.ScrollBox = CreateFrame("Frame", nil, self, "WowScrollBoxList")

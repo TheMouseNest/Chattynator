@@ -427,6 +427,16 @@ end
 local function LoadSkin()
   GW = GW2_ADDON
   addonTable.Core.OverwriteDefaultFont("GW2_UI_Chat")
+
+  addonTable.Messages:AddMessageFilter(function(data)
+    if not enableHooks then
+      return
+    end
+    data.text = data.text:gsub("|Hchannel:(.-)|h%[(.-)%]|h", function(channelLink, channelTag)
+      return string.format("|Hchannel:%s|h|c%s[%s]|r|h", channelLink, "FFD0D0D0", channelTag)
+    end)
+    return true
+  end)
 end
 
 if addonTable.Skins.IsAddOnLoading("GW2_UI") then

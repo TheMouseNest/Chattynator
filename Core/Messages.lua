@@ -44,6 +44,8 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   self.formatters = {}
   self.messageCount = #self.messages
 
+  self.customFilters = {}
+
   self.awaitingRecorderSet = {}
   self.pending = {}
 
@@ -453,6 +455,10 @@ function addonTable.MessagesMonitorMixin:SetIncomingType(eventType)
   self.incomingType = eventType
 end
 
+function addonTable.MessagesMonitorMixin:AddMessageFilter(func)
+  table.insert(self.customFilters, func)
+end
+
 local ignoreTypes = {
   ["ADDON"] = true,
   ["SYSTEM"] = true,
@@ -485,6 +491,10 @@ function addonTable.MessagesMonitorMixin:AddMessage(text, r, g, b, id, _, _, _, 
     table.insert(self.awaitingRecorderSet, data)
   end
   self.incomingType = nil
+  local state = true
+  for _, f in ipairs(self.customFilters) do
+    state = state and f(data)
+  end
   table.insert(self.messages, data)
   self.formatters[self.messageCount + 1] = {
     formatter = Formatter,

@@ -411,8 +411,9 @@ function addonTable.MessagesMonitorMixin:ReduceMessages()
 end
 
 function addonTable.MessagesMonitorMixin:UpdateChannels()
-  self.channelList = {} -- Used to generate channel messages in Blizzard handlers
-  self.zoneChannelList = {} -- Not used in anything relevant to us, so we don't fill it
+  -- Setup parameters for Blizzard code to show channel messages
+  self.channelList = {}
+  self.zoneChannelList = {}
   local channelDetails = {GetChannelList()}
   if #channelDetails > 0 then
     for i = 1, #channelDetails, 3 do

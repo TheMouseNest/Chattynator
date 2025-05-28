@@ -52,6 +52,7 @@ L["LOCK_CHAT"] = "Lock chat"
 
 L["MESSAGE_SPACING"] = "Message spacing"
 L["TIMESTAMP_FORMAT"] = "Timestamp format"
+L["SHOW_TIMESTAMP_SEPARATOR"] = "Show timestamp separator"
 
 L["MESSAGE_FONT"] = "Message font"
 L["MESSAGE_FONT_SIZE"] = "Message font size"

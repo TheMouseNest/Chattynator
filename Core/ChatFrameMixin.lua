@@ -26,6 +26,7 @@ function addonTable.ChatFrameMixin:OnLoad()
     self:Render()
   end)
   self.updatedFrames = {}
+  self.showTimestampSeparator = addonTable.Config.Get(addonTable.Config.Options.SHOW_TIMESTAMP_SEPARATOR)
   view:SetElementInitializer("Frame", function(frame, data)
     if not frame.initialized then
       frame.initialized = true
@@ -92,6 +93,8 @@ function addonTable.ChatFrameMixin:OnLoad()
 
       frame.Timestamp:SetFontObject(addonTable.Messages.font)
       frame.Timestamp:SetTextScale(addonTable.Messages.scalingFactor)
+
+      frame.Bar:SetShown(self.showTimestampSeparator)
       self.updatedFrames[frame] = true
     end
     frame.data = data
@@ -159,6 +162,13 @@ function addonTable.ChatFrameMixin:OnLoad()
     if self:GetID() ~= 0 and refreshState[addonTable.Constants.RefreshReason.Tabs] then
       addonTable.Core.InitializeTabs(self)
       self:Render()
+    end
+    if refreshState[addonTable.Constants.RefreshReason.MessageWidget] then
+      self.updatedFrames = {}
+      self.showTimestampSeparator = addonTable.Config.Get(addonTable.Config.Options.SHOW_TIMESTAMP_SEPARATOR)
+      if self:GetID() ~= 0 then
+        self:Render()
+      end
     end
     if refreshState[addonTable.Constants.RefreshReason.Locked] then
       self.resizeWidget:SetShown(not addonTable.Config.Get(addonTable.Config.Options.LOCKED))

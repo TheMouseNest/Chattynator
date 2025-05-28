@@ -30,5 +30,6 @@ addonTable.Constants.Events = {
 addonTable.Constants.RefreshReason = {
   Tabs = 1,
   MessageFont = 2,
-  Locked = 3,
+  MessageWidget = 3,
+  Locked = 1000,
 }

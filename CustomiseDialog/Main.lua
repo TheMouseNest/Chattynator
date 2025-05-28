@@ -237,11 +237,23 @@ local function SetupLayout(parent)
     }
     timestampDropdown:Init(entries, values)
   end
+  table.insert(allFrames, timestampDropdown)
+
+  local showSeparator = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_TIMESTAMP_SEPARATOR, 28, function(state)
+    addonTable.Config.Set(addonTable.Config.Options.SHOW_TIMESTAMP_SEPARATOR, state)
+  end)
+  showSeparator.option = addonTable.Config.Options.SHOW_TIMESTAMP_SEPARATOR
+  showSeparator:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
+  table.insert(allFrames, showSeparator)
 
   container:SetScript("OnShow", function()
     for _, f in ipairs(allFrames) do
       if f.SetValue then
-        f:SetValue(addonTable.Config.Get(f.option))
+        if f.option then
+          f:SetValue(addonTable.Config.Get(f.option))
+        else
+          f:SetValue()
+        end
       end
     end
   end)

@@ -83,6 +83,7 @@ local settings = {
 
   MESSAGE_SPACING = {key = "message_spacing", default = 5},
   TIMESTAMP_FORMAT = {key = "timestamp_format", default = "%X"},
+  SHOW_TIMESTAMP_SEPARATOR = {key = "show_timestamp_separator", default = true, refresh = {addonTable.Constants.RefreshReason.MessageWidget}},
 
   MESSAGE_FONT = {key = "message_font", default = "default", refresh = {addonTable.Constants.RefreshReason.MessageFont}},
   MESSAGE_FONT_SIZE = {key = "message_font_size", default = 14, refresh = {addonTable.Constants.RefreshReason.MessageFont}},

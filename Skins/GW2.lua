@@ -40,15 +40,17 @@ local skinners = {
     frame:SetFrameStrata("HIGH")
     if tags.customise then
       AddHeader(frame, "Interface/AddOns/GW2_UI/textures/character/settings-window-icon")
-      frame.Tabs[1]:SetPoint("TOPLEFT", 65, -25)
-      frame:HookScript("OnShow", function(self)
-        if not enableHooks then
-          return
-        end
-        local tabsWidth = self.Tabs[#self.Tabs]:GetRight() - self.Tabs[1]:GetLeft()
+      if frame.Tabs then
+        frame.Tabs[1]:SetPoint("TOPLEFT", 65, -25)
+        frame:HookScript("OnShow", function(self)
+          if not enableHooks then
+            return
+          end
+          local tabsWidth = self.Tabs[#self.Tabs]:GetRight() - self.Tabs[1]:GetLeft()
 
-        self:SetWidth(math.max(self:GetWidth(), tabsWidth + 90))
-      end)
+          self:SetWidth(math.max(self:GetWidth(), tabsWidth + 90))
+        end)
+      end
     else
       GW.HandlePortraitFrame(frame, true)
     end

@@ -257,4 +257,6 @@ function addonTable.CustomiseDialog.ToggleTabFilters(windowIndex, tabIndex)
   frame.filters:SetPoint("BOTTOMRIGHT")
 
   frame.filters:ShowSettings(windowIndex, tabIndex)
+
+  addonTable.Skins.AddFrame("ButtonFrame", frame, {"customise"})
 end

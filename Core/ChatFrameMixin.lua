@@ -103,6 +103,7 @@ function addonTable.ChatFrameMixin:OnLoad()
     end
     frame.data = data
     frame.Timestamp:SetText(date(addonTable.Messages.timestampFormat, data.timestamp))
+    frame.DisplayString:SetSpacing(0)
     frame.DisplayString:SetText(data.text)
     frame.DisplayString:SetTextColor(data.color.r, data.color.g, data.color.b)
     frame.FadeAnimation:Stop()

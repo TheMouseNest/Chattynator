@@ -257,11 +257,18 @@ function addonTable.ChatFrameMixin:SaveSize()
   addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].size = {x, y}
 end
 
-function addonTable.ChatFrameMixin:UpdateAlphas()
+function addonTable.ChatFrameMixin:UpdateAlphas(elapsed)
   if self.pauseAlphas then
     return
   end
-  self:SetScript("OnUpdate", nil)
+  if elapsed then
+    self.accummulatedTime = (self.accummulatedTime or 0) + elapsed
+    if self.accummulatedTime < 1 then
+      return
+    else
+      self.accummulatedTime = 0
+    end
+  end
 
   local fadeTime = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FADE_TIME)
   local fadeEnabled = addonTable.Config.Get(addonTable.Config.Options.ENABLE_MESSAGE_FADE)
@@ -293,7 +300,7 @@ function addonTable.ChatFrameMixin:UpdateAlphas()
       elseif f:GetAlpha() ~= 1 then
         targetAlpha = 1
       end
-      if fadeEnabled and (targetAlpha or f:GetAlpha() > 0) then
+      if fadeEnabled and not self.scrolling and (targetAlpha or f:GetAlpha() > 0) then
         self:SetScript("OnUpdate", self.UpdateAlphas)
       end
 

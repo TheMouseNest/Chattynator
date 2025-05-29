@@ -11,6 +11,4 @@ plain-copy:
   - Core
   - CustomiseDialog
   - Skins
-required-dependencies:
-  - syndicator
 enable-toc-creation: yes

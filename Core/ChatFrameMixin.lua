@@ -114,6 +114,9 @@ function addonTable.ChatFrameMixin:OnLoad()
   self.ScrollBox:GetScrollTarget():SetHyperlinkPropagateToParent(true)
   self.ScrollBox:GetScrollTarget():SetPropagateMouseClicks(true)
   self.ScrollBox:GetScrollTarget():SetPropagateMouseMotion(true)
+  self.ScrollBox:HookScript("OnMouseWheel", function()
+    self:ResetFading()
+  end)
   self.ScrollBox:SetPanExtent(50)
   self.ScrollBox:SetFlattensRenderLayers(true)
 
@@ -133,7 +136,6 @@ function addonTable.ChatFrameMixin:OnLoad()
     self.ScrollToBottomButton:SetShown(self.scrolling)
     if self.scrolling then
       self:ResetFading()
-      self.currentFadeOffsetTime = GetTime()
     end
     self:UpdateAlphas()
   end)
@@ -214,6 +216,7 @@ function addonTable.ChatFrameMixin:Reset()
   self.filterFunc = nil
   self.heights = {}
   self:ResetFading()
+  self.currentFadeOffsetTime = 0
 
   self.tabIndex = 1
   self.Tabs = {}
@@ -228,7 +231,7 @@ end
 
 function addonTable.ChatFrameMixin:ResetFading()
   self.fadeTriggered = {}
-  self.currentFadeOffsetTime = 0
+  self.currentFadeOffsetTime = GetTime()
 end
 
 function addonTable.ChatFrameMixin:UpdateWidth()

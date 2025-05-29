@@ -290,11 +290,12 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
     addonTable.CallbackRegistry:TriggerEvent("Render")
   else
     local channelName = self.channelMap[select(8, ...)]
+    local channelID = select(7, ...)
     self:SetIncomingType({
       type = ChatTypeGroupInverted[eventName] or "NONE",
       event = eventName,
       player = select(2, ...),
-      channel = channelName and {name = channelName, isDefault = self.defaultChannels[channelName]} or nil,
+      channel = channelName and {name = channelName, isDefault = self.defaultChannels[channelName], zoneID = channelID} or nil,
     })
     self.lockType = true
     ChatFrame_OnEvent(self, eventName, ...)
@@ -519,7 +520,7 @@ local ignoreEvents = {
 }
 
 function addonTable.MessagesMonitorMixin:ShouldLog(data)
-  return not ignoreTypes[data.typeInfo.type] and not ignoreEvents[data.typeInfo.event]
+  return not ignoreTypes[data.typeInfo.type] and not ignoreEvents[data.typeInfo.event] and not data.typeInfo.channel
 end
 
 function addonTable.MessagesMonitorMixin:GetFont() -- Compatibility with any emoji filters

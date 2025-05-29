@@ -12,6 +12,15 @@ addonTable.Constants = {
   NewTabMarkup = CreateTextureMarkup("Interface/AddOns/Chattynator/Assets/NewTab.png", 40, 40, 15, 15, 0, 1, 0, 1),
   MinTabWidth = 20,
   TabPadding = 30,
+
+  ChannelIDs = {
+    General = 1,
+    Trade = 2,
+    LocalDefense = 22,
+    LookingForGroup = 26,
+    NewcomerChat = 32,
+    Services = 42,
+  }
 }
 if addonTable.Constants.IsRetail then
   addonTable.Constants.ButtonFrameOffset = 5

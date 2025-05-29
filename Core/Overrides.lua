@@ -57,6 +57,18 @@ function addonTable.Core.ApplyOverrides()
     end
   end
 
+  ChatFrame_ChatPageUp = function()
+    addonTable.allChatFrames[1].ScrollBox:ScrollDecrease(2)
+  end
+
+  ChatFrame_ChatPageDown = function()
+    addonTable.allChatFrames[1].ScrollBox:ScrollIncrease(2)
+  end
+
+  ChatFrame_ScrollToBottom = function()
+    addonTable.allChatFrames[1].ScrollBox:ScrollToEnd()
+  end
+
   local frame = CreateFrame("Frame")
   frame:RegisterEvent("PLAYER_ENTERING_WORLD")
   frame:SetScript("OnEvent", function()

@@ -80,6 +80,12 @@ function addonTable.Core.ApplyOverrides()
         if tabName ~= "ChatFrame2" then
           tab:UnregisterAllEvents()
           tab:RegisterEvent("UPDATE_CHAT_COLOR") -- Needed to prevent errors in OnUpdate from UIParent
+          -- Workaround for addons trying to prevent messages showing in chat frame by unregistering and reregistering events
+          hooksecurefunc(tab, "RegisterEvent", function(_, name)
+            if name ~= "UPDATE_CHAT_COLOR" then
+              tab:UnregisterEvent(name)
+            end
+          end)
         end
         local tabButton = _G[tabName .. "Tab"]
         tabButton:SetParent(addonTable.hiddenFrame)

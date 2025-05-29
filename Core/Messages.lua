@@ -529,6 +529,13 @@ function addonTable.MessagesMonitorMixin:GetFont() -- Compatibility with any emo
 end
 
 function addonTable.MessagesMonitorMixin:AddMessage(text, r, g, b, id, _, _, _, _, Formatter)
+  if text == "" then
+    if not self.lockType then
+      self.incomingType = nil
+    end
+    return
+  end
+
   local data = {
     text = text,
     color = {r = r or 1, g = g or 1, b = b or 1},

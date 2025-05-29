@@ -226,14 +226,16 @@ local function SetupLayout(parent)
   timestampDropdown:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
   do
     local entries = {
-      "HH:MM:SS",
       "HH:MM",
+      "HH:MM:SS",
       "HH:MM AM/PM",
+      "HH:MM:SS AM/PM",
     }
     local values = {
-      "%X",
       "%H:%M",
+      "%X",
       "%I:%M %p",
+      "%I:%M:%S %p",
     }
     timestampDropdown:Init(entries, values)
   end

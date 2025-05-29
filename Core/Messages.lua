@@ -215,6 +215,8 @@ function addonTable.MessagesMonitorMixin:SetInset()
     self.sizingFontString:SetText("00:00")
   elseif self.timestampFormat == "%I:%M %p" then
     self.sizingFontString:SetText("00:00 mm")
+  elseif self.timestampFormat == "%I:%M:%S %p" then
+    self.sizingFontString:SetText("00:00:00 mm")
   else
     error("unknown format")
   end

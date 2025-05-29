@@ -296,7 +296,9 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
       player = select(2, ...),
       channel = channelName and {name = channelName, isDefault = self.defaultChannels[channelName]} or nil,
     })
+    self.lockType = true
     ChatFrame_OnEvent(self, eventName, ...)
+    self.lockType = false
   end
 end
 
@@ -535,7 +537,9 @@ function addonTable.MessagesMonitorMixin:AddMessage(text, r, g, b, id, _, _, _, 
   if addonTable.Data.CharacterName == nil then
     table.insert(self.awaitingRecorderSet, {data, self.messageCount + 1})
   end
-  self.incomingType = nil
+  if not self.lockType then
+    self.incomingType = nil
+  end
   table.insert(self.messages, data)
   self.formatters[self.messageCount + 1] = {
     formatter = Formatter,

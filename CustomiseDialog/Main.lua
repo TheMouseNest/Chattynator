@@ -211,6 +211,13 @@ local function SetupLayout(parent)
   messageSpacing:SetPoint("TOP")
   table.insert(allFrames, messageSpacing)
 
+  local enableMessageFade = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.ENABLE_MESSAGE_FADE, 28, function(state)
+    addonTable.Config.Set(addonTable.Config.Options.ENABLE_MESSAGE_FADE, state)
+  end)
+  enableMessageFade.option = addonTable.Config.Options.ENABLE_MESSAGE_FADE
+  enableMessageFade:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
+  table.insert(allFrames, enableMessageFade)
+
   local messageFadeTimer
   messageFadeTimer = addonTable.CustomiseDialog.Components.GetSlider(container, addonTable.Locales.MESSAGE_FADE_TIME, 5, 240, "%ss", function()
     addonTable.Config.Set(addonTable.Config.Options.MESSAGE_FADE_TIME, messageFadeTimer:GetValue())
@@ -219,19 +226,12 @@ local function SetupLayout(parent)
   messageFadeTimer:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
   table.insert(allFrames, messageFadeTimer)
 
-  local locked = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.LOCK_CHAT, 28, function(state)
-    addonTable.Config.Set(addonTable.Config.Options.LOCKED, state)
-  end)
-  locked.option = addonTable.Config.Options.LOCKED
-  locked:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
-  table.insert(allFrames, locked)
-
   local timestampDropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.TIMESTAMP_FORMAT, function(value)
     return addonTable.Config.Get(addonTable.Config.Options.TIMESTAMP_FORMAT) == value
   end, function(value)
     addonTable.Config.Set(addonTable.Config.Options.TIMESTAMP_FORMAT, value)
   end)
-  timestampDropdown:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
+  timestampDropdown:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
   do
     local entries = {
       "HH:MM",
@@ -255,6 +255,13 @@ local function SetupLayout(parent)
   showSeparator.option = addonTable.Config.Options.SHOW_TIMESTAMP_SEPARATOR
   showSeparator:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
   table.insert(allFrames, showSeparator)
+
+  local locked = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.LOCK_CHAT, 28, function(state)
+    addonTable.Config.Set(addonTable.Config.Options.LOCKED, state)
+  end)
+  locked.option = addonTable.Config.Options.LOCKED
+  locked:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
+  table.insert(allFrames, locked)
 
   container:SetScript("OnShow", function()
     for _, f in ipairs(allFrames) do

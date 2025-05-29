@@ -195,6 +195,8 @@ function addonTable.ChatFrameMixin:OnLoad()
     if settingName == addonTable.Config.Options.WINDOWS then
       self:SetPoint(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].position))
       self:SetSize(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].size))
+    elseif settingName == addonTable.Config.Options.ENABLE_MESSAGE_FADE then
+      self:UpdateAlphas()
     end
   end)
 
@@ -261,6 +263,7 @@ function addonTable.ChatFrameMixin:UpdateAlphas()
   self:SetScript("OnUpdate", nil)
 
   local fadeTime = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FADE_TIME)
+  local fadeEnabled = addonTable.Config.Get(addonTable.Config.Options.ENABLE_MESSAGE_FADE)
   local currentTime = GetTime()
 
   local oldAlphas = self.alphas
@@ -272,12 +275,12 @@ function addonTable.ChatFrameMixin:UpdateAlphas()
 
       local targetAlpha, duration = nil, 0.2
 
-      if self.fadeTriggered[f.data] then
+      if fadeEnabled and self.fadeTriggered[f.data] then
         if f:GetAlpha() ~= 0 or f.FadeAnimation.alpha:GetToAlpha() ~= 0 or f.FadeAnimation:IsPlaying() then
           duration = 3
           targetAlpha = 0
         end
-      elseif not self.scrolling and math.max(f.data.timestamp + self.timestampOffset, self.currentFadeOffsetTime) + fadeTime - currentTime < 0 and currentTime - self.lastFadeTime > 1 then
+      elseif fadeEnabled and not self.scrolling and math.max(f.data.timestamp + self.timestampOffset, self.currentFadeOffsetTime) + fadeTime - currentTime < 0 and currentTime - self.lastFadeTime > 1 then
         self.fadeTriggered[f.data] = true
         self.lastFadeTime = currentTime
         duration = 3
@@ -289,7 +292,7 @@ function addonTable.ChatFrameMixin:UpdateAlphas()
       elseif f:GetAlpha() ~= 1 then
         targetAlpha = 1
       end
-      if targetAlpha or f:GetAlpha() > 0 then
+      if fadeEnabled and (targetAlpha or f:GetAlpha() > 0) then
         self:SetScript("OnUpdate", self.UpdateAlphas)
       end
 

@@ -52,6 +52,7 @@ L["LOCK_CHAT"] = "Lock chat"
 
 L["MESSAGE_SPACING"] = "Message spacing"
 L["MESSAGE_FADE_TIME"] = "Message fade time"
+L["ENABLE_MESSAGE_FADE"] = "Enable message fading"
 L["TIMESTAMP_FORMAT"] = "Timestamp format"
 L["SHOW_TIMESTAMP_SEPARATOR"] = "Show timestamp separator"
 

@@ -59,6 +59,7 @@ function addonTable.ChatFrameMixin:OnLoad()
       frame.FadeAnimation:SetScript("OnStop", function()
         frame.FadeAnimation:SetScript("OnUpdate", nil)
       end)
+      frame:SetFlattensRenderLayers(true)
 
       frame.DisplayString:SetPoint("TOPLEFT", frame.Timestamp, "TOPRIGHT")
     end
@@ -114,6 +115,7 @@ function addonTable.ChatFrameMixin:OnLoad()
   self.ScrollBox:GetScrollTarget():SetPropagateMouseClicks(true)
   self.ScrollBox:GetScrollTarget():SetPropagateMouseMotion(true)
   self.ScrollBox:SetPanExtent(50)
+  self.ScrollBox:SetFlattensRenderLayers(true)
 
   self.ScrollBox:SetPoint("TOPLEFT", 34, -27)
   self.ScrollBox:SetPoint("BOTTOMRIGHT", 0, 38)

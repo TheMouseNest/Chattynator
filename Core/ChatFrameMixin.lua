@@ -13,6 +13,8 @@ function addonTable.ChatFrameMixin:OnLoad()
   self:SetResizeBounds(240, 140)
   self:SetClampedToScreen(true)
 
+  self.timestampOffset = GetTime() - time()
+
   self.ScrollBox = CreateFrame("Frame", nil, self, "WowScrollBoxList")
   local view = CreateScrollBoxListLinearView()
   view:SetElementExtentCalculator(function(index)
@@ -70,7 +72,7 @@ function addonTable.ChatFrameMixin:OnLoad()
           GameTooltip:AddLine("Player: " .. tostring(frame.data.typeInfo.player))
           GameTooltip:AddLine("Source: " .. tostring(frame.data.typeInfo.source))
           GameTooltip:AddLine("Recorder: " .. tostring(frame.data.recordedBy))
-          GameTooltip:AddLine("Channel: " .. tostring(frame.data.typeInfo.channel))
+          GameTooltip:AddLine("Channel: " .. tostring(C_EncodingUtil and C_EncodingUtil.SerializeJSON(frame.data.typeInfo.channel) or frame.data.typeInfo.channel and frame.data.typeInfo.channel.name))
           local color = frame.data.color
           GameTooltip:AddLine("Color: " .. CreateColor(color.r, color.g, color.b):GenerateHexColorNoAlpha())
           GameTooltip:Show()
@@ -121,10 +123,16 @@ function addonTable.ChatFrameMixin:OnLoad()
     self.updatedFrames = {}
   end)
 
+  self.currentFadeOffsetTime = 0
+
   -- Preserve location when scrolling up
   hooksecurefunc(self.ScrollBox, "scrollInternal", function()
     self.scrolling = self.ScrollBox:GetScrollPercentage() ~= 1 and self.ScrollBox:GetScrollInterpolator():GetInterpolateTo() ~= 1
     self.ScrollToBottomButton:SetShown(self.scrolling)
+    if self.scrolling then
+      self:ResetFading()
+      self.currentFadeOffsetTime = GetTime()
+    end
     self:UpdateAlphas()
   end)
 
@@ -203,6 +211,7 @@ function addonTable.ChatFrameMixin:Reset()
 
   self.filterFunc = nil
   self.heights = {}
+  self:ResetFading()
 
   self.tabIndex = 1
   self.Tabs = {}
@@ -213,6 +222,11 @@ function addonTable.ChatFrameMixin:Reset()
   self:UpdateWidth()
 
   addonTable.Core.InitializeTabs(self)
+end
+
+function addonTable.ChatFrameMixin:ResetFading()
+  self.fadeTriggered = {}
+  self.currentFadeOffsetTime = 0
 end
 
 function addonTable.ChatFrameMixin:UpdateWidth()
@@ -239,23 +253,45 @@ function addonTable.ChatFrameMixin:UpdateAlphas()
   if self.pauseAlphas then
     return
   end
+  self:SetScript("OnUpdate", nil)
+
+  local fadeTime = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FADE_TIME)
+  local currentTime = GetTime()
+
   local oldAlphas = self.alphas
   self.alphas = {}
+  self.lastFadeTime = self.lastFadeTime or currentTime
   for _, f in ipairs(self.ScrollBox:GetFrames()) do
     if f.data and f:IsVisible() then
       self.alphas[f.data] = oldAlphas[f.data] or 0
 
-      local targetAlpha
-      if f.DisplayString:GetBottom() - self.ScrollBox:GetTop() > -f.DisplayString:GetLineHeight() * 0.9 or f.DisplayString:GetTop() - self.ScrollBox:GetBottom() < f.DisplayString:GetLineHeight() * 0.9 then
+      local targetAlpha, duration = nil, 0.2
+
+      if self.fadeTriggered[f.data] then
+        if f:GetAlpha() ~= 0 or f.FadeAnimation.alpha:GetToAlpha() ~= 0 or f.FadeAnimation:IsPlaying() then
+          duration = 3
+          targetAlpha = 0
+        end
+      elseif not self.scrolling and math.max(f.data.timestamp + self.timestampOffset, self.currentFadeOffsetTime) + fadeTime - currentTime < 0 and currentTime - self.lastFadeTime > 1 then
+        self.fadeTriggered[f.data] = true
+        self.lastFadeTime = currentTime
+        duration = 3
+        targetAlpha = 0
+      elseif f.DisplayString:GetBottom() - self.ScrollBox:GetTop() > -f.DisplayString:GetLineHeight() * 0.9 or f.DisplayString:GetTop() - self.ScrollBox:GetBottom() < f.DisplayString:GetLineHeight() * 0.9 then
         if f:GetAlpha() ~= 0.5 then
           targetAlpha = 0.5
         end
       elseif f:GetAlpha() ~= 1 then
         targetAlpha = 1
       end
+      if targetAlpha or f:GetAlpha() > 0 then
+        self:SetScript("OnUpdate", self.UpdateAlphas)
+      end
+
       if targetAlpha then
         f.FadeAnimation.alpha:SetFromAlpha(f:GetAlpha())
         f.FadeAnimation.alpha:SetToAlpha(targetAlpha)
+        f.FadeAnimation.alpha:SetDuration(duration)
         f.FadeAnimation:Play()
         f.FadeAnimation:SetScript("OnUpdate", function()
           self.alphas[f.data] = f:GetAlpha()
@@ -396,6 +432,7 @@ end
 function addonTable.ChatFrameMixin:SetTabSelected(index)
   self.tabIndex = index
   self.tabChanged = true
+  self:ResetFading()
 end
 
 function addonTable.ChatFrameMixin:FilterMessages()
@@ -449,6 +486,9 @@ end
 function addonTable.ChatFrameMixin:Render(newMessages)
   if newMessages and self.filterFunc and next(tFilter(newMessages, self.filterFunc)) == nil then
     return
+  end
+  if self.currentFadeOffsetTime == 0 then
+    self.currentFadeOffsetTime = GetTime()
   end
   local filteredMessages, heights = self:FilterMessages()
   self.heights = heights

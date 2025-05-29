@@ -211,6 +211,14 @@ local function SetupLayout(parent)
   messageSpacing:SetPoint("TOP")
   table.insert(allFrames, messageSpacing)
 
+  local messageFadeTimer
+  messageFadeTimer = addonTable.CustomiseDialog.Components.GetSlider(container, addonTable.Locales.MESSAGE_FADE_TIME, 5, 240, "%ss", function()
+    addonTable.Config.Set(addonTable.Config.Options.MESSAGE_FADE_TIME, messageFadeTimer:GetValue())
+  end)
+  messageFadeTimer.option = addonTable.Config.Options.MESSAGE_FADE_TIME
+  messageFadeTimer:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
+  table.insert(allFrames, messageFadeTimer)
+
   local locked = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.LOCK_CHAT, 28, function(state)
     addonTable.Config.Set(addonTable.Config.Options.LOCKED, state)
   end)

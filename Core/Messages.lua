@@ -133,6 +133,7 @@ function addonTable.MessagesMonitorMixin:OnLoad()
 
   hooksecurefunc(DEFAULT_CHAT_FRAME, "AddMessage", function(_, ...)
     local fullTrace = debugstack()
+    addonTable.Messages:AddMessage(fullTrace)
     if fullTrace:find("ChatFrame_OnEvent") then
       return
     end
@@ -300,6 +301,7 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
     self.lockType = true
     ChatFrame_OnEvent(self, eventName, ...)
     self.lockType = false
+    self.incomingType = nil
   end
 end
 

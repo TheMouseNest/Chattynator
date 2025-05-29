@@ -275,7 +275,7 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
     self.font = addonTable.Core.GetFontByID(self.fontKey)
     self.scalingFactor = addonTable.Core.GetFontScalingFactor()
     if oldFontKey ~= self.fontKey then
-      self.widths = {}
+      self.heights = {}
     end
     self:SetInset()
     local name, realm = UnitFullName("player")

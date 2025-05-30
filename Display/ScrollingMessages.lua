@@ -57,6 +57,8 @@ function addonTable.Display.ScrollingMessagesMixin:OnLoad()
       self:UpdateAlphas()
     end
   end)
+
+  self.scrollCallback = nil
 end
 
 function addonTable.Display.ScrollingMessagesMixin:Reset()
@@ -65,7 +67,10 @@ function addonTable.Display.ScrollingMessagesMixin:Reset()
 end
 
 function addonTable.Display.ScrollingMessagesMixin:ScrollTo(target)
-  self.destination = target
+  self.destination = math.max(0, target)
+  if self.scrollCallback then
+    self.scrollCallback(self.destination)
+  end
   if self.destination == self.scrollOffset then -- Already done
     return
   end
@@ -182,7 +187,6 @@ end
 function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
   self.firstRender = false
   self.scrollOffset = math.max(0, self.scrollOffset)
-  self.destination = math.max(0, self.destination)
 
   if self.currentFadeOffsetTime == 0 then
     self.currentFadeOffsetTime = GetTime()

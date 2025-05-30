@@ -20,6 +20,11 @@ function addonTable.Display.ChatFrameMixin:OnLoad()
   self.ScrollingMessages = CreateFrame("Frame", nil, self)
   Mixin(self.ScrollingMessages, addonTable.Display.ScrollingMessagesMixin)
   self.ScrollingMessages:OnLoad()
+  self.ScrollingMessages.scrollCallback = function(destination)
+    if self.ScrollToBottomButton then
+      self.ScrollToBottomButton:SetShown(destination ~= 0)
+    end
+  end
 
   self.ScrollingMessages:SetPoint("TOPLEFT", 34, -27)
   self.ScrollingMessages:SetPoint("BOTTOMRIGHT", 0, 38)
@@ -227,6 +232,7 @@ function addonTable.Display.ChatFrameMixin:RepositionBlizzardWidgets()
   self.ScrollToBottomButton:SetScript("OnClick", function()
     self.ScrollingMessages:ScrollToEnd()
   end)
+  self.ScrollToBottomButton:Hide()
   addonTable.Skins.AddFrame("ChatButton", self.ScrollToBottomButton, {"scrollToEnd"})
 
   ArrangeButtons(self.buttons)

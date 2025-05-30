@@ -35,7 +35,7 @@ end
 
 local function DisableCombatLog(chatFrame)
   ChatFrame2:SetParent(addonTable.hiddenFrame)
-  chatFrame.ScrollBox:Show()
+  chatFrame.ScrollingMessages:Show()
 end
 
 local function RenameTab(windowIndex, tabIndex, newName)
@@ -115,7 +115,7 @@ function addonTable.Core.InitializeTabs(chatFrame)
         chatFrame:SetFilter(filter)
         chatFrame:SetBackgroundColor(bgColor.r, bgColor.g, bgColor.b)
         chatFrame:SetTabSelected(tabButton:GetID())
-        chatFrame:Render()
+        chatFrame.ScrollingMessages:Render()
         for _, otherTab in ipairs(allTabs) do
           otherTab:SetSelected(false)
         end
@@ -179,15 +179,15 @@ function addonTable.Core.InitializeTabs(chatFrame)
         end
         chatFrame:SetBackgroundColor(0.15, 0.15, 0.15)
         combatLogButton:SetSelected(true)
-        chatFrame.ScrollBox:Hide()
+        chatFrame.ScrollingMessages:Hide()
         CombatLogQuickButtonFrame_Custom:SetParent(ChatFrame2)
         CombatLogQuickButtonFrame_Custom:ClearAllPoints()
-        CombatLogQuickButtonFrame_Custom:SetPoint("TOPLEFT", chatFrame.ScrollBox, 0, 0)
-        CombatLogQuickButtonFrame_Custom:SetPoint("TOPRIGHT", chatFrame.ScrollBox, 0, 0)
+        CombatLogQuickButtonFrame_Custom:SetPoint("TOPLEFT", chatFrame.ScrollingMessages, 0, 0)
+        CombatLogQuickButtonFrame_Custom:SetPoint("TOPRIGHT", chatFrame.ScrollingMessages, 0, 0)
         ChatFrame2:SetParent(chatFrame)
         ChatFrame2:ClearAllPoints()
-        ChatFrame2:SetPoint("TOPLEFT", chatFrame.ScrollBox, 0, -22)
-        ChatFrame2:SetPoint("BOTTOMRIGHT", chatFrame.ScrollBox, -15, 0)
+        ChatFrame2:SetPoint("TOPLEFT", chatFrame.ScrollingMessages, 0, -22)
+        ChatFrame2:SetPoint("BOTTOMRIGHT", chatFrame.ScrollingMessages, -15, 0)
         ChatFrame2Background:SetParent(addonTable.hiddenFrame)
         ChatFrame2BottomRightTexture:SetParent(addonTable.hiddenFrame)
         ChatFrame2BottomLeftTexture:SetParent(addonTable.hiddenFrame)

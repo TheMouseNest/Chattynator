@@ -42,7 +42,7 @@ function addonTable.Display.ChatFrameMixin:OnLoad()
     if self:GetID() == 0 then
       return
     end
-    self.ApplyFlashing(...)
+    self:ApplyFlashing(...)
     self.ScrollingMessages:Render(...)
   end, self)
 
@@ -259,9 +259,14 @@ function addonTable.Display.ChatFrameMixin:ApplyFlashing(newMessages)
   if not newMessages then
     return
   end
+  local messages = {}
+  while newMessages > 0 do
+    newMessages = newMessages - 1
+    table.insert(messages,  addonTable.Messages:GetMessage(1 + #messages))
+  end
   local tabsMatching = {}
   for index, tab in ipairs(self.Tabs) do
-    if tab.filter and FindInTableIf(newMessages, tab.filter) ~= nil then
+    if tab.filter and FindInTableIf(messages, tab.filter) ~= nil then
       tabsMatching[index] = true
     end
   end

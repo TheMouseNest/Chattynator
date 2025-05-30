@@ -26,6 +26,8 @@ function addonTable.Display.ScrollingMessagesMixin:OnLoad()
   self.scrollInterpolator = CreateInterpolator(InterpolatorUtil.InterpolateEaseOut)
   self.destination = 0
 
+  self.firstRender = true
+
   self.timestampOffset = GetTime() - time()
 
   addonTable.CallbackRegistry:RegisterCallback("MessageDisplayChanged", function()
@@ -37,7 +39,9 @@ function addonTable.Display.ScrollingMessagesMixin:OnLoad()
   self:SetScript("OnSizeChanged", function()
     self:UpdateWidth()
     self:UpdateAllocated()
-    self:Render()
+    if not self.firstRender then
+      self:Render()
+    end
   end)
 
   self:SetScript("OnUpdate", self.UpdateAlphas)
@@ -90,6 +94,7 @@ end
 function addonTable.Display.ScrollingMessagesMixin:UpdateAllocated()
   for _, f in ipairs(self.allocated) do
     f:UpdateWidgets(self.currentStringWidth)
+    f.data = nil
   end
 end
 
@@ -135,6 +140,7 @@ function addonTable.Display.ScrollingMessagesMixin:UpdateAlphas(elapsed)
       end
     elseif f:GetAlpha() ~= 1 then
       targetAlpha = 1
+      duration = 0.11 -- Same as scrolling
     end
 
     if targetAlpha then
@@ -174,6 +180,7 @@ function addonTable.Display.ScrollingMessagesMixin:FilterMessages()
 end
 
 function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
+  self.firstRender = false
   self.scrollOffset = math.max(0, self.scrollOffset)
   self.destination = math.max(0, self.destination)
 
@@ -185,7 +192,7 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
   local allocatedHeight = 0
   local shownMessages = {}
   local index = 1
-  local oldOffset
+  local correctedOffset = false
   while allocatedHeight < self:GetHeight() + self.scrollOffset do
     local m = addonTable.Messages:GetMessage(index)
     if not m then
@@ -200,21 +207,18 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
         extentTop = allocatedHeight + heights[self.key] + messageSpacing,
         index = index,
       })
-      if oldOffset == nil and newMessages and index >= newMessages + 1 then
+      if not correctedOffset and newMessages and index >= newMessages + 1 then
+        correctedOffset = true
         if #shownMessages == 1 then
           return
         else
-          oldOffset = shownMessages[#shownMessages].extentBottom
+          self.scrollOffset = self.scrollOffset + shownMessages[#shownMessages].extentBottom
         end
       end
       allocatedHeight = allocatedHeight + heights[self.key] + messageSpacing
     end
     index = index + 1
   end
-
-  oldOffset = oldOffset or 0
-
-  self.scrollOffset = self.scrollOffset + oldOffset
 
   if #shownMessages > 0 and shownMessages[#shownMessages].extentTop < self.scrollOffset + self:GetHeight() and self.scrollOffset ~= 0 then
     self.scrollOffset = shownMessages[#shownMessages].extentTop - self:GetHeight()
@@ -224,13 +228,13 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
   for _, info in ipairs(shownMessages) do
     info.fromBottom = info.extentBottom - self.scrollOffset
     info.show = info.extentTop - self.scrollOffset >= 0 and info.fromBottom <= self:GetHeight()
-    known[info.data] = info.show
+    known[info.data.id] = info.show
   end
   local toReplace = {}
   local toReuse = {}
   for _, a in ipairs(self.allocated) do
-    if known[a.data] then
-      toReuse[a.data] = a
+    if a.data and known[a.data.id] then
+      toReuse[a.data.id] = a
     else
       a:Hide()
       table.insert(toReplace, a)
@@ -240,8 +244,7 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
   self.activeFrames = {}
   for _, info in ipairs(shownMessages) do
     if info.show then
-      local frame = toReuse[info.data]
-      toReuse[info.data] = nil
+      local frame = toReuse[info.data.id]
       if not frame then
         frame = table.remove(toReplace)
         if not frame then

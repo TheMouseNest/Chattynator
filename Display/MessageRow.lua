@@ -26,6 +26,8 @@ function addonTable.Display.MessageRowMixin:OnLoad()
   self:SetFlattensRenderLayers(true)
 
   self.DisplayString:SetPoint("TOPLEFT", self.Timestamp, "TOPRIGHT")
+
+  self:AttachDebug()
 end
 
 function addonTable.Display.MessageRowMixin:AttachDebug()

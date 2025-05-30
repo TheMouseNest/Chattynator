@@ -128,6 +128,10 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   self.channelList = {}
   self.zoneChannelList = {}
 
+  self.channelMap = {}
+  self.defaultChannels = {}
+  self.maxDisplayChannels = 0
+
   local ignoredGroups
   if addonTable.Config.Get(addonTable.Config.Options.ENABLE_COMBAT_MESSAGES) then
     ignoredGroups = {}

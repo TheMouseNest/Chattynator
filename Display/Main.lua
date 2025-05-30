@@ -2,152 +2,31 @@
 local addonTable = select(2, ...)
 
 ---@class ChatFrameMixin: Frame
-addonTable.ChatFrameMixin = {}
+addonTable.Display.ChatFrameMixin = {}
 
-local rightInset = 10
-
-function addonTable.ChatFrameMixin:OnLoad()
+function addonTable.Display.ChatFrameMixin:OnLoad()
   self:SetHyperlinkPropagateToParent(true)
   self:SetMovable(true)
   self:SetResizable(true)
   self:SetResizeBounds(240, 140)
   self:SetClampedToScreen(true)
 
-  self.timestampOffset = GetTime() - time()
-
-  self.ScrollBox = CreateFrame("Frame", nil, self, "WowScrollBoxList")
-  local view = CreateScrollBoxListLinearView()
-  view:SetElementExtentCalculator(function(index)
-    return self.heights[index][self.key] + addonTable.Messages.spacing
-  end)
-  self.currentStringWidth = 0
   self:SetScript("OnSizeChanged", function()
     self:UpdateButtons()
     self:SavePosition()
     self:SaveSize()
-    self:UpdateWidth()
-    self:Render()
-  end)
-  self.updatedFrames = {}
-  self.showTimestampSeparator = addonTable.Config.Get(addonTable.Config.Options.SHOW_TIMESTAMP_SEPARATOR)
-  view:SetElementInitializer("Frame", function(frame, data)
-    if not frame.initialized then
-      frame.initialized = true
-      frame:SetHyperlinkPropagateToParent(true)
-      frame.DisplayString = frame:CreateFontString(nil, "ARTWORK", addonTable.Messages.font)
-      frame.DisplayString:SetJustifyH("LEFT")
-      frame.DisplayString:SetNonSpaceWrap(true)
-      frame.DisplayString:SetWordWrap(true)
-      frame.Timestamp = frame:CreateFontString(nil, "ARTWORK", addonTable.Messages.font)
-      frame.Timestamp:SetPoint("TOPLEFT", 0, 0)
-      frame.Timestamp:SetJustifyH("LEFT")
-      frame.Timestamp:SetTextColor(0.5, 0.5, 0.5)
-      frame.Bar = frame:CreateTexture(nil, "BACKGROUND")
-      frame.Bar:SetTexture("Interface/AddOns/Chattynator/Assets/Fade.png")
-      frame.Bar:SetPoint("RIGHT", frame.DisplayString, "LEFT", -4, 0)
-      frame.Bar:SetPoint("TOP", 0, 0)
-      frame.Bar:SetWidth(2)
-
-      frame.FadeAnimation = frame:CreateAnimationGroup()
-      frame.FadeAnimation.alpha = frame.FadeAnimation:CreateAnimation("Alpha")
-      frame.FadeAnimation.alpha:SetDuration(0.20)
-      frame.FadeAnimation:SetToFinalAlpha(true)
-      frame.FadeAnimation:SetScript("OnFinished", function()
-        frame.FadeAnimation:SetScript("OnUpdate", nil)
-        self.alphas[frame.data] = frame:GetAlpha()
-      end)
-      frame.FadeAnimation:SetScript("OnStop", function()
-        frame.FadeAnimation:SetScript("OnUpdate", nil)
-      end)
-      frame:SetFlattensRenderLayers(true)
-
-      frame.DisplayString:SetPoint("TOPLEFT", frame.Timestamp, "TOPRIGHT")
-    end
-    if not frame.debugAttached and not InCombatLockdown() then
-      frame.debugAttached = true
-      frame:SetScript("OnEnter", function()
-        if addonTable.Config.Get(addonTable.Config.Options.DEBUG) then
-          GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-          GameTooltip:SetText("Type: " .. tostring(frame.data.typeInfo.type))
-          GameTooltip:AddLine("Event: " .. tostring(frame.data.typeInfo.event))
-          GameTooltip:AddLine("Player: " .. tostring(frame.data.typeInfo.player))
-          GameTooltip:AddLine("Source: " .. tostring(frame.data.typeInfo.source))
-          GameTooltip:AddLine("Recorder: " .. tostring(frame.data.recordedBy))
-          GameTooltip:AddLine("Channel: " .. tostring(C_EncodingUtil and C_EncodingUtil.SerializeJSON(frame.data.typeInfo.channel) or frame.data.typeInfo.channel and frame.data.typeInfo.channel.name))
-          local color = frame.data.color
-          GameTooltip:AddLine("Color: " .. CreateColor(color.r, color.g, color.b):GenerateHexColorNoAlpha())
-          GameTooltip:Show()
-        end
-      end)
-      frame:SetScript("OnLeave", function()
-        GameTooltip:Hide()
-      end)
-      frame:SetPropagateMouseClicks(true)
-      frame:SetPropagateMouseMotion(true)
-    end
-    -- Prevent setting the font settings every time (which is bad for performance)
-    if not self.updatedFrames[frame] then
-      frame.Bar:SetPoint("BOTTOM", 0, 1 + addonTable.Messages.spacing)
-
-      frame.Timestamp:SetWidth(addonTable.Messages.inset)
-      frame.DisplayString:SetWidth(self.currentStringWidth)
-
-      frame.DisplayString:SetFontObject(addonTable.Messages.font)
-      frame.DisplayString:SetTextScale(addonTable.Messages.scalingFactor)
-
-      frame.Timestamp:SetFontObject(addonTable.Messages.font)
-      frame.Timestamp:SetTextScale(addonTable.Messages.scalingFactor)
-
-      frame.Bar:SetShown(self.showTimestampSeparator)
-      self.updatedFrames[frame] = true
-    end
-    frame.data = data
-    frame.Timestamp:SetText(date(addonTable.Messages.timestampFormat, data.timestamp))
-    frame.DisplayString:SetSpacing(0)
-    frame.DisplayString:SetText(data.text)
-    frame.DisplayString:SetTextColor(data.color.r, data.color.g, data.color.b)
-    frame.FadeAnimation:Stop()
-    frame:SetAlpha(self.alphas[data] or 0)
-  end)
-  self.ScrollBox:SetInterpolateScroll(true)
-  self.ScrollBox:Init(view)
-  self.ScrollBox:SetHyperlinkPropagateToParent(true)
-  self.ScrollBox:GetScrollTarget():SetHyperlinkPropagateToParent(true)
-  self.ScrollBox:GetScrollTarget():SetPropagateMouseClicks(true)
-  self.ScrollBox:GetScrollTarget():SetPropagateMouseMotion(true)
-  self.ScrollBox:HookScript("OnMouseWheel", function()
-    self:ResetFading()
-  end)
-  self.ScrollBox:SetPanExtent(50)
-  self.ScrollBox:SetFlattensRenderLayers(true)
-
-  self.ScrollBox:SetPoint("TOPLEFT", 34, -27)
-  self.ScrollBox:SetPoint("BOTTOMRIGHT", 0, 38)
-
-  addonTable.CallbackRegistry:RegisterCallback("MessageDisplayChanged", function()
-    self:UpdateWidth()
-    self.updatedFrames = {}
   end)
 
-  self.currentFadeOffsetTime = 0
+  self.ScrollingMessages = CreateFrame("Frame", nil, self)
+  Mixin(self.ScrollingMessages, addonTable.Display.ScrollingMessagesMixin)
+  self.ScrollingMessages:OnLoad()
 
-  -- Preserve location when scrolling up
-  hooksecurefunc(self.ScrollBox, "scrollInternal", function()
-    self.scrolling = self.ScrollBox:GetScrollPercentage() ~= 1 and self.ScrollBox:GetScrollInterpolator():GetInterpolateTo() ~= 1
-    self.ScrollToBottomButton:SetShown(self.scrolling)
-    if self.scrolling then
-      self:ResetFading()
-    end
-    self:UpdateAlphas()
-  end)
-
-  self.pauseAlphas = false
-  self.ScrollBox:RegisterCallback("OnUpdate", self.UpdateAlphas, self)
-  self.ScrollBox:RegisterCallback("OnScroll", self.UpdateAlphas, self)
+  self.ScrollingMessages:SetPoint("TOPLEFT", 34, -27)
+  self.ScrollingMessages:SetPoint("BOTTOMRIGHT", 0, 38)
 
   self.resizeWidget = CreateFrame("Button", nil, self)
   self.resizeWidget:SetSize(20, 22)
-  self.resizeWidget:SetPoint("BOTTOMRIGHT", self.ScrollBox, -5,  0)
+  self.resizeWidget:SetPoint("BOTTOMRIGHT", self.ScrollingMessages, -5,  0)
   self.resizeWidget:RegisterForDrag("LeftButton")
   self.resizeWidget:SetScript("OnDragStart", function()
     self:StartSizing("BOTTOMRIGHT")
@@ -159,13 +38,14 @@ function addonTable.ChatFrameMixin:OnLoad()
   addonTable.Skins.AddFrame("ResizeWidget", self.resizeWidget)
   self.resizeWidget:SetShown(not addonTable.Config.Get(addonTable.Config.Options.LOCKED))
 
-  addonTable.CallbackRegistry:RegisterCallback("Render", function(...)
+  addonTable.CallbackRegistry:RegisterCallback("Render", function(self, ...)
     if self:GetID() == 0 then
       return
     end
     self.ApplyFlashing(...)
-    self.Render(...)
+    self.ScrollingMessages:Render(...)
   end, self)
+
   addonTable.CallbackRegistry:RegisterCallback("ScrollToEndImmediate", function(_, windowID)
     if windowID == self:GetID() then
       self:SetTabSelected(self.tabIndex)
@@ -175,13 +55,11 @@ function addonTable.ChatFrameMixin:OnLoad()
   addonTable.CallbackRegistry:RegisterCallback("RefreshStateChange", function(_, refreshState)
     if self:GetID() ~= 0 and refreshState[addonTable.Constants.RefreshReason.Tabs] then
       addonTable.Core.InitializeTabs(self)
-      self:Render()
+      self.ScrollingMessages:Render()
     end
     if refreshState[addonTable.Constants.RefreshReason.MessageWidget] then
-      self.updatedFrames = {}
-      self.showTimestampSeparator = addonTable.Config.Get(addonTable.Config.Options.SHOW_TIMESTAMP_SEPARATOR)
       if self:GetID() ~= 0 then
-        self:Render()
+        self.ScrollingMessages:Render()
       end
     end
     if refreshState[addonTable.Constants.RefreshReason.Locked] then
@@ -196,8 +74,6 @@ function addonTable.ChatFrameMixin:OnLoad()
     if settingName == addonTable.Config.Options.WINDOWS then
       self:SetPoint(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].position))
       self:SetSize(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].size))
-    elseif settingName == addonTable.Config.Options.ENABLE_MESSAGE_FADE then
-      self:UpdateAlphas()
     end
   end)
 
@@ -206,7 +82,7 @@ function addonTable.ChatFrameMixin:OnLoad()
   addonTable.Skins.AddFrame("ChatFrame", self)
 end
 
-function addonTable.ChatFrameMixin:Reset()
+function addonTable.Display.ChatFrameMixin:Reset()
   local function SetPosition()
     self:SetPoint(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].position))
   end
@@ -217,109 +93,28 @@ function addonTable.ChatFrameMixin:Reset()
   self:SetSize(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].size))
 
   self.filterFunc = nil
-  self.heights = {}
-  self:ResetFading()
-  self.currentFadeOffsetTime = 0
 
   self.tabIndex = 1
   self.Tabs = {}
 
-  self.alphas = {}
-
   self:RepositionBlizzardWidgets() -- Only does stuff if self:GetID() is 1
-  self:UpdateWidth()
+  self.ScrollingMessages:Reset()
 
   addonTable.Core.InitializeTabs(self)
 end
 
-function addonTable.ChatFrameMixin:ResetFading()
-  self.fadeTriggered = {}
-  self.currentFadeOffsetTime = GetTime()
-end
-
-function addonTable.ChatFrameMixin:UpdateWidth()
-  local width = math.floor(self.ScrollBox:GetWidth() - addonTable.Messages.inset - rightInset)
-  addonTable.Messages:RegisterWidth(width)
-  addonTable.Messages:UnregisterWidth(self.currentStringWidth)
-  self.currentStringWidth = width
-  self.key = width
-  self.updatedFrames = {}
-end
-
-function addonTable.ChatFrameMixin:SavePosition()
+function addonTable.Display.ChatFrameMixin:SavePosition()
   local point1, anchorFrame, point2, x, y = self:GetPoint(1)
   local anchorFrameName = anchorFrame and anchorFrame:GetName() or "UIParent"
   addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].position = {point1, anchorFrameName, point2, x, y}
 end
 
-function addonTable.ChatFrameMixin:SaveSize()
+function addonTable.Display.ChatFrameMixin:SaveSize()
   local x, y = self:GetSize()
   addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].size = {x, y}
 end
 
-function addonTable.ChatFrameMixin:UpdateAlphas(elapsed)
-  if self.pauseAlphas then
-    return
-  end
-  if elapsed then
-    self.accummulatedTime = (self.accummulatedTime or 0) + elapsed
-    if self.accummulatedTime < 1 then
-      return
-    else
-      self.accummulatedTime = 0
-    end
-  end
-
-  local fadeTime = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FADE_TIME)
-  local fadeEnabled = addonTable.Config.Get(addonTable.Config.Options.ENABLE_MESSAGE_FADE)
-  local currentTime = GetTime()
-
-  local oldAlphas = self.alphas
-  self.alphas = {}
-  self.lastFadeTime = self.lastFadeTime or currentTime
-  for _, f in ipairs(self.ScrollBox:GetFrames()) do
-    if f.data and f:IsVisible() then
-      self.alphas[f.data] = oldAlphas[f.data] or 0
-
-      local targetAlpha, duration = nil, 0.2
-
-      if fadeEnabled and self.fadeTriggered[f.data] then
-        if f:GetAlpha() ~= 0 or f.FadeAnimation.alpha:GetToAlpha() ~= 0 or f.FadeAnimation:IsPlaying() then
-          duration = 3
-          targetAlpha = 0
-        end
-      elseif fadeEnabled and not self.scrolling and math.max(f.data.timestamp + self.timestampOffset, self.currentFadeOffsetTime) + fadeTime - currentTime < 0 and currentTime - self.lastFadeTime > 1 then
-        self.fadeTriggered[f.data] = true
-        self.lastFadeTime = currentTime
-        duration = 3
-        targetAlpha = 0
-      elseif f.DisplayString:GetBottom() - self.ScrollBox:GetTop() > -f.DisplayString:GetLineHeight() * 0.9 or f.DisplayString:GetTop() - self.ScrollBox:GetBottom() < f.DisplayString:GetLineHeight() * 0.9 then
-        if f:GetAlpha() ~= 0.5 then
-          targetAlpha = 0.5
-        end
-      elseif f:GetAlpha() ~= 1 then
-        targetAlpha = 1
-      end
-      if fadeEnabled and not self.scrolling and (targetAlpha or f:GetAlpha() > 0) then
-        self:SetScript("OnUpdate", self.UpdateAlphas)
-      end
-
-      if targetAlpha then
-        f.FadeAnimation.alpha:SetFromAlpha(f:GetAlpha())
-        f.FadeAnimation.alpha:SetToAlpha(targetAlpha)
-        f.FadeAnimation.alpha:SetDuration(duration)
-        f.FadeAnimation:Play()
-        f.FadeAnimation:SetScript("OnUpdate", function()
-          self.alphas[f.data] = f:GetAlpha()
-        end)
-      else
-        f.FadeAnimation:Stop()
-      end
-    end
-  end
-end
-
-function addonTable.ChatFrameMixin:RepositionBlizzardWidgets()
+function addonTable.Display.ChatFrameMixin:RepositionBlizzardWidgets()
   if self.arrangedButtons then
     return
   end
@@ -329,7 +124,7 @@ function addonTable.ChatFrameMixin:RepositionBlizzardWidgets()
     for _, b in ipairs(buttons) do
       b:ClearAllPoints()
       if lastButton == nil then
-        b:SetPoint("TOPRIGHT", self.ScrollBox, "TOPLEFT", -5, -8)
+        b:SetPoint("TOPRIGHT", self.ScrollingMessages, "TOPLEFT", -5, -8)
       else
         b:SetPoint("TOP", lastButton, "BOTTOM", 0, -5)
       end
@@ -353,15 +148,15 @@ function addonTable.ChatFrameMixin:RepositionBlizzardWidgets()
       QuickJoinToastButton:SetScript("OnMouseDown", nil)
       QuickJoinToastButton:SetScript("OnMouseUp", nil)
       QuickJoinToastButton:ClearAllPoints()
-      QuickJoinToastButton:SetPoint("RIGHT", self.ScrollBox, "LEFT", -5, 0)
+      QuickJoinToastButton:SetPoint("RIGHT", self.ScrollingMessages, "LEFT", -5, 0)
       QuickJoinToastButton:SetPoint("TOP", 0, -2)
       QuickJoinToastButton:SetFrameStrata("HIGH")
       local SetPoint = QuickJoinToastButton.SetPoint
       hooksecurefunc(QuickJoinToastButton, "SetPoint", function(_, _, frame)
-        if frame ~= self.ScrollBox then
+        if frame ~= self.ScrollingMessages then
           QuickJoinToastButton:SetParent(self)
           QuickJoinToastButton:ClearAllPoints()
-          SetPoint(QuickJoinToastButton, "RIGHT", self.ScrollBox, "LEFT", -5, 0)
+          SetPoint(QuickJoinToastButton, "RIGHT", self.ScrollingMessages, "LEFT", -5, 0)
           SetPoint(QuickJoinToastButton, "TOP", 0, -2)
         end
       end)
@@ -428,50 +223,31 @@ function addonTable.ChatFrameMixin:RepositionBlizzardWidgets()
   addonTable.Skins.AddFrame("ChatButton", self.SettingsButton, {"settings"})
 
   self.ScrollToBottomButton = MakeButton(addonTable.Locales.SCROLL_TO_END)
-  self.ScrollToBottomButton:SetPoint("BOTTOMRIGHT", self.ScrollBox, "BOTTOMLEFT", -5, 5)
+  self.ScrollToBottomButton:SetPoint("BOTTOMRIGHT", self.ScrollingMessages, "BOTTOMLEFT", -5, 5)
   self.ScrollToBottomButton:SetScript("OnClick", function()
-    self.ScrollBox:ScrollToEnd()
+    self.ScrollingMessages:ScrollToEnd()
   end)
   addonTable.Skins.AddFrame("ChatButton", self.ScrollToBottomButton, {"scrollToEnd"})
 
   ArrangeButtons(self.buttons)
 end
 
-function addonTable.ChatFrameMixin:SetFilter(func)
-  self.filterFunc = func
+function addonTable.Display.ChatFrameMixin:SetFilter(func)
+  self.ScrollingMessages:SetFilter(func)
 end
 
-function addonTable.ChatFrameMixin:SetBackgroundColor(r, g, b)
+function addonTable.Display.ChatFrameMixin:SetBackgroundColor(r, g, b)
   self.backgroundColor = {r= r, g = g, b = b}
 end
 
-function addonTable.ChatFrameMixin:SetTabSelected(index)
+function addonTable.Display.ChatFrameMixin:SetTabSelected(index)
   self.tabIndex = index
   self.tabChanged = true
-  self:ResetFading()
+  self.ScrollingMessages:Reset()
 end
 
-function addonTable.ChatFrameMixin:FilterMessages()
-  local result1, result2 = {}, {}
-  local data = addonTable.Messages:GetMessage(1)
-  local index = 1
-  local limit = addonTable.Config.Get(addonTable.Config.Options.ROWS_LIMIT)
-  while #result1 < limit and data do
-    if (
-      data.recordedBy == addonTable.Data.CharacterName and
-      (not self.filterFunc or self.filterFunc(data))
-    ) then
-      table.insert(result1, 1, data)
-      table.insert(result2, 1, addonTable.Messages:GetMessageHeight(index))
-    end
-    index = index + 1
-    data = addonTable.Messages:GetMessage(index)
-  end
-  return result1, result2
-end
-
-function addonTable.ChatFrameMixin:UpdateButtons()
-  local heightAvailable = self.ScrollBox:GetHeight() - 8 - self.ScrollToBottomButton:GetHeight() - 2
+function addonTable.Display.ChatFrameMixin:UpdateButtons()
+  local heightAvailable = self.ScrollingMessages:GetHeight() - 8 - self.ScrollToBottomButton:GetHeight() - 2
   local currentHeight = 0
   for _, b in ipairs(self.buttons) do
     currentHeight = currentHeight + b:GetHeight() + 5
@@ -479,7 +255,7 @@ function addonTable.ChatFrameMixin:UpdateButtons()
   end
 end
 
-function addonTable.ChatFrameMixin:ApplyFlashing(newMessages)
+function addonTable.Display.ChatFrameMixin:ApplyFlashing(newMessages)
   if not newMessages then
     return
   end
@@ -497,42 +273,4 @@ function addonTable.ChatFrameMixin:ApplyFlashing(newMessages)
   for index in pairs(tabsMatching) do
     self.Tabs[index]:SetFlashing(true)
   end
-end
-
-function addonTable.ChatFrameMixin:Render(newMessages)
-  if newMessages and self.filterFunc and next(tFilter(newMessages, self.filterFunc)) == nil then
-    return
-  end
-  if self.currentFadeOffsetTime == 0 then
-    self.currentFadeOffsetTime = GetTime()
-  end
-  local filteredMessages, heights = self:FilterMessages()
-  self.heights = heights
-
-  local lowest, data = nil, nil
-  for _, f in ipairs(self.ScrollBox:GetFrames()) do
-    local testLow = f:GetBottom()
-    if not lowest or testLow < lowest then
-      data = f.data
-      lowest = testLow
-    end
-  end
-  local extent
-  if data then
-    extent = self.ScrollBox:GetExtentUntil(self.ScrollBox:FindElementDataIndex(data)) - self.ScrollBox:GetDerivedScrollOffset()
-  end
-  self.pauseAlphas = true
-  self.ScrollBox:SetDataProvider(CreateDataProvider(filteredMessages), true)
-  if not self.scrolling or self.tabChanged then
-    self.ScrollBox:ScrollToEnd(self.tabChanged)
-  elseif data then
-    local newIndex = tIndexOf(filteredMessages, data)
-    if newIndex then
-      local diff = extent - (self.ScrollBox:GetExtentUntil(newIndex) - self.ScrollBox:GetDerivedScrollOffset())
-      self.ScrollBox:SetScrollPercentage(self.ScrollBox:GetScrollPercentage() - diff / self.ScrollBox:GetDerivedScrollRange(), true)
-    end
-  end
-  self.pauseAlphas = false
-  self:UpdateAlphas()
-  self.tabChanged = false
 end

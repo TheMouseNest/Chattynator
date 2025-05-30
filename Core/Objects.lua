@@ -1,6 +1,7 @@
 ---@class addonTableChattynator
 local addonTable = select(2, ...)
 addonTable.Core = {}
+addonTable.Display = {}
 addonTable.Utilities = {}
 addonTable.CustomiseDialog = {}
 addonTable.Data = {}

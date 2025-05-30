@@ -129,9 +129,9 @@ local skinners = {
     frame.background = frame:CreateTexture(nil, "BACKGROUND")
     frame.background:SetTexture("Interface/AddOns/Chattynator/Assets/ChatBackground")
     frame.background:SetTexCoord(0, 1, 1, 0)
-    frame.background:SetPoint("TOP", frame.ScrollBox, 0, 5)
+    frame.background:SetPoint("TOP", frame.ScrollingMessages, 0, 5)
     frame.background:SetPoint("LEFT")
-    frame.background:SetPoint("BOTTOMRIGHT", frame.ScrollBox, 0, -5)
+    frame.background:SetPoint("BOTTOMRIGHT", frame.ScrollingMessages, 0, -5)
     frame.background:SetAlpha(0.8)
 
     if frame.backgroundColor then

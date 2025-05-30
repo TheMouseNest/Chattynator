@@ -48,7 +48,7 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   self.messageCount = #self.messages
 
   self.awaitingRecorderSet = {}
-  self.pending = {}
+  self.pending = 0
 
   if DEFAULT_CHAT_FRAME:GetNumMessages() > 0 then
     for i = 1, DEFAULT_CHAT_FRAME:GetNumMessages() do
@@ -204,6 +204,8 @@ function addonTable.MessagesMonitorMixin:OnLoad()
       addonTable.CallbackRegistry:TriggerEvent("Render")
     end
   end)
+
+  self:SetInset()
 end
 
 function addonTable.MessagesMonitorMixin:SetInset()
@@ -558,13 +560,13 @@ function addonTable.MessagesMonitorMixin:AddMessage(text, r, g, b, id, _, _, _, 
     self.storeCount = self.storeCount + 1
     self.store[self.storeCount] = data
   end
-  table.insert(self.pending, data)
+  self.pending = self.pending + 1
   self.messageCount = self.messageCount + 1
   self:SetScript("OnUpdate", function()
     self:SetScript("OnUpdate", nil)
     self:ReduceMessages()
     local pending = self.pending
-    self.pending = {}
+    self.pending = 0
     addonTable.CallbackRegistry:TriggerEvent("Render", pending)
 
     self:UpdateStores()

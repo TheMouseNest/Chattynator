@@ -40,6 +40,8 @@ Core/API.lua
 
 Display/Main.lua
 Display/Tabs.lua
+Display/ScrollingMessages.lua
+Display/MessageRow.lua
 
 Skins/Main.lua
 Skins/Dark.lua

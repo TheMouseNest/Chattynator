@@ -98,11 +98,11 @@ function addonTable.Core.Initialize()
   addonTable.allChatFrames = {}
   addonTable.ChatFramePool = CreateFramePool("Frame", ChattynatorHyperlinkHandler, nil, nil, false, function(frame)
     if not frame.OnLoad then
-      Mixin(frame, addonTable.ChatFrameMixin)
+      Mixin(frame, addonTable.Display.ChatFrameMixin)
       frame:OnLoad()
     end
   end)
-  for id, window in pairs(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)) do
+  for id, _ in pairs(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)) do
     local chatFrame = addonTable.ChatFramePool:Acquire()
     chatFrame:SetID(id)
     chatFrame:Reset()

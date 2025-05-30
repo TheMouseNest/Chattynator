@@ -30,8 +30,6 @@ Core/Constants.lua
 Core/Config.lua
 Core/Utilities.lua
 Core/HyperlinkHandler.xml
-Core/ChatFrameMixin.lua
-Core/Tabs.lua
 Core/Fonts.lua
 Core/Messages.lua
 Core/Overrides.lua
@@ -39,6 +37,9 @@ Core/Initialize.lua
 Core/SlashCmd.lua
 Core/CommandHistory.lua
 Core/API.lua
+
+Display/Main.lua
+Display/Tabs.lua
 
 Skins/Main.lua
 Skins/Dark.lua

@@ -9,6 +9,7 @@ ignore:
   - annotations.lua
 plain-copy:
   - Core
+  - Display
   - CustomiseDialog
   - Skins
 enable-toc-creation: yes

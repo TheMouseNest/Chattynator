@@ -184,10 +184,8 @@ function addonTable.Display.ScrollingMessagesMixin:FilterMessages()
 end
 
 function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
-  local start = debugprofilestop()
   self.scrollOffset = math.max(0, self.scrollOffset)
 
-  --TODO: Optimise away any 0 change stuff
   if self.currentFadeOffsetTime == 0 then
     self.currentFadeOffsetTime = GetTime()
   end

@@ -66,7 +66,7 @@ function addonTable.Display.ScrollingMessagesMixin:Reset()
   self.currentFadeOffsetTime = 0
 end
 
-function addonTable.Display.ScrollingMessagesMixin:ScrollTo(target)
+function addonTable.Display.ScrollingMessagesMixin:ScrollTo(target, easyMode)
   self.destination = math.max(0, target)
   if self.scrollCallback then
     self.scrollCallback(self.destination)
@@ -74,16 +74,26 @@ function addonTable.Display.ScrollingMessagesMixin:ScrollTo(target)
   if self.destination == self.scrollOffset then -- Already done
     return
   end
-  self.scrollInterpolator:Interpolate(self.scrollOffset, target, 0.11, function(value)
-    if value ~= self.scrollOffset then
+  if easyMode then
+    self.scrollInterpolator:Interpolate(self.scrollOffset, target, 0.11, function(value)
+      local diff = self.scrollOffset - value
+      for _, f in ipairs(self.activeFrames) do
+        f:AdjustPointsOffset(0, diff)
+      end
+      self.scrollOffset = value
+      self:UpdateAlphas()
+      --self:Render()
+    end)
+  else
+    self.scrollInterpolator:Interpolate(self.scrollOffset, target, 0.11, function(value)
       self.scrollOffset = value
       self:Render()
-    end
-  end)
+    end)
+  end
 end
 
-function addonTable.Display.ScrollingMessagesMixin:ScrollToEnd()
-  self:ScrollTo(0)
+function addonTable.Display.ScrollingMessagesMixin:ScrollToEnd(easyMode)
+  self:ScrollTo(0, easyMode)
 end
 
 function addonTable.Display.ScrollingMessagesMixin:OnMouseWheel(delta)
@@ -127,29 +137,32 @@ function addonTable.Display.ScrollingMessagesMixin:UpdateAlphas(elapsed)
   local fadeEnabled = addonTable.Config.Get(addonTable.Config.Options.ENABLE_MESSAGE_FADE)
   local currentTime = GetTime()
 
+  local lineHeight = self.activeFrames[1] and self.activeFrames[1].DisplayString:GetLineHeight() * 0.9 or 0
+
   self.alphas = {}
   self.lastFadeTime = self.lastFadeTime or currentTime
+  local top, bottom = self:GetTop(), self:GetBottom()
   for _, f in ipairs(self.activeFrames) do
     local targetAlpha, duration = nil, 0.2
-    local more = false
 
+    local alpha = f:GetAlpha()
     if fadeEnabled and self.destination == 0 and math.max(f.data.timestamp + self.timestampOffset, self.currentFadeOffsetTime) + fadeTime - currentTime < 0 then
-      if f:GetAlpha() ~= 0 and (f.FadeAnimation.alpha:GetToAlpha() ~= 0 or not f.FadeAnimation:IsPlaying()) and currentTime - self.lastFadeTime > 1 then
+      if alpha ~= 0 and (f.FadeAnimation.alpha:GetToAlpha() ~= 0 or not f.FadeAnimation:IsPlaying()) and currentTime - self.lastFadeTime > 1 then
         self.lastFadeTime = currentTime
         duration = 3
         targetAlpha = 0
       end
-    elseif f.DisplayString:GetBottom() - self:GetTop() > -f.DisplayString:GetLineHeight() * 0.9 or f.DisplayString:GetTop() - self:GetBottom() < f.DisplayString:GetLineHeight() * 0.9 then
-      if f:GetAlpha() ~= 0.5 then
+    elseif f:GetBottom() - top > - lineHeight or f:GetTop() - bottom < lineHeight then
+      if alpha ~= 0.5 then
         targetAlpha = 0.5
       end
-    elseif f:GetAlpha() ~= 1 then
+    elseif alpha ~= 1 then
       targetAlpha = 1
       duration = 0.11 -- Same as scrolling
     end
 
     if targetAlpha then
-      f.FadeAnimation.alpha:SetFromAlpha(f:GetAlpha())
+      f.FadeAnimation.alpha:SetFromAlpha(alpha)
       f.FadeAnimation.alpha:SetToAlpha(targetAlpha)
       f.FadeAnimation.alpha:SetDuration(duration)
       f.FadeAnimation:Play()
@@ -192,12 +205,13 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
     self.currentFadeOffsetTime = GetTime()
   end
 
+  local viewportHeight = self:GetHeight()
   local messageSpacing = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_SPACING)
   local allocatedHeight = 0
   local shownMessages = {}
   local index = 1
   local correctedOffset = false
-  while allocatedHeight < self:GetHeight() + self.scrollOffset do
+  while allocatedHeight < viewportHeight + self.scrollOffset do
     local m = addonTable.Messages:GetMessage(index)
     if not m then
       break
@@ -224,14 +238,19 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
     index = index + 1
   end
 
-  if #shownMessages > 0 and shownMessages[#shownMessages].extentTop < self.scrollOffset + self:GetHeight() and self.scrollOffset ~= 0 then
+  if #shownMessages > 0 and shownMessages[#shownMessages].extentTop < self.scrollOffset + viewportHeight and self.scrollOffset ~= 0 then
     self.scrollOffset = shownMessages[#shownMessages].extentTop - self:GetHeight()
+  end
+
+  local shift = 0
+  if self.destination == 0 and self.scrollOffset ~= 0 and self.scrollOffset < viewportHeight and newMessages then
+    shift = self.scrollOffset
   end
 
   local known = {}
   for _, info in ipairs(shownMessages) do
     info.fromBottom = info.extentBottom - self.scrollOffset
-    info.show = info.extentTop - self.scrollOffset >= 0 and info.fromBottom <= self:GetHeight()
+    info.show = info.extentTop - self.scrollOffset + shift >= 0 and info.fromBottom <= viewportHeight
     known[info.data.id] = info.show
   end
   local toReplace = {}
@@ -267,6 +286,6 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
   self:UpdateAlphas()
 
   if self.destination == 0 and self.scrollOffset ~= 0 and newMessages then
-    self:ScrollToEnd()
+    self:ScrollToEnd(shift > 0)
   end
 end

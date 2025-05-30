@@ -10,6 +10,33 @@ local function GetNewLog()
   return { current = {}, historical = {}, version = 1, cleanIndex = 0}
 end
 
+local function AddHistoricalIDs()
+  if not addonTable.Config.Get(addonTable.Config.Options.APPLIED_MESSAGE_IDS) then
+    local idRoot = #CHATTYNATOR_MESSAGE_LOG.historical + 1
+    for index, entry in ipairs(CHATTYNATOR_MESSAGE_LOG.current) do
+      if entry.id == nil then
+        entry.id = "r" .. idRoot .. "_" .. index
+      end
+    end
+    local frame = CreateFrame("Frame")
+    local historicalIndex = 1
+    frame:SetScript("OnUpdate", function()
+      if CHATTYNATOR_MESSAGE_LOG.historical[historicalIndex] then
+        local resolved = C_EncodingUtil.DeserializeJSON(CHATTYNATOR_MESSAGE_LOG.historical[historicalIndex].data)
+        for index, entry in ipairs(resolved) do
+          if entry.id == nil then
+            entry.id = "r" .. historicalIndex .. "_" .. index
+          end
+        end
+        CHATTYNATOR_MESSAGE_LOG.historical[historicalIndex].data = C_EncodingUtil.SerializeJSON(resolved)
+      else
+        addonTable.Config.Set(addonTable.Config.Options.APPLIED_MESSAGE_IDS, true)
+        frame:SetScript("OnUpdate", nil)
+      end
+    end)
+  end
+end
+
 function addonTable.MessagesMonitorMixin:OnLoad()
   self.spacing = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_SPACING)
   self.timestampFormat = addonTable.Config.Get(addonTable.Config.Options.TIMESTAMP_FORMAT)
@@ -36,8 +63,11 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   CHATTYNATOR_MESSAGE_LOG.cleanIndex = CHATTYNATOR_MESSAGE_LOG.cleanIndex or 0
   CHATTYNATOR_MESSAGE_LOG.cleanIndex = self:CleanStore(CHATTYNATOR_MESSAGE_LOG.current, CHATTYNATOR_MESSAGE_LOG.cleanIndex)
 
+  AddHistoricalIDs()
+
   self.store = CHATTYNATOR_MESSAGE_LOG.current
   self.storeCount = #self.store
+  self.storeIDRoot = #CHATTYNATOR_MESSAGE_LOG.historical
 
   self:UpdateStores()
 
@@ -46,6 +76,7 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   self.formatters = {}
   self.messagesProcessed = {}
   self.messageCount = #self.messages
+  self.messageIDCounter = 0
 
   self.awaitingRecorderSet = {}
   self.pending = 0
@@ -441,6 +472,7 @@ function addonTable.MessagesMonitorMixin:UpdateStores()
     endTimestamp = newStore[#newStore].timestamp,
     data = C_EncodingUtil and C_EncodingUtil.SerializeJSON(newStore) or {}
   })
+  self.storeIDRoot = #CHATTYNATOR_MESSAGE_LOG.historical
   CHATTYNATOR_MESSAGE_LOG.current = newCurrent
   self.store = newCurrent
   self.storeCount = #self.store
@@ -559,6 +591,10 @@ function addonTable.MessagesMonitorMixin:AddMessage(text, r, g, b, id, _, _, _, 
   if self:ShouldLog(data) then
     self.storeCount = self.storeCount + 1
     self.store[self.storeCount] = data
+    data.id = "s" .. self.storeIDRoot .. "_" .. self.storeCount
+  else
+    data.id = "l" .. self.messageIDCounter
+    self.messageIDCounter = self.messageIDCounter + 1
   end
   self.pending = self.pending + 1
   self.messageCount = self.messageCount + 1

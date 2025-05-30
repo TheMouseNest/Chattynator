@@ -91,6 +91,8 @@ local settings = {
   ENABLE_MESSAGE_FADE = {key = "enable_message_fade", default = true},
   ENABLE_SMOOTH_SCROLLING_COMBAT = {key = "enable_smooth_scrolling_combat", default = false},
 
+  APPLIED_MESSAGE_IDS = {key = "applied_message_ids", default = false},
+
   ENABLE_COMBAT_MESSAGES = {key = "enable_combat_messages", default = false},
   DEBUG = {key = "debug", default = false},
 }

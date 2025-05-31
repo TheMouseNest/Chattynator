@@ -100,6 +100,10 @@ function addonTable.Display.ScrollingMessagesMixin:ScrollToEnd(easyMode)
   self:ScrollTo(0, easyMode)
 end
 
+function addonTable.Display.ScrollingMessagesMixin:ScrollBy(diff)
+  self:ScrollTo(self.scrollOffset + diff)
+end
+
 function addonTable.Display.ScrollingMessagesMixin:OnMouseWheel(delta)
   if delta > 0 then
     delta = 1

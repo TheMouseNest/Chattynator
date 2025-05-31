@@ -145,7 +145,7 @@ function addonTable.Core.InitializeTabs(chatFrame)
                 windows[newChatFrame:GetID()].tabs[1] = windows[chatFrame:GetID()].tabs[tabButton:GetID()]
                 table.remove(windows[chatFrame:GetID()].tabs, tabButton:GetID())
                 newChatFrame:Reset()
-                newChatFrame:Render()
+                newChatFrame.ScrollingMessages:Render()
                 addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
               end)
             end
@@ -279,7 +279,7 @@ function addonTable.Core.InitializeTabs(chatFrame)
   chatFrame:SetBackgroundColor(allTabs[currentTab].bgColor.r, allTabs[currentTab].bgColor.g, allTabs[currentTab].bgColor.b)
   if currentTab ~= chatFrame.tabIndex then
     chatFrame:SetTabSelected(currentTab)
-    chatFrame:Render()
+    chatFrame.ScrollingMessages:Render()
     addonTable.CallbackRegistry:TriggerEvent("TabSelected", chatFrame:GetID(), currentTab)
   elseif forceSelected then
     addonTable.CallbackRegistry:TriggerEvent("TabSelected", chatFrame:GetID(), currentTab)

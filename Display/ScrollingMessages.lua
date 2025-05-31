@@ -72,6 +72,7 @@ function addonTable.Display.ScrollingMessagesMixin:ScrollTo(target, easyMode)
     self.scrollCallback(self.destination)
   end
   if self.destination == self.scrollOffset then -- Already done
+    self:UpdateAlphas()
     return
   end
   if easyMode then

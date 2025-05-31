@@ -448,9 +448,7 @@ function addonTable.MessagesMonitorMixin:GetMessageHeight(reverseIndex)
     self.sizingFontString:SetText(self.messagesProcessed[index].text)
     for width in pairs(self.widths) do
       self.sizingFontString:SetWidth(width + 0.1)
-      local basicHeight = (self.sizingFontString:GetLineHeight() + self.sizingFontString:GetSpacing()) * self.sizingFontString:GetNumLines()
-      local stringHeight = self.sizingFontString:GetStringHeight()
-      height[width] = math.max(basicHeight, stringHeight, self.sizingFontString:GetLineHeight())
+      height[width] = self.sizingFontString:GetStringHeight()
     end
   end
   return self.heights[index]

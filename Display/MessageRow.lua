@@ -19,10 +19,6 @@ function addonTable.Display.MessageRowMixin:OnLoad()
   self.Bar:SetPoint("TOP", 0, 0)
   self.Bar:SetWidth(2)
 
-  self.FadeAnimation = self:CreateAnimationGroup()
-  self.FadeAnimation.alpha = self.FadeAnimation:CreateAnimation("Alpha")
-  self.FadeAnimation.alpha:SetDuration(0.20)
-  self.FadeAnimation:SetToFinalAlpha(true)
   self:SetFlattensRenderLayers(true)
 
   self.DisplayString:SetPoint("TOPLEFT", self.Timestamp, "TOPRIGHT")
@@ -77,6 +73,9 @@ function addonTable.Display.MessageRowMixin:SetData(data)
   self.DisplayString:SetSpacing(0)
   self.DisplayString:SetText(data.text)
   self.DisplayString:SetTextColor(data.color.r, data.color.g, data.color.b)
-  self.FadeAnimation:Stop()
+  self.animationTime = 0
+  self.animationFinalTime = 0
+  self.animationDestination = 0
+  self.animationFinalAlpha = nil
   self:SetAlpha(0)
 end

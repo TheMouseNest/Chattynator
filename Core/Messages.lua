@@ -29,6 +29,7 @@ local function AddHistoricalIDs()
           end
         end
         CHATTYNATOR_MESSAGE_LOG.historical[historicalIndex].data = C_EncodingUtil.SerializeJSON(resolved)
+        historicalIndex = historicalIndex + 1
       else
         addonTable.Config.Set(addonTable.Config.Options.APPLIED_MESSAGE_IDS, true)
         frame:SetScript("OnUpdate", nil)

@@ -107,7 +107,7 @@ end
 function addonTable.Display.ScrollingMessagesMixin:OnMouseWheel(delta)
   if delta > 0 then
     delta = 1
-  else
+  elseif delta < 0 then
     delta = -1
   end
   self.currentFadeOffsetTime = GetTime()
@@ -248,8 +248,8 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
   end
 
   if #shownMessages > 0 and shownMessages[#shownMessages].extentTop < self.scrollOffset + viewportHeight and self.scrollOffset ~= 0 then
-    self.scrollOffset = 0
-    self.destination = 0
+    self.scrollOffset = math.max(0, allocatedHeight - viewportHeight)
+    self.destination = self.scrollOffset
     if self.scrollCallback then
       self.scrollCallback(self.destination)
     end

@@ -22,7 +22,7 @@ local function Shorten(data)
   end
 end
 
-function addonTable.Core.InitializeShortenChannels()
+function addonTable.Modifiers.InitializeShortenChannels()
   if addonTable.Config.Get(addonTable.Config.Options.SHORTEN_CHANNEL_NAMES) then
     addonTable.Messages:AddLiveModifier(Shorten)
   end

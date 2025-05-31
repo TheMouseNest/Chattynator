@@ -112,7 +112,8 @@ function addonTable.Core.Initialize()
 
   addonTable.Core.ApplyOverrides()
   addonTable.Core.InitializeChatCommandLogging()
-  addonTable.Core.InitializeShortenChannels()
+  addonTable.Modifiers.InitializeShortenChannels()
+  addonTable.Modifiers.InitializeClassColors()
   addonTable.CustomiseDialog.Initialize()
 end
 

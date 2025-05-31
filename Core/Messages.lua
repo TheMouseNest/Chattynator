@@ -333,10 +333,19 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
     local channelIndex = select(8, ...)
     local channelName = self.channelMap[channelIndex]
     local channelID = select(7, ...)
+    local playerArg = select(2, ...)
+    local playerGUID = select(12, ...)
+    local playerClass
+    if playerGUID and type(playerArg) == "string" then
+      playerClass = select(2, GetPlayerInfoByGUID(playerGUID))
+    else
+      playerArg = nil
+    end
     self:SetIncomingType({
       type = ChatTypeGroupInverted[eventName] or "NONE",
       event = eventName,
-      player = select(2, ...),
+      player = playerArg,
+      playerClass = playerClass,
       channel = channelName and {name = channelName, index = channelIndex, isDefault = self.defaultChannels[channelName], zoneID = channelID} or nil,
     })
     self.lockType = true

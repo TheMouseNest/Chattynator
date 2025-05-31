@@ -43,7 +43,7 @@ function addonTable.Display.ChatFrameMixin:OnLoad()
   addonTable.Skins.AddFrame("ResizeWidget", self.resizeWidget)
   self.resizeWidget:SetShown(not addonTable.Config.Get(addonTable.Config.Options.LOCKED))
 
-  addonTable.CallbackRegistry:RegisterCallback("Render", function(self, ...)
+  addonTable.CallbackRegistry:RegisterCallback("Render", function(_, ...)
     if self:GetID() == 0 then
       return
     end
@@ -268,7 +268,7 @@ function addonTable.Display.ChatFrameMixin:ApplyFlashing(newMessages)
   local messages = {}
   while newMessages > 0 do
     newMessages = newMessages - 1
-    table.insert(messages,  addonTable.Messages:GetMessage(1 + #messages))
+    table.insert(messages,  addonTable.Messages:GetMessageRaw(1 + #messages))
   end
   local tabsMatching = {}
   for index, tab in ipairs(self.Tabs) do

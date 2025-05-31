@@ -35,6 +35,12 @@ function addonTable.Display.ScrollingMessagesMixin:OnLoad()
     self:UpdateAllocated()
   end)
 
+  addonTable.CallbackRegistry:RegisterCallback("RefreshStateChange", function(_, state)
+    if state[addonTable.Constants.RefreshReason.MessageModifier] then
+      self.cleanRender = true
+    end
+  end)
+
   self:SetScript("OnMouseWheel", self.OnMouseWheel)
   self:SetScript("OnSizeChanged", function()
     self:UpdateWidth()
@@ -210,11 +216,12 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
   local index = 1
   local correctedOffset = false
   while allocatedHeight < viewportHeight + self.scrollOffset do
-    local m = addonTable.Messages:GetMessage(index)
+    local m = addonTable.Messages:GetMessageRaw(index)
     if not m then
       break
     end
     if m.recordedBy == addonTable.Data.CharacterName and (not self.filterFunc or self.filterFunc(m)) then
+      m = addonTable.Messages:GetMessageProcessed(index)
       local heights = addonTable.Messages:GetMessageHeight(index)
       table.insert(shownMessages, {
         data = m,
@@ -225,7 +232,7 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
       })
       if not correctedOffset and newMessages and index >= newMessages + 1 then
         correctedOffset = true
-        if #shownMessages == 1 then
+        if #shownMessages == 1 and not self.cleanRender then
           return
         else
           self.scrollOffset = self.scrollOffset + shownMessages[#shownMessages].extentBottom
@@ -254,7 +261,7 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
   local toReplace = {}
   local toReuse = {}
   for _, a in ipairs(self.allocated) do
-    if a.data and known[a.data.id] then
+    if a.data and known[a.data.id] and not self.cleanRender then
       toReuse[a.data.id] = a
     else
       a:Hide()
@@ -262,6 +269,7 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
       a.data = nil
     end
   end
+  self.cleanRender = false
   self.activeFrames = {}
   for _, info in ipairs(shownMessages) do
     if info.show then

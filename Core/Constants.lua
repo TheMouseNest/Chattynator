@@ -44,5 +44,6 @@ addonTable.Constants.RefreshReason = {
   Tabs = 1,
   MessageFont = 2,
   MessageWidget = 3,
+  MessageModifier = 4,
   Locked = 1000,
 }

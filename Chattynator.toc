@@ -43,6 +43,8 @@ Display/Tabs.lua
 Display/ScrollingMessages.lua
 Display/MessageRow.lua
 
+Modifiers/ShortenChannels.lua
+
 Skins/Main.lua
 Skins/Dark.lua
 Skins/ElvUI.lua

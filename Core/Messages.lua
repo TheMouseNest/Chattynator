@@ -308,6 +308,7 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
     self.heights = {}
     addonTable.CallbackRegistry:TriggerEvent("MessageDisplayChanged")
   elseif eventName == "PLAYER_LOGIN" then
+    self.playerLoginFired = true
     local oldFontKey = self.fontKey
     self.fontKey = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT)
     self.font = addonTable.Core.GetFontByID(self.fontKey)
@@ -327,13 +328,14 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
 
     addonTable.CallbackRegistry:TriggerEvent("Render")
   else
-    local channelName = self.channelMap[select(8, ...)]
+    local channelIndex = select(8, ...)
+    local channelName = self.channelMap[channelIndex]
     local channelID = select(7, ...)
     self:SetIncomingType({
       type = ChatTypeGroupInverted[eventName] or "NONE",
       event = eventName,
       player = select(2, ...),
-      channel = channelName and {name = channelName, isDefault = self.defaultChannels[channelName], zoneID = channelID} or nil,
+      channel = channelName and {name = channelName, index = channelIndex, isDefault = self.defaultChannels[channelName], zoneID = channelID} or nil,
     })
     self.lockType = true
     ChatFrame_OnEvent(self, eventName, ...)
@@ -347,7 +349,7 @@ function addonTable.MessagesMonitorMixin:AddLiveModifier(func)
   if not index then
     self.messagesProcessed = {}
     table.insert(self.liveModifiers, func)
-    if self:GetScript("OnUpdate") == nil then
+    if self:GetScript("OnUpdate") == nil and self.playerLoginFired then
       self:SetScript("OnUpdate", function()
         addonTable.CallbackRegistry:TriggerEvent("Render")
       end)
@@ -360,7 +362,7 @@ function addonTable.MessagesMonitorMixin:RemoveLiveModifier(func)
   if index then
     self.messagesProcessed = {}
     table.remove(self.liveModifiers, index)
-    if self:GetScript("OnUpdate") == nil then
+    if self:GetScript("OnUpdate") == nil and self.playerLoginFired then
       self:SetScript("OnUpdate", function()
         addonTable.CallbackRegistry:TriggerEvent("Render")
       end)
@@ -422,7 +424,7 @@ function addonTable.MessagesMonitorMixin:UnregisterWidth(width)
   end
 end
 
-function addonTable.MessagesMonitorMixin:GetMessage(reverseIndex)
+function addonTable.MessagesMonitorMixin:GetMessageProcessed(reverseIndex)
   local index = self.messageCount - reverseIndex + 1
   if not self.messages[index] then
     return
@@ -437,6 +439,11 @@ function addonTable.MessagesMonitorMixin:GetMessage(reverseIndex)
   self.heights[index] = nil
   self.messagesProcessed[index] = new
   return new
+end
+
+function addonTable.MessagesMonitorMixin:GetMessageRaw(reverseIndex)
+  local index = self.messageCount - reverseIndex + 1
+  return self.messages[index]
 end
 
 function addonTable.MessagesMonitorMixin:GetMessageHeight(reverseIndex)

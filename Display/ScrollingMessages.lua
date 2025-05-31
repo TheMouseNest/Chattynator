@@ -117,6 +117,7 @@ end
 function addonTable.Display.ScrollingMessagesMixin:UpdateAllocated()
   for _, f in ipairs(self.allocated) do
     f:UpdateWidgets(self.currentStringWidth)
+    f:Hide()
     f.data = nil
   end
 end

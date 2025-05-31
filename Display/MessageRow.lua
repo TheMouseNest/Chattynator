@@ -74,6 +74,7 @@ function addonTable.Display.MessageRowMixin:SetData(data)
   self.DisplayString:SetText(data.text)
   self.DisplayString:SetTextColor(data.color.r, data.color.g, data.color.b)
   self.animationTime = 0
+  self.animationStart = 0
   self.animationFinalTime = 0
   self.animationDestination = 0
   self.animationFinalAlpha = nil

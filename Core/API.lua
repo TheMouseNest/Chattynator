@@ -30,3 +30,11 @@ function Chattynator.API.RemoveDynamicFilter(func)
     funcToWrapper[func] = nil
   end
 end
+
+function Chattynator.API.FilterTimePlayed(state)
+  if state then
+    addonTable.Messages:UnregisterEvent("TIME_PLAYED_MSG")
+  else
+    addonTable.Messages:RegisterEvent("TIME_PLAYED_MSG")
+  end
+end

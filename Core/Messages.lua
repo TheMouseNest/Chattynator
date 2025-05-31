@@ -22,13 +22,15 @@ local function AddHistoricalIDs()
     local historicalIndex = 1
     frame:SetScript("OnUpdate", function()
       if CHATTYNATOR_MESSAGE_LOG.historical[historicalIndex] then
-        local resolved = C_EncodingUtil.DeserializeJSON(CHATTYNATOR_MESSAGE_LOG.historical[historicalIndex].data)
-        for index, entry in ipairs(resolved) do
-          if entry.id == nil then
-            entry.id = "r" .. historicalIndex .. "_" .. index
+        if type(CHATTYNATOR_MESSAGE_LOG.historical[historicalIndex].data) == "string" and C_EncodingUtil then
+          local resolved = C_EncodingUtil.DeserializeJSON(CHATTYNATOR_MESSAGE_LOG.historical[historicalIndex].data)
+          for index, entry in ipairs(resolved) do
+            if entry.id == nil then
+              entry.id = "r" .. historicalIndex .. "_" .. index
+            end
           end
+          CHATTYNATOR_MESSAGE_LOG.historical[historicalIndex].data = C_EncodingUtil.SerializeJSON(resolved)
         end
-        CHATTYNATOR_MESSAGE_LOG.historical[historicalIndex].data = C_EncodingUtil.SerializeJSON(resolved)
         historicalIndex = historicalIndex + 1
       else
         addonTable.Config.Set(addonTable.Config.Options.APPLIED_MESSAGE_IDS, true)

@@ -58,15 +58,15 @@ function addonTable.Core.ApplyOverrides()
   end
 
   ChatFrame_ChatPageUp = function()
-    addonTable.allChatFrames[1].ScrollBox:ScrollDecrease(2)
+    addonTable.allChatFrames[1].ScrollingMessages:ScrollBy(200)
   end
 
   ChatFrame_ChatPageDown = function()
-    addonTable.allChatFrames[1].ScrollBox:ScrollIncrease(2)
+    addonTable.allChatFrames[1].ScrollingMessages:ScrollBy(-200)
   end
 
   ChatFrame_ScrollToBottom = function()
-    addonTable.allChatFrames[1].ScrollBox:ScrollToEnd()
+    addonTable.allChatFrames[1].ScrollingMessages:ScrollToEnd()
   end
 
   local frame = CreateFrame("Frame")

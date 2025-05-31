@@ -31,7 +31,10 @@ L["MOVE_TO_NEW_WINDOW"] = "Move to new window"
 L["CLOSE_TAB"] = "Close tab"
 L["CLOSE_WINDOW"] = "Close window"
 L["RENAME_TAB"] = "Rename tab"
+L["TAB_SETTINGS"] = "Tab Settings"
 L["GLOBAL_SETTINGS"] = "Global Settings"
+L["UNLOCK_CHAT"] = "Unlock Chat"
+L["LOCK_CHAT"] = "Lock Chat"
 
 L["CANT_POPOUT_THIS_CHANNEL"] = "Can't popout this channel"
 

@@ -56,8 +56,6 @@ function addonTable.Display.ScrollingMessagesMixin:OnLoad()
     end
   end)
 
-  self:SetScript("OnUpdate", self.UpdateAlphas)
-
   self.scrollCallback = nil
 end
 
@@ -127,11 +125,16 @@ function addonTable.Display.ScrollingMessagesMixin:UpdateAlphas(elapsed)
   if elapsed then
     self.accumulatedTime = (self.accumulatedTime or 0) + elapsed
     if self.accumulatedTime < 1 then
+      local any = false
       for _, f in ipairs(self.activeFrames) do
         if f.animationTime ~= f.animationFinalTime then
+          any = true
           f.animationTime = math.min(f.animationFinalTime, f.animationTime + elapsed)
           f:SetAlpha(f.animationStart + (1 - (1 - f.animationTime/f.animationFinalTime) ^ 2) * f.animationDestination)
         end
+      end
+      if not any then
+        self:SetScript("OnUpdate", nil)
       end
       return
 
@@ -146,12 +149,14 @@ function addonTable.Display.ScrollingMessagesMixin:UpdateAlphas(elapsed)
 
   local lineHeight = self.activeFrames[1] and self.activeFrames[1].DisplayString:GetLineHeight() * 0.9 or 0
 
+  local any = false
   local top, bottom = self:GetTop(), self:GetBottom()
   for _, f in ipairs(self.activeFrames) do
     local alpha = f:GetAlpha()
 
     if fadeEnabled and self.destination == 0 and math.max(f.data.timestamp + self.timestampOffset, self.currentFadeOffsetTime) + fadeTime - currentTime < 0 then
       if self.accumulatedTime == 0 and alpha ~= 0 and (f.animationFinalAlpha ~= 0 or f.animationFinalTime == 0) then
+        any = true
         f.animationTime = 0
         f.animationStart = alpha
         f.animationFinalTime = 3
@@ -160,6 +165,7 @@ function addonTable.Display.ScrollingMessagesMixin:UpdateAlphas(elapsed)
       end
     elseif f:GetBottom() - top > - lineHeight or f:GetTop() - bottom < lineHeight then
       if alpha ~= 0.5 and (f.animationFinalAlpha ~= 0.5 or f.animationFinalTime == 0) then
+        any = true
         f.animationTime = 0
         f.animationStart = alpha
         f.animationFinalTime = 0.2
@@ -167,12 +173,17 @@ function addonTable.Display.ScrollingMessagesMixin:UpdateAlphas(elapsed)
         f.animationFinalAlpha = 0.5
       end
     elseif alpha ~= 1 and (f.animationFinalAlpha ~= 1 or f.animationFinalTime == 0) then
+      any = true
       f.animationTime = 0
       f.animationFinalTime = 0.11 -- Same as scrolling
       f.animationStart = alpha
       f.animationDestination = 1 - alpha
       f.animationFinalAlpha = 1
     end
+  end
+
+  if any then
+    self:SetScript("OnUpdate", self.UpdateAlphas)
   end
 end
 

@@ -244,7 +244,11 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
   end
 
   if #shownMessages > 0 and shownMessages[#shownMessages].extentTop < self.scrollOffset + viewportHeight and self.scrollOffset ~= 0 then
-    self.scrollOffset = shownMessages[#shownMessages].extentTop - viewportHeight
+    self.scrollOffset = 0
+    self.destination = 0
+    if self.scrollCallback then
+      self.scrollCallback(self.destination)
+    end
   end
 
   local shift = 0

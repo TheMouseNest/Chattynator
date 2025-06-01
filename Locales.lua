@@ -61,6 +61,11 @@ L["TIMESTAMP"] = "Timestamp"
 L["SHOW_VERTICAL_SEPARATOR"] = "Show vertical separator"
 L["USE_CLASS_COLORS"] = "Use class colors"
 
+L["NONE"] = "None"
+L["LETTER"] = "Letter"
+L["NUMBER"] = "Number"
+L["SHORTEN_CHANNELS"] = "Shorten channels"
+
 L["MESSAGE_FONT"] = "Message font"
 L["MESSAGE_FONT_SIZE"] = "Message font size"
 

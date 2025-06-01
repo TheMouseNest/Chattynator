@@ -91,7 +91,7 @@ local settings = {
   ENABLE_MESSAGE_FADE = {key = "enable_message_fade", default = true},
   ENABLE_SMOOTH_SCROLLING_COMBAT = {key = "enable_smooth_scrolling_combat", default = false},
 
-  SHORTEN_CHANNEL_NAMES = {key = "shorten_channel_names_1", default = false, refresh = {addonTable.Constants.RefreshReason.MessageModifier}},
+  SHORTEN_FORMAT = {key = "shorten_format", default = "none", refresh = {addonTable.Constants.RefreshReason.MessageModifier}},
   CLASS_COLORS = {key = "class_colors", default = true, refresh = {addonTable.Constants.RefreshReason.MessageModifier}},
 
   APPLIED_MESSAGE_IDS = {key = "applied_message_ids", default = false},

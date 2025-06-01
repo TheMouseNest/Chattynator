@@ -344,6 +344,27 @@ local function SetupFormatting(parent)
   useClassColors:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
   table.insert(allFrames, useClassColors)
 
+  local shorteningDropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.SHORTEN_CHANNELS, function(value)
+    return addonTable.Config.Get(addonTable.Config.Options.SHORTEN_FORMAT) == value
+  end, function(value)
+    addonTable.Config.Set(addonTable.Config.Options.SHORTEN_FORMAT, value)
+  end)
+  shorteningDropdown:SetPoint("TOP", useClassColors, "BOTTOM")
+  do
+    local entries = {
+      addonTable.Locales.NONE,
+      addonTable.Locales.NUMBER,
+      addonTable.Locales.LETTER,
+    }
+    local values = {
+      "none",
+      "number",
+      "letter",
+    }
+    shorteningDropdown:Init(entries, values)
+  end
+  table.insert(allFrames, shorteningDropdown)
+
   container:SetScript("OnShow", function()
     for _, f in ipairs(allFrames) do
       if f.SetValue then

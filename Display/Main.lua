@@ -219,7 +219,11 @@ function addonTable.Display.ChatFrameMixin:RepositionBlizzardWidgets()
   addonTable.Skins.AddFrame("ChatButton", self.SearchButton, {"search"})
   self.CopyButton = MakeButton(addonTable.Locales.COPY_CHAT)
   self.CopyButton:SetScript("OnClick", function()
-    addonTable.CopyFrame:LoadMessages(self.ScrollingMessages.filterFunc, self.ScrollingMessages.startingIndex)
+    if addonTable.CopyFrame:IsShown() then
+      addonTable.CopyFrame:Hide()
+    else
+      addonTable.CopyFrame:LoadMessages(self.ScrollingMessages.filterFunc, self.ScrollingMessages.startingIndex)
+    end
   end)
   table.insert(self.buttons, self.CopyButton)
   addonTable.Skins.AddFrame("ChatButton", self.CopyButton, {"copy"})

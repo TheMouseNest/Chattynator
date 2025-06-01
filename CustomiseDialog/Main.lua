@@ -353,8 +353,8 @@ local function SetupFormatting(parent)
   do
     local entries = {
       addonTable.Locales.NONE,
-      addonTable.Locales.NUMBER,
-      addonTable.Locales.LETTER,
+      addonTable.Locales.SHORTEN_STYLE_1,
+      addonTable.Locales.SHORTEN_STYLE_2,
     }
     local values = {
       "none",

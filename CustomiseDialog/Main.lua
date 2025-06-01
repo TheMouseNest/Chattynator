@@ -211,45 +211,7 @@ local function SetupLayout(parent)
   messageSpacing:SetPoint("TOP")
   table.insert(allFrames, messageSpacing)
 
-  local enableMessageFade = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.ENABLE_MESSAGE_FADE, 28, function(state)
-    addonTable.Config.Set(addonTable.Config.Options.ENABLE_MESSAGE_FADE, state)
-  end)
-  enableMessageFade.option = addonTable.Config.Options.ENABLE_MESSAGE_FADE
-  enableMessageFade:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
-  table.insert(allFrames, enableMessageFade)
-
-  local messageFadeTimer
-  messageFadeTimer = addonTable.CustomiseDialog.Components.GetSlider(container, addonTable.Locales.MESSAGE_FADE_TIME, 5, 240, "%ss", function()
-    addonTable.Config.Set(addonTable.Config.Options.MESSAGE_FADE_TIME, messageFadeTimer:GetValue())
-  end)
-  messageFadeTimer.option = addonTable.Config.Options.MESSAGE_FADE_TIME
-  messageFadeTimer:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
-  table.insert(allFrames, messageFadeTimer)
-
-  local timestampDropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.TIMESTAMP_FORMAT, function(value)
-    return addonTable.Config.Get(addonTable.Config.Options.TIMESTAMP_FORMAT) == value
-  end, function(value)
-    addonTable.Config.Set(addonTable.Config.Options.TIMESTAMP_FORMAT, value)
-  end)
-  timestampDropdown:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
-  do
-    local entries = {
-      "HH:MM",
-      "HH:MM:SS",
-      "HH:MM AM/PM",
-      "HH:MM:SS AM/PM",
-    }
-    local values = {
-      "%H:%M",
-      "%X",
-      "%I:%M %p",
-      "%I:%M:%S %p",
-    }
-    timestampDropdown:Init(entries, values)
-  end
-  table.insert(allFrames, timestampDropdown)
-
-  local showSeparator = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_TIMESTAMP_SEPARATOR, 28, function(state)
+  local showSeparator = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_VERTICAL_SEPARATOR, 28, function(state)
     addonTable.Config.Set(addonTable.Config.Options.SHOW_TIMESTAMP_SEPARATOR, state)
   end)
   showSeparator.option = addonTable.Config.Options.SHOW_TIMESTAMP_SEPARATOR
@@ -278,7 +240,7 @@ local function SetupLayout(parent)
   return container
 end
 
-local function SetupFont(parent)
+local function SetupDisplay(parent)
   local LibSharedMedia = LibStub("LibSharedMedia-3.0")
 
   local container = CreateFrame("Frame", nil, parent)
@@ -293,7 +255,24 @@ local function SetupFont(parent)
   fontSize = addonTable.CustomiseDialog.Components.GetSlider(container, addonTable.Locales.MESSAGE_FONT_SIZE, 2, 40, "%spx", function()
     addonTable.Config.Set(addonTable.Config.Options.MESSAGE_FONT_SIZE, fontSize:GetValue())
   end)
+  fontSize.option = addonTable.Config.Options.MESSAGE_FONT_SIZE
   fontSize:SetPoint("TOP", fontDropdown, "BOTTOM")
+  table.insert(allFrames, fontSize)
+
+  local enableMessageFade = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.ENABLE_MESSAGE_FADE, 28, function(state)
+    addonTable.Config.Set(addonTable.Config.Options.ENABLE_MESSAGE_FADE, state)
+  end)
+  enableMessageFade.option = addonTable.Config.Options.ENABLE_MESSAGE_FADE
+  enableMessageFade:SetPoint("TOP", fontSize, "BOTTOM", 0, -30)
+  table.insert(allFrames, enableMessageFade)
+
+  local messageFadeTimer
+  messageFadeTimer = addonTable.CustomiseDialog.Components.GetSlider(container, addonTable.Locales.MESSAGE_FADE_TIME, 5, 240, "%ss", function()
+    addonTable.Config.Set(addonTable.Config.Options.MESSAGE_FADE_TIME, messageFadeTimer:GetValue())
+  end)
+  messageFadeTimer.option = addonTable.Config.Options.MESSAGE_FADE_TIME
+  messageFadeTimer:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
+  table.insert(allFrames, messageFadeTimer)
 
   container:SetScript("OnShow", function()
     local fontValues = CopyTable(LibSharedMedia:List("font"))
@@ -318,7 +297,63 @@ local function SetupFont(parent)
       rootDescription:SetScrollMode(20 * 20)
     end)
 
-    fontSize:SetValue(addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT_SIZE))
+    for _, f in ipairs(allFrames) do
+      if f.SetValue then
+        if f.option then
+          f:SetValue(addonTable.Config.Get(f.option))
+        end
+      end
+    end
+  end)
+
+  return container
+end
+
+local function SetupFormatting(parent)
+  local container = CreateFrame("Frame", nil, parent)
+
+  local allFrames = {}
+
+  local timestampDropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.TIMESTAMP, function(value)
+    return addonTable.Config.Get(addonTable.Config.Options.TIMESTAMP_FORMAT) == value
+  end, function(value)
+    addonTable.Config.Set(addonTable.Config.Options.TIMESTAMP_FORMAT, value)
+  end)
+  timestampDropdown:SetPoint("TOP")
+  do
+    local entries = {
+      "HH:MM",
+      "HH:MM:SS",
+      "HH:MM AM/PM",
+      "HH:MM:SS AM/PM",
+    }
+    local values = {
+      "%H:%M",
+      "%X",
+      "%I:%M %p",
+      "%I:%M:%S %p",
+    }
+    timestampDropdown:Init(entries, values)
+  end
+  table.insert(allFrames, timestampDropdown)
+
+  local useClassColors = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.USE_CLASS_COLORS, 28, function(state)
+    addonTable.Config.Set(addonTable.Config.Options.CLASS_COLORS, state)
+  end)
+  useClassColors.option = addonTable.Config.Options.CLASS_COLORS
+  useClassColors:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
+  table.insert(allFrames, useClassColors)
+
+  container:SetScript("OnShow", function()
+    for _, f in ipairs(allFrames) do
+      if f.SetValue then
+        if f.option then
+          f:SetValue(addonTable.Config.Get(f.option))
+        else
+          f:SetValue()
+        end
+      end
+    end
   end)
 
   return container
@@ -327,7 +362,8 @@ end
 local TabSetups = {
   {name = GENERAL, callback = SetupGeneral},
   {name = addonTable.Locales.LAYOUT, callback = SetupLayout},
-  {name = addonTable.Locales.FONT, callback = SetupFont},
+  {name = addonTable.Locales.DISPLAY, callback = SetupDisplay},
+  {name = addonTable.Locales.FORMATTING, callback = SetupFormatting},
 }
 
 function addonTable.CustomiseDialog.Toggle()

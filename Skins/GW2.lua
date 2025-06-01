@@ -430,7 +430,7 @@ local function LoadSkin()
 
   addonTable.Messages:AddLiveModifier(function(data)
     if data.typeInfo.channel then
-      data.text = data.text:gsub("|Hchannel:channel(.-)|h(.-)|h", "|Hchannel:channel%1|h|cffd0d0d0%2|r|h")
+      data.text = data.text:gsub("(|Hchannel:channel.-|h.-|h)", "|cffd0d0d0%1|r")
     end
   end)
 end

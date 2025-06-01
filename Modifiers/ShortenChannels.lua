@@ -18,7 +18,7 @@ local letterStyle = {
     r = "%1%2%3",
   },
   channel = {
-    p = "^(%|Hchannel%:channel%:[^|]-%|h)%[.-%](%|h)",
+    p = "(%|Hchannel:channel:.-|h)%[?.-%]?(|h)",
     r = function(data)
       local index = data.typeInfo.channel.index or 0
       local map = channelMapping[data.typeInfo.channel.zoneID]
@@ -26,35 +26,35 @@ local letterStyle = {
     end,
   },
   guild = {
-    p = "(|Hchannel:GUILD|h)[^|]-(|h)",
+    p = "(|Hchannel:GUILD|h).-(|h)",
     r = "%1" .. addonTable.Locales.ABBREV_GUILD .. ".%2",
   },
   officer = {
-    p = "(|Hchannel:OFFICER|h)[^|]-(|h)",
+    p = "(|Hchannel:OFFICER|h).-(|h)",
     r = "%1" .. addonTable.Locales.ABBREV_OFFICER .. ".%2",
   },
   party = {
-    p = "(|Hchannel:PARTY|h)[^|]-(|h)",
+    p = "(|Hchannel:PARTY|h).-(|h)",
     r = "%1" .. addonTable.Locales.ABBREV_PARTY .. ".%2",
   },
   partyLeader = {
-    p = "(|Hchannel:PARTY|h)[^|]-(|h)",
+    p = "(|Hchannel:PARTY|h).-(|h)",
     r = "%1" .. addonTable.Locales.ABBREV_PARTY_LEADER .. ".%2",
   },
   instance = {
-    p = "(|Hchannel:INSTANCE_CHAT|h)[^|]-(|h)",
+    p = "(|Hchannel:INSTANCE_CHAT|h).-(|h)",
     r = "%1" .. addonTable.Locales.ABBREV_INSTANCE .. ".%2",
   },
   instanceLeader = {
-    p = "(|Hchannel:INSTANCE_CHAT|h)[^|]-(|h)",
+    p = "(|Hchannel:INSTANCE_CHAT|h).-(|h)",
     r = "%1" .. addonTable.Locales.ABBREV_INSTANCE_LEADER .. ".%2",
   },
   raid = {
-    p = "(|Hchannel:RAID|h)[^|]-(|h)",
+    p = "(|Hchannel:RAID|h).-(|h)",
     r = "%1" .. addonTable.Locales.ABBREV_RAID .. ".%2",
   },
   raidLeader = {
-    p = "(|Hchannel:RAID|h)[^|]-(|h)",
+    p = "(|Hchannel:RAID|h).-(|h)",
     r = "%1" .. addonTable.Locales.ABBREV_RAID_LEADER .. ".%2",
   },
 }
@@ -65,42 +65,42 @@ local numberStyle = {
     r = "%1[%2]%3",
   },
   channel = {
-    p = "^(%|Hchannel%:channel%:[^|]-%|h)%[?[^%[%]|]-%]?(%|h)",
+    p = "(%|Hchannel%:channel%:[^|]-%|h)%[?[^%[%]]-%]?(%|h)",
     r = function(data)
       local index = data.typeInfo.channel.index or 0
       return "%1[" .. index .. "]%2"
     end,
   },
   guild = {
-    p = "(|Hchannel:GUILD|h)[^|]-(|h)",
+    p = "(|Hchannel:GUILD|h).-(|h)",
     r = "%1[" .. addonTable.Locales.ABBREV_GUILD .. "]%2",
   },
   officer = {
-    p = "(|Hchannel:OFFICER|h)[^|]-(|h)",
+    p = "(|Hchannel:OFFICER|h).-(|h)",
     r = "%1[" .. addonTable.Locales.ABBREV_OFFICER .. "]%2",
   },
   party = {
-    p = "(|Hchannel:PARTY|h)[^|]-(|h)",
+    p = "(|Hchannel:PARTY|h).-(|h)",
     r = "%1[" .. addonTable.Locales.ABBREV_PARTY .. "]%2",
   },
   partyLeader = {
-    p = "(|Hchannel:PARTY|h)[^|]-(|h)",
+    p = "(|Hchannel:PARTY|h).-(|h)",
     r = "%1[" .. addonTable.Locales.ABBREV_PARTY_LEADER .. "]%2",
   },
   instance = {
-    p = "(|Hchannel:INSTANCE_CHAT|h)[^|]-(|h)",
+    p = "(|Hchannel:INSTANCE_CHAT|h).-(|h)",
     r = "%1[" .. addonTable.Locales.ABBREV_INSTANCE .. "]%2",
   },
   instanceLeader = {
-    p = "(|Hchannel:INSTANCE_CHAT|h)[^|]-(|h)",
+    p = "(|Hchannel:INSTANCE_CHAT|h).-(|h)",
     r = "%1[" .. addonTable.Locales.ABBREV_INSTANCE_LEADER .. "]%2",
   },
   raid = {
-    p = "(|Hchannel:RAID|h)[^|]-(|h)",
+    p = "(|Hchannel:RAID|h).-(|h)",
     r = "%1[" .. addonTable.Locales.ABBREV_RAID .. "]%2",
   },
   raidLeader = {
-    p = "(|Hchannel:RAID|h)[^|]-(|h)",
+    p = "(|Hchannel:RAID|h).-(|h)",
     r = "%1[" .. addonTable.Locales.ABBREV_RAID_LEADER .. "]%2",
   },
 }

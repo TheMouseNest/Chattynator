@@ -29,6 +29,10 @@ local letterStyle = {
     p = "(|Hchannel:GUILD|h)[^|]-(|h)",
     r = "%1" .. addonTable.Locales.ABBREV_GUILD .. ".%2",
   },
+  officer = {
+    p = "(|Hchannel:OFFICER|h)[^|]-(|h)",
+    r = "%1" .. addonTable.Locales.ABBREV_OFFICER .. ".%2",
+  },
   party = {
     p = "(|Hchannel:PARTY|h)[^|]-(|h)",
     r = "%1" .. addonTable.Locales.ABBREV_PARTY .. ".%2",
@@ -71,6 +75,10 @@ local numberStyle = {
     p = "(|Hchannel:GUILD|h)[^|]-(|h)",
     r = "%1[" .. addonTable.Locales.ABBREV_GUILD .. "]%2",
   },
+  officer = {
+    p = "(|Hchannel:OFFICER|h)[^|]-(|h)",
+    r = "%1[" .. addonTable.Locales.ABBREV_OFFICER .. "]%2",
+  },
   party = {
     p = "(|Hchannel:PARTY|h)[^|]-(|h)",
     r = "%1[" .. addonTable.Locales.ABBREV_PARTY .. "]%2",
@@ -104,6 +112,7 @@ local typeToPattern = {
 }
 
 local chatTypeToPatterns = {
+  OFFICER = "officer",
   PARTY = "party",
   PARTY_LEADER = "partyLeader",
   INSTANCE = "instance",

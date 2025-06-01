@@ -289,7 +289,11 @@ local skinners = {
         button.HoverIcon:SetVertexColor(hoverColor.r, hoverColor.g, hoverColor.b)
         button.HoverIcon:SetSize(15, 15)
       elseif tags.copy then
-        button.Icon:SetTexture("Interface/AddOns/GW2_UI/textures/uistuff/maximize_button")
+        button.Icon:SetTexture("Interface/AddOns/Chattynator/Assets/Copy.png")
+        button.Icon:SetSize(15, 15)
+        button.HoverIcon:SetTexture(button.Icon:GetTexture())
+        button.HoverIcon:SetVertexColor(hoverColor.r, hoverColor.g, hoverColor.b)
+        button.HoverIcon:SetSize(15, 15)
       elseif tags.settings then
         button.Icon:SetTexture("Interface/AddOns/GW2_UI/textures/icons/MainMenuMicroButton-Down")
         button.HoverIcon:SetTexture("Interface/AddOns/GW2_UI/textures/icons/MainMenuMicroButton-Up")

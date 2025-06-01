@@ -573,6 +573,14 @@ local ignoreTypes = {
 
 local ignoreEvents = {
   ["GUILD_MOTD"] = true,
+  ["CHAT_SERVER_DISCONNECTED"] = true,
+  ["CHAT_SERVER_RECONNECTED"] = true,
+  ["CHAT_REGIONAL_SEND_FAILED"] = true,
+  ["NOTIFY_CHAT_SUPPRESSED"] = true,
+  ["BN_CONNECTED"] = true,
+  ["BN_DISCONNECTED"] = true,
+  ["CHARACTER_POINTS_CHANGED"] = true,
+  ["UPDATE_INSTANCE_INFO"] = true,
 }
 
 function addonTable.MessagesMonitorMixin:ShouldLog(data)

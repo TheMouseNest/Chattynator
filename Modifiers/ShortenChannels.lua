@@ -26,9 +26,33 @@ local letterStyle = {
     end,
   },
   guild = {
-    p = "(|Hchannel:GUILD|h)%[[^%[%]|]-%](|h)",
+    p = "(|Hchannel:GUILD|h)[^|]-(|h)",
     r = "%1" .. addonTable.Locales.ABBREV_GUILD .. ".%2",
-  }
+  },
+  party = {
+    p = "(|Hchannel:PARTY|h)[^|]-(|h)",
+    r = "%1" .. addonTable.Locales.ABBREV_PARTY .. ".%2",
+  },
+  partyLeader = {
+    p = "(|Hchannel:PARTY|h)[^|]-(|h)",
+    r = "%1" .. addonTable.Locales.ABBREV_PARTY_LEADER .. ".%2",
+  },
+  instance = {
+    p = "(|Hchannel:INSTANCE_CHAT|h)[^|]-(|h)",
+    r = "%1" .. addonTable.Locales.ABBREV_INSTANCE .. ".%2",
+  },
+  instanceLeader = {
+    p = "(|Hchannel:INSTANCE_CHAT|h)[^|]-(|h)",
+    r = "%1" .. addonTable.Locales.ABBREV_INSTANCE_LEADER .. ".%2",
+  },
+  raid = {
+    p = "(|Hchannel:RAID|h)[^|]-(|h)",
+    r = "%1" .. addonTable.Locales.ABBREV_RAID .. ".%2",
+  },
+  raidLeader = {
+    p = "(|Hchannel:RAID|h)[^|]-(|h)",
+    r = "%1" .. addonTable.Locales.ABBREV_RAID_LEADER .. ".%2",
+  },
 }
 
 local numberStyle = {
@@ -44,15 +68,48 @@ local numberStyle = {
     end,
   },
   guild = {
-    p = "(|Hchannel:GUILD|h)%[[^%[%]|]-%](|h)",
+    p = "(|Hchannel:GUILD|h)[^|]-(|h)",
     r = "%1[" .. addonTable.Locales.ABBREV_GUILD .. "]%2",
-  }
+  },
+  party = {
+    p = "(|Hchannel:PARTY|h)[^|]-(|h)",
+    r = "%1[" .. addonTable.Locales.ABBREV_PARTY .. "]%2",
+  },
+  partyLeader = {
+    p = "(|Hchannel:PARTY|h)[^|]-(|h)",
+    r = "%1[" .. addonTable.Locales.ABBREV_PARTY_LEADER .. "]%2",
+  },
+  instance = {
+    p = "(|Hchannel:INSTANCE_CHAT|h)[^|]-(|h)",
+    r = "%1[" .. addonTable.Locales.ABBREV_INSTANCE .. "]%2",
+  },
+  instanceLeader = {
+    p = "(|Hchannel:INSTANCE_CHAT|h)[^|]-(|h)",
+    r = "%1[" .. addonTable.Locales.ABBREV_INSTANCE_LEADER .. "]%2",
+  },
+  raid = {
+    p = "(|Hchannel:RAID|h)[^|]-(|h)",
+    r = "%1[" .. addonTable.Locales.ABBREV_RAID .. "]%2",
+  },
+  raidLeader = {
+    p = "(|Hchannel:RAID|h)[^|]-(|h)",
+    r = "%1[" .. addonTable.Locales.ABBREV_RAID_LEADER .. "]%2",
+  },
 }
 
 local typeToPattern = {
   ["none"] = nil,
   ["letter"] = letterStyle,
   ["number"] = numberStyle,
+}
+
+local chatTypeToPatterns = {
+  PARTY = "party",
+  PARTY_LEADER = "partyLeader",
+  INSTANCE = "instance",
+  INSTANCE_LEADER = "instanceLeader",
+  RAID = "raid",
+  RAID_LEADER = "raidLeader",
 }
 
 local patterns
@@ -63,6 +120,9 @@ local function Shorten(data)
     data.text = data.text:gsub(patterns.channel.p, patterns.channel.r(data))
   elseif data.typeInfo.type == "GUILD" and data.typeInfo.event == "CHAT_MSG_GUILD" then
     data.text = data.text:gsub(patterns.guild.p, patterns.guild.r)
+  elseif chatTypeToPatterns[data.typeInfo.type] then
+    local p = patterns[chatTypeToPatterns[data.typeInfo.type]]
+    data.text = data.text:gsub(p.p, p.r)
   end
 end
 

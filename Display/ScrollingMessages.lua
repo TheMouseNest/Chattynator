@@ -38,6 +38,11 @@ function addonTable.Display.ScrollingMessagesMixin:OnLoad()
   addonTable.CallbackRegistry:RegisterCallback("RefreshStateChange", function(_, state)
     if state[addonTable.Constants.RefreshReason.MessageModifier] then
       self.cleanRender = true
+    elseif state[addonTable.Constants.RefreshReason.MessageWidget] then
+      self:UpdateAllocated()
+      if self:GetParent():GetID() ~= 0 then
+        self:Render()
+      end
     end
   end)
 

@@ -239,7 +239,11 @@ function addonTable.MessagesMonitorMixin:OnLoad()
       self:SetInset()
       self.heights = {}
       addonTable.CallbackRegistry:TriggerEvent("MessageDisplayChanged")
-      addonTable.CallbackRegistry:TriggerEvent("Render")
+      if self:GetScript("OnUpdate") == nil then
+        self:SetScript("OnUpdate", function()
+          addonTable.CallbackRegistry:TriggerEvent("Render")
+        end)
+      end
     end
   end)
 
@@ -359,6 +363,7 @@ function addonTable.MessagesMonitorMixin:AddLiveModifier(func)
   local index = tIndexOf(self.liveModifiers, func)
   if not index then
     self.messagesProcessed = {}
+    self.heights = {}
     table.insert(self.liveModifiers, func)
     if self:GetScript("OnUpdate") == nil and self.playerLoginFired then
       self:SetScript("OnUpdate", function()
@@ -372,6 +377,7 @@ function addonTable.MessagesMonitorMixin:RemoveLiveModifier(func)
   local index = tIndexOf(self.liveModifiers, func)
   if index then
     self.messagesProcessed = {}
+    self.heights = {}
     table.remove(self.liveModifiers, index)
     if self:GetScript("OnUpdate") == nil and self.playerLoginFired then
       self:SetScript("OnUpdate", function()

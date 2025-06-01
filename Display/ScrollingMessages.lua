@@ -190,6 +190,8 @@ function addonTable.Display.ScrollingMessagesMixin:UpdateAlphas(elapsed)
       f.animationStart = alpha
       f.animationDestination = 1 - alpha
       f.animationFinalAlpha = 1
+    elseif alpha == 1 and fadeEnabled then
+      any = true
     end
   end
 

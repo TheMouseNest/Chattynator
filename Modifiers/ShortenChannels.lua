@@ -3,13 +3,14 @@ local addonTable = select(2, ...)
 
 local channel = addonTable.Constants.ChannelIDs
 local channelMapping = {
-  [channel.General] = "W",
-  [channel.Trade] = "T",
-  [channel.LocalDefense] = "D",
-  [channel.LookingForGroup] = "LFG",
-  [channel.NewcomerChat] = "NC",
-  [channel.Services] = "S",
+  [channel.General] = addonTable.Locales.ABBREV_GENERAL_WORLD,
+  [channel.Trade] = addonTable.Locales.ABBREV_TRADE,
+  [channel.LocalDefense] = addonTable.Locales.ABBREV_LOCAL_DEFENSE,
+  [channel.LookingForGroup] = addonTable.Locales.ABBREV_LOOKING_FOR_GROUP,
+  [channel.NewcomerChat] = addonTable.Locales.ABBREV_NEWCOMER_CHAT,
+  [channel.Services] = addonTable.Locales.ABBREV_SERVICES,
 }
+local guildAbbrev = addonTable.Locales.ABBREV_GUILD
 
 local letterStyle = {
   player = {
@@ -26,7 +27,7 @@ local letterStyle = {
   },
   guild = {
     p = "(|Hchannel:GUILD|h)%[[^%[%]|]-%](|h)",
-    r = "%1G.%2",
+    r = "%1" .. addonTable.Locales.ABBREV_GUILD .. ".%2",
   }
 }
 
@@ -44,7 +45,7 @@ local numberStyle = {
   },
   guild = {
     p = "(|Hchannel:GUILD|h)%[[^%[%]|]-%](|h)",
-    r = "%1[G]%2",
+    r = "%1[" .. addonTable.Locales.ABBREV_GUILD .. "]%2",
   }
 }
 

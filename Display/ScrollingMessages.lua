@@ -273,10 +273,14 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
   end
 
   local known = {}
+  self.startingIndex = nil
   for _, info in ipairs(shownMessages) do
     info.fromBottom = info.extentBottom - self.scrollOffset
     info.show = info.extentTop - self.scrollOffset + shift >= 0 and info.fromBottom <= viewportHeight
     known[info.data.id] = info.show
+    if not self.startingIndex and info.show then
+      self.startingIndex = info.index
+    end
   end
   local toReplace = {}
   local toReuse = {}

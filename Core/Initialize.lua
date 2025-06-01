@@ -110,6 +110,10 @@ function addonTable.Core.Initialize()
     table.insert(addonTable.allChatFrames, chatFrame)
   end
 
+  addonTable.CopyFrame = CreateFrame("Frame", "ChattynatorCopyChatDialog", UIParent, "ButtonFrameTemplate")
+  Mixin(addonTable.CopyFrame, addonTable.Display.CopyChatMixin)
+  addonTable.CopyFrame:OnLoad()
+
   addonTable.Core.ApplyOverrides()
   addonTable.Core.InitializeChatCommandLogging()
   addonTable.Modifiers.InitializeShortenChannels()

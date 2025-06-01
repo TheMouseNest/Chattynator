@@ -35,6 +35,7 @@ L["TAB_SETTINGS"] = "Tab Settings"
 L["GLOBAL_SETTINGS"] = "Global Settings"
 L["UNLOCK_CHAT"] = "Unlock Chat"
 L["LOCK_CHAT"] = "Lock Chat"
+L["COPY_CHAT"] = "Copy Chat"
 
 L["CANT_POPOUT_THIS_CHANNEL"] = "Can't popout this channel"
 

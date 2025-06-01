@@ -1,14 +1,12 @@
 ---@class addonTableChattynator
 local addonTable = select(2, ...)
 
-local playerPattern1 = "(|Hplayer:[^|]+|h%[)([^|]-)(%]|h)"
-local playerPattern2 = "(|Hplayer:[^|]+|h)([^|%]%[]-)(|h)"
+local playerPattern = "(|Hplayer:[^|]+|h%[?)([^|%[%]][^c%[%]][^%[%]]-)(%]?|h)"
 local function Color(data)
   if data.typeInfo.playerClass then
     local color = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)[data.typeInfo.playerClass]
     local hex = CreateColor(color.r, color.g, color.b):GenerateHexColorMarkup()
-    data.text = data.text:gsub(playerPattern1, "%1" .. hex .. "%2|r%3")
-    data.text = data.text:gsub(playerPattern2, "%1" .. hex .. "%2|r%3")
+    data.text = data.text:gsub(playerPattern, "%1" .. hex .. "%2|r%3")
   end
 end
 

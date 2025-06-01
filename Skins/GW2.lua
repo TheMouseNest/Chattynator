@@ -51,6 +51,12 @@ local skinners = {
           self:SetWidth(math.max(self:GetWidth(), tabsWidth + 90))
         end)
       end
+    elseif tags.copyChat then
+      GW.HandlePortraitFrame(frame)
+      GW.CreateFrameHeaderWithBody(frame, frame.TitleContainer.TitleText, "Interface/AddOns/GW2_UI/textures/character/macro-window-icon", {frame.textBox}, nil, false, true)
+      frame.textBox:ClearAllPoints()
+      frame.textBox:SetPoint("TOPLEFT", addonTable.Constants.ButtonFrameOffset + 10, -40)
+      frame.textBox:SetPoint("BOTTOMRIGHT", -10, 10)
     else
       GW.HandlePortraitFrame(frame, true)
     end

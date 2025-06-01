@@ -24,7 +24,7 @@ function addonTable.Display.CopyChatMixin:OnLoad()
   self:SetPoint("CENTER")
   self:SetTitle(addonTable.Locales.COPY_CHAT)
 
-  addonTable.Skins.AddFrame("ButtonFrame", self)
+  addonTable.Skins.AddFrame("ButtonFrame", self, {"copyChat"})
 end
 
 function addonTable.Display.CopyChatMixin:LoadMessages(filterFunc, indexOffset)

@@ -104,7 +104,9 @@ function addonTable.Display.ChatFrameMixin:Reset()
   self.tabIndex = 1
   self.Tabs = {}
 
-  self:RepositionBlizzardWidgets() -- Only does stuff if self:GetID() is 1
+  self:RepositionBlizzardWidgets()
+  self:UpdateButtons()
+  self:AdjustMessageAnchors()
   self.ScrollingMessages:Reset()
 
   addonTable.Core.InitializeTabs(self)
@@ -245,13 +247,24 @@ function addonTable.Display.ChatFrameMixin:RepositionBlizzardWidgets()
   ArrangeButtons(self.buttons)
 end
 
+function addonTable.Display.ChatFrameMixin:AdjustMessageAnchors()
+  if self:GetID() == 1 then
+    return
+  end
+  self.ScrollingMessages:SetPoint("BOTTOMRIGHT", 0, 5)
+end
+
 function addonTable.Display.ChatFrameMixin:PositionEditBox()
+  if self:GetID() ~= 1 then
+    return
+  end
+
   local position = addonTable.Config.Get(addonTable.Config.Options.EDIT_BOX_POSITION)
   ChatFrame1EditBox:ClearAllPoints()
   if position == "bottom" then
+    self.ScrollingMessages:SetPoint("BOTTOMRIGHT", 0, 38)
     ChatFrame1EditBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, 32)
     ChatFrame1EditBox:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, 32)
-    self.ScrollingMessages:SetPoint("BOTTOMRIGHT", 0, 38)
   elseif position == "top" then
     self.ScrollingMessages:SetPoint("BOTTOMRIGHT", 0, 5)
     ChatFrame1EditBox:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0)

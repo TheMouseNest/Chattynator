@@ -113,18 +113,18 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
     local fields = LAYOUT[entry[2]]
     local force = entry[3]
     if not fields then
-      fields = {}
-      local map, count = addonTable.Messages:GetChannels()
-      for index = 1, count do
-        if map[index] then
-          table.insert(fields, {map[index], map[index], index})
-        end
-      end
       dropdown.DropDown:SetupMenu(function(_, rootDescription)
+        fields = {}
+        local map, count = addonTable.Messages:GetChannels()
+        for index = 1, count do
+          if map[index] then
+            table.insert(fields, {map[index], map[index], index})
+          end
+        end
         if tab.invert then
           for _, f in ipairs(fields) do
-              local color = GetChatColor("CHANNEL" .. f[3])
-              rootDescription:CreateCheckbox(color:WrapTextInColorCode(f[2] or _G[f[1]]),
+            local color = GetChatColor("CHANNEL" .. f[3])
+            rootDescription:CreateCheckbox(color:WrapTextInColorCode(f[2] or _G[f[1]]),
               function()
                 return tab.channels[f[1]] ~= false
               end, function()

@@ -248,6 +248,15 @@ function addonTable.MessagesMonitorMixin:OnLoad()
     end
   end)
 
+  if ChatFrame_AddCommunitiesChannel then
+    hooksecurefunc("ChatFrame_AddCommunitiesChannel", function()
+      self:UpdateChannels()
+    end)
+    hooksecurefunc("ChatFrame_RemoveCommunitiesChannel", function()
+      self:UpdateChannels()
+    end)
+  end
+
   self:SetInset()
 end
 
@@ -558,6 +567,19 @@ function addonTable.MessagesMonitorMixin:UpdateChannels()
 
       if category ~= "CHANNEL_CATEGORY_CUSTOM" or select(4, GetChannelName(name)) then
         self.defaultChannels[name] = true
+      end
+    end
+  end
+
+  for _, channelName in ipairs(self.channelList) do
+    local communityIDStr, channelID = channelName:match("^Community:(%d+):(%d+)$")
+    if communityIDStr then
+      local index = GetChannelName(channelName)
+      local clubInfo = C_Club.GetClubInfo(communityIDStr)
+      local streamInfo = C_Club.GetStreamInfo(communityIDStr, channelID)
+      if clubInfo and streamInfo and ChatFrame_ContainsChannel(ChatFrame1, channelName) then
+        self.channelMap[index] = clubInfo.name .. " - " .. streamInfo.name
+        self.maxDisplayChannels = math.max(self.maxDisplayChannels, index)
       end
     end
   end

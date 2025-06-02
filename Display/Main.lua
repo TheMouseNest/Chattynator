@@ -79,6 +79,8 @@ function addonTable.Display.ChatFrameMixin:OnLoad()
     if settingName == addonTable.Config.Options.WINDOWS then
       self:SetPoint(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].position))
       self:SetSize(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].size))
+    elseif settingName == addonTable.Config.Options.EDIT_BOX_POSITION and self:GetID() == 1 then
+      self:PositionEditBox()
     end
   end)
 
@@ -143,9 +145,7 @@ function addonTable.Display.ChatFrameMixin:RepositionBlizzardWidgets()
 
     -- We use the default edit box rather than instantiating our own so that the keyboard shortcuts to open it work
     ChatFrame1EditBox:SetParent(self)
-    ChatFrame1EditBox:ClearAllPoints()
-    ChatFrame1EditBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, 32)
-    ChatFrame1EditBox:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, 32)
+    self:PositionEditBox()
     addonTable.Skins.AddFrame("ChatEditBox", ChatFrame1EditBox)
 
     if QuickJoinToastButton then
@@ -243,6 +243,20 @@ function addonTable.Display.ChatFrameMixin:RepositionBlizzardWidgets()
   addonTable.Skins.AddFrame("ChatButton", self.ScrollToBottomButton, {"scrollToEnd"})
 
   ArrangeButtons(self.buttons)
+end
+
+function addonTable.Display.ChatFrameMixin:PositionEditBox()
+  local position = addonTable.Config.Get(addonTable.Config.Options.EDIT_BOX_POSITION)
+  ChatFrame1EditBox:ClearAllPoints()
+  if position == "bottom" then
+    ChatFrame1EditBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, 32)
+    ChatFrame1EditBox:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, 32)
+    self.ScrollingMessages:SetPoint("BOTTOMRIGHT", 0, 38)
+  elseif position == "top" then
+    self.ScrollingMessages:SetPoint("BOTTOMRIGHT", 0, 5)
+    ChatFrame1EditBox:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0)
+    ChatFrame1EditBox:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 0)
+  end
 end
 
 function addonTable.Display.ChatFrameMixin:SetFilter(func)

@@ -218,6 +218,25 @@ local function SetupLayout(parent)
   showSeparator:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
   table.insert(allFrames, showSeparator)
 
+  local editBoxPositionDropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.EDIT_BOX_POSITION, function(value)
+    return addonTable.Config.Get(addonTable.Config.Options.EDIT_BOX_POSITION) == value
+  end, function(value)
+    addonTable.Config.Set(addonTable.Config.Options.EDIT_BOX_POSITION, value)
+  end)
+  editBoxPositionDropdown:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
+  do
+    local entries = {
+      addonTable.Locales.BOTTOM,
+      addonTable.Locales.TOP,
+    }
+    local values = {
+      "bottom",
+      "top"
+    }
+    editBoxPositionDropdown:Init(entries, values)
+  end
+  table.insert(allFrames, editBoxPositionDropdown)
+
   local locked = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.LOCK_CHAT, 28, function(state)
     addonTable.Config.Set(addonTable.Config.Options.LOCKED, state)
   end)

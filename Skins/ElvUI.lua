@@ -214,9 +214,23 @@ local skinners = {
   end,
   ChatFrame = function(frame)
     if frame:GetID() == 1 then
+      local position = addonTable.Config.Get(addonTable.Config.Options.EDIT_BOX_POSITION)
       LeftChatPanel:ClearAllPoints()
       LeftChatPanel:SetPoint("TOPLEFT", frame)
-      LeftChatPanel:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, 24)
+      LeftChatPanel:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, position == "bottom" and 24 or 0)
+      frame:SetClampRectInsets(0, 0, 0, position == "top" and -24 or 0)
+      addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
+        if not enableHooks then
+          return
+        end
+        if settingName == addonTable.Config.Options.EDIT_BOX_POSITION then
+          position = addonTable.Config.Get(addonTable.Config.Options.EDIT_BOX_POSITION)
+          LeftChatPanel:ClearAllPoints()
+          LeftChatPanel:SetPoint("TOPLEFT", frame)
+          LeftChatPanel:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, position == "bottom" and 24 or 0)
+          frame:SetClampRectInsets(0, 0, 0, position == "top" and -24 or 0)
+        end
+      end)
     else
       frame:CreateBackdrop()
       local panelColor = CH.db.panelColor

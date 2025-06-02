@@ -74,6 +74,8 @@ local settings = {
     },]]
   }},
 
+  EDIT_BOX_POSITION = {key = "edit_box_position", default = "bottom"},
+
   SKINS = {key = "skins", default = {}},
   DISABLED_SKINS = {key = "disabled_skins", default = {}},
   CURRENT_SKIN = {key = "current_skin", default = "dark"},

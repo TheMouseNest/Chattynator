@@ -146,18 +146,51 @@ local skinners = {
       frame:SetFont(chatFont, addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT_SIZE), fontFlags)
       _G[frame:GetName() .. "Header"]:SetFont(chatFont, addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT_SIZE), fontFlags)
     end
+    frame.backgroundTex = frame:CreateTexture(nil, "BACKGROUND")
+    frame.backgroundTex:SetTexture("Interface/AddOns/GW2_UI/textures/chat/chateditboxmid")
+    frame.backgroundTex:SetPoint("BOTTOMLEFT")
+    frame.backgroundTex:SetPoint("BOTTOMRIGHT")
+    frame.backgroundTex:SetHeight(32)
   end,
   ChatFrame = function(frame)
-    frame.background = CreateFrame("Frame", nil, frame, "GwChatContainer")
-    frame.background:SetPoint("TOPLEFT", 0, -22)
-    frame.background:SetPoint("BOTTOMRIGHT")
-    frame.background:Show()
+    frame.backgroundTex = frame:CreateTexture(nil, "BACKGROUND")
+    frame.backgroundTex:SetTexture("Interface/AddOns/GW2_UI/textures/chat/chatframebackground")
+    frame.backgroundTex:SetPoint("TOPLEFT", frame, 0, -22)
+    frame.backgroundTex:SetPoint("BOTTOMRIGHT", frame.ScrollingMessages, 0, -7)
+    frame.borderTex = frame:CreateTexture(nil, "ARTWORK")
+    frame.borderTex:SetSize(2, 2)
+    frame.borderTex:SetTexture("Interface/AddOns/GW2_UI/textures/chat/chatframeborder")
+    frame.borderTex:SetPoint("TOPRIGHT", frame, 0, -22)
+    frame.borderTex:SetPoint("BOTTOMRIGHT", frame.ScrollingMessages, 0, -7)
+    frame.dockTex = frame:CreateTexture(nil, "BACKGROUND")
+    frame.dockTex:SetTexture("Interface/AddOns/GW2_UI/textures/chat/chatdockbg")
+    frame.dockTex:SetHeight(25)
+    frame.dockTex:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", 0, -22)
+    frame.dockTex:SetPoint("BOTTOMRIGHT", frame, "TOPRIGHT", 0, -22)
     if frame:GetID() == 1 then
       frame:SetClampRectInsets(0, 0, 0, -16)
       if frame:GetBottom() < 16 then
         frame:AdjustPointsOffset(0, 16 - frame:GetBottom())
       end
     end
+
+    frame.fakeEditBoxTex = frame:CreateTexture(nil, "BACKGROUND")
+    frame.fakeEditBoxTex:SetTexture("Interface/AddOns/GW2_UI/textures/chat/chateditboxmid")
+    frame.fakeEditBoxTex:SetPoint("BOTTOMLEFT")
+    frame.fakeEditBoxTex:SetPoint("BOTTOMRIGHT")
+    frame.fakeEditBoxTex:SetHeight(32)
+
+    local position = addonTable.Config.Get(addonTable.Config.Options.EDIT_BOX_POSITION)
+    frame.fakeEditBoxTex:SetShown(position == "bottom")
+    addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
+      if not enableHooks then
+        return
+      end
+      if settingName == addonTable.Config.Options.EDIT_BOX_POSITION then
+        position = addonTable.Config.Get(addonTable.Config.Options.EDIT_BOX_POSITION)
+        frame.fakeEditBoxTex:SetShown(position == "bottom")
+      end
+    end)
   end,
   ChatButton = function(button, tags)
     button:SetSize(26, 28);

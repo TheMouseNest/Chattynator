@@ -15,10 +15,9 @@ function addonTable.Display.CopyChatMixin:OnLoad()
   self:EnableMouse(true)
   self:SetScript("OnMouseWheel", function() end)
 
-  self.textBox = CreateFrame("EditBox", nil, self, "ScrollingEditBoxTemplate")
+  self.textBox = CreateFrame("Frame", nil, self, "ScrollingEditBoxTemplate")
   self.textBox:SetPoint("TOPLEFT", addonTable.Constants.ButtonFrameOffset + 10, -30)
   self.textBox:SetPoint("BOTTOMRIGHT", -10, 10)
-  self.textBox:SetAutoFocus(false)
 
   self:SetSize(600, 600)
   self:SetPoint("CENTER")
@@ -47,8 +46,9 @@ function addonTable.Display.CopyChatMixin:LoadMessages(filterFunc, indexOffset)
   end
 
   self.textBox:SetText(table.concat(messages, "\n"))
-  self.textBox:SetCursorPosition(#self.textBox:GetText())
-  self.textBox:GetEditBox():HighlightText(0, #self.textBox:GetText())
+  if #self.textBox:GetText() > 0 then
+    self.textBox:GetEditBox():HighlightText(0, #self.textBox:GetText())
+  end
   C_Timer.After(0, function()
     self.textBox:SetFocus()
     C_Timer.After(0, function()

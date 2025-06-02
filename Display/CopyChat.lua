@@ -37,9 +37,8 @@ function addonTable.Display.CopyChatMixin:LoadMessages(filterFunc, indexOffset)
     if m.recordedBy == addonTable.Data.CharacterName and (not filterFunc or filterFunc(m)) then
       m = addonTable.Messages:GetMessageProcessed(index)
       local color = CreateColor(m.color.r, m.color.g, m.color.b)
-      local text = color:WrapTextInColorCode(m.text):gsub("|K(.-)|k", "|ck%1|r")
+      local text = color:WrapTextInColorCode(m.text):gsub("|K(.-)|k", "???")
       text = StripHyperlinks(text, true, true, false, false)
-      text = text:gsub("|ck(.-)|r", "|K%1|k")
       table.insert(messages, 1, text)
     end
     index = index + 1

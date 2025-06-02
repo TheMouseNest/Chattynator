@@ -118,6 +118,7 @@ function addonTable.Core.Initialize()
   addonTable.Core.InitializeChatCommandLogging()
   addonTable.Modifiers.InitializeShortenChannels()
   addonTable.Modifiers.InitializeClassColors()
+  addonTable.Modifiers.InitializeURLs()
   addonTable.CustomiseDialog.Initialize()
 end
 

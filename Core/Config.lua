@@ -95,6 +95,7 @@ local settings = {
 
   SHORTEN_FORMAT = {key = "shorten_format", default = "none", refresh = {addonTable.Constants.RefreshReason.MessageModifier}},
   CLASS_COLORS = {key = "class_colors", default = true, refresh = {addonTable.Constants.RefreshReason.MessageModifier}},
+  LINK_URLS = {key = "link_urls", default = true, refresh = {addonTable.Constants.RefreshReason.MessageModifier}},
 
   APPLIED_MESSAGE_IDS = {key = "applied_message_ids", default = false},
 

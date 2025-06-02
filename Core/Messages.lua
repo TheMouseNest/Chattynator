@@ -4,7 +4,7 @@ local addonTable = select(2, ...)
 ---@class MessagesMonitorMixin: Frame
 addonTable.MessagesMonitorMixin ={}
 
-local conversionThreshold = 10000
+local conversionThreshold = 3000
 
 local function GetNewLog()
   return { current = {}, historical = {}, version = 1, cleanIndex = 0}

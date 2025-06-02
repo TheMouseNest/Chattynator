@@ -57,8 +57,8 @@ StaticPopupDialogs[urlDialog] = {
 }
 
 EventRegistry:RegisterCallback("SetItemRef", function(_, link)
-  local addon, root, url = strsplit(":", link)
-  if addon == "addon" and root == "chattynatorurllink" then
+  local url = link:match("^addon:chattynatorurllink:(.*)")
+  if url then
     StaticPopup_Show(urlDialog, nil, nil, url)
   end
 end)

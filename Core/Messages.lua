@@ -130,6 +130,7 @@ function addonTable.MessagesMonitorMixin:OnLoad()
 
   self.channelList = {}
   self.zoneChannelList = {}
+  self.historyBuffer = {elements = {1}} -- Questie Compatibility
 
   self.channelMap = {}
   self.defaultChannels = {}

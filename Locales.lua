@@ -84,6 +84,10 @@ L["ABBREV_RAID_LEADER"] = "RL"
 L["MESSAGE_FONT"] = "Message font"
 L["MESSAGE_FONT_SIZE"] = "Message font size"
 
+L["ADDON_MESSAGES"] = "Addon Messages"
+L["ADDONS"] = "Addons"
+L["DATA_DUMPS"] = "Data Dumps"
+
 L["SKINS_DARK"] = "Dark"
 
 L["MESSAGE_TYPES"] = "Message types"

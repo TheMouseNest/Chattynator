@@ -61,6 +61,11 @@ local LAYOUT = {
     {"PET_BATTLE_COMBAT_LOG"},
     {"PET_BATTLE_INFO"},
     {"PING"},
+  },
+
+  ADDONS = {
+    {"ADDON", addonTable.Locales.ADDON_MESSAGES},
+    {"DUMP", addonTable.Locales.DATA_DUMPS},
   }
 }
 
@@ -71,6 +76,7 @@ local order = {
   {addonTable.Locales.REWARDS, "OTHER_COMBAT"},
   {PVP, "OTHER_PVP"},
   {SYSTEM, "OTHER_SYSTEM"},
+  {addonTable.Locales.ADDONS, "ADDONS", true},
 }
 
 local function GetChatColor(group)
@@ -105,6 +111,7 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
     dropdown.DropDown:SetDefaultText(addonTable.Locales.NONE_SELECTED)
     table.insert(allFrames, dropdown)
     local fields = LAYOUT[entry[2]]
+    local force = entry[3]
     if not fields then
       fields = {}
       local map, count = addonTable.Messages:GetChannels()
@@ -147,8 +154,8 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
       dropdown.DropDown:SetupMenu(function(_, rootDescription)
         if tab.invert then
           for _, f in ipairs(fields) do
-            if ChatTypeGroup[f[1]] then
-              local color = GetChatColor(f[1])
+            if ChatTypeGroup[f[1]] or force then
+              local color = not force and GetChatColor(f[1]) or NORMAL_FONT_COLOR
               rootDescription:CreateCheckbox(color:WrapTextInColorCode(f[2] or _G[f[1]]),
                 function()
                   return tab.groups[f[1]] ~= false
@@ -165,8 +172,8 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
           end
         else
           for _, f in ipairs(fields) do
-            if ChatTypeGroup[f[1]] then
-              local color = GetChatColor(f[1])
+            if ChatTypeGroup[f[1]] or force then
+              local color = not force and GetChatColor(f[1]) or NORMAL_FONT_COLOR
               rootDescription:CreateCheckbox(color:WrapTextInColorCode(f[2] or _G[f[1]]),
                 function()
                   return tab.groups[f[1]] == true

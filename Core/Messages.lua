@@ -389,7 +389,7 @@ end
 
 function addonTable.MessagesMonitorMixin:CleanStore(store, index)
   if #store <= index then
-    return index
+    return #store
   end
   for i = index + 1, #store do
     local data = store[i]
@@ -494,6 +494,7 @@ function addonTable.MessagesMonitorMixin:UpdateStores()
   for i = self.storeCount - conversionThreshold / 2, self.storeCount do
     table.insert(newCurrent, self.store[i])
   end
+  CHATTYNATOR_MESSAGE_LOG.cleanIndex = math.max(0, math.floor(CHATTYNATOR_MESSAGE_LOG.cleanIndex - conversionThreshold / 2))
   table.insert(CHATTYNATOR_MESSAGE_LOG.historical, {
     startTimestamp = newStore[1].timestamp,
     endTimestamp = newStore[#newStore].timestamp,

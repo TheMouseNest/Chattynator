@@ -213,7 +213,7 @@ local skinners = {
     end
   end,
   ChatFrame = function(frame)
-    if frame:GetID() == 1 then
+    if frame:GetID() == 1 and not addonTable.Skins.IsAddOnLoading("ElvUI_EltreumUI") then
       local position = addonTable.Config.Get(addonTable.Config.Options.EDIT_BOX_POSITION)
       LeftChatPanel:ClearAllPoints()
       LeftChatPanel:SetPoint("TOPLEFT", frame)
@@ -234,7 +234,7 @@ local skinners = {
     else
       frame:CreateBackdrop()
       local panelColor = CH.db.panelColor
-      frame:SetBackdropColor(panelColor.r, panelColor.g, panelColor.b, panelColor.a)
+      frame.backdrop:SetBackdropColor(panelColor.r, panelColor.g, panelColor.b, panelColor.a)
     end
   end,
   TopTabButton = function(frame)

@@ -26,8 +26,6 @@ function addonTable.Display.ScrollingMessagesMixin:OnLoad()
   self.scrollInterpolator = CreateInterpolator(InterpolatorUtil.InterpolateEaseOut)
   self.destination = 0
 
-  self.firstRender = true
-
   self.timestampOffset = GetTime() - time()
 
   addonTable.CallbackRegistry:RegisterCallback("MessageDisplayChanged", function()
@@ -50,7 +48,7 @@ function addonTable.Display.ScrollingMessagesMixin:OnLoad()
   self:SetScript("OnSizeChanged", function()
     self:UpdateWidth()
     self:UpdateAllocated()
-    if not self.firstRender then
+    if self:GetTop() and self:GetBottom() then
       self:Render()
     end
   end)
@@ -217,7 +215,6 @@ function addonTable.Display.ScrollingMessagesMixin:SetFilter(filterFunc)
 end
 
 function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
-  self.firstRender = false
   self.scrollOffset = math.max(0, self.scrollOffset)
 
   if self.currentFadeOffsetTime == 0 then

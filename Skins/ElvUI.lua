@@ -299,10 +299,15 @@ end
 
 if addonTable.Skins.IsAddOnLoading("ElvUI") then
   local frame = CreateFrame("Frame")
-  frame:SetScript("OnEvent", function()
-    addonTable.Core.OverwriteDefaultFont("default")
+  frame:SetScript("OnEvent", function(_, eventName, data)
+    if eventName == "PLAYER_LOGIN" then
+      addonTable.Core.OverwriteDefaultFont("default")
+    elseif eventName == "ADDON_LOADED" and data == "ElvUI" then
+      table.insert(ElvUI[1].INCOMPATIBLE_ADDONS.Chat, "Chattynator")
+    end
   end)
   frame:RegisterEvent("PLAYER_LOGIN")
+  frame:RegisterEvent("ADDON_LOADED")
   addonTable.Skins.RegisterSkin(addonTable.Locales.ELVUI, "elvui", LoadSkin, SkinFrame, SetConstants, {
     {
       type = "checkbox",

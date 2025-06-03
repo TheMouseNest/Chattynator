@@ -55,8 +55,10 @@ function addonTable.Core.InitializeChatCommandLogging()
       if chatRaw:sub(-#text) == text then -- Keep chat type where possible
         text = chatRaw
       end
-      table.insert(lines, text)
-      index = #lines
+      if lines[#lines] ~= text then
+        table.insert(lines, text)
+        index = #lines
+      end
     end
   end)
 

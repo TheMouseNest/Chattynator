@@ -404,7 +404,7 @@ function addonTable.MessagesMonitorMixin:CleanStore(store, index)
   end
   for i = index + 1, #store do
     local data = store[i]
-    if data.text:find("|K.-|k") or data.typeInfo.player:find("|K.-|k") then
+    if data.text:find("|K.-|k") or (data.typeInfo.player and data.typeInfo.player:find("|K.-|k")) then
       data.text = data.text:gsub("|K.-|k", "???")
       data.text = data.text:gsub("|HBNplayer.-|h(.-)|h", "%1")
       if data.typeInfo.player then

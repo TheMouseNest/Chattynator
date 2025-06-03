@@ -64,7 +64,7 @@ local LAYOUT = {
   },
 
   ADDONS = {
-    {"ADDON", addonTable.Locales.ADDON_MESSAGES},
+    {"ADDON", addonTable.Locales.ALL_ADDONS},
     {"DUMP", addonTable.Locales.DATA_DUMPS},
   }
 }
@@ -76,7 +76,6 @@ local order = {
   {addonTable.Locales.REWARDS, "OTHER_COMBAT"},
   {PVP, "OTHER_PVP"},
   {SYSTEM, "OTHER_SYSTEM"},
-  {addonTable.Locales.ADDONS, "ADDONS", true},
 }
 
 local function GetChatColor(group)
@@ -111,7 +110,6 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
     dropdown.DropDown:SetDefaultText(addonTable.Locales.NONE_SELECTED)
     table.insert(allFrames, dropdown)
     local fields = LAYOUT[entry[2]]
-    local force = entry[3]
     if not fields then
       dropdown.DropDown:SetupMenu(function(_, rootDescription)
         fields = {}
@@ -154,8 +152,8 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
       dropdown.DropDown:SetupMenu(function(_, rootDescription)
         if tab.invert then
           for _, f in ipairs(fields) do
-            if ChatTypeGroup[f[1]] or force then
-              local color = not force and GetChatColor(f[1]) or NORMAL_FONT_COLOR
+            if ChatTypeGroup[f[1]] then
+              local color = GetChatColor(f[1]) or NORMAL_FONT_COLOR
               rootDescription:CreateCheckbox(color:WrapTextInColorCode(f[2] or _G[f[1]]),
                 function()
                   return tab.groups[f[1]] ~= false
@@ -172,8 +170,8 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
           end
         else
           for _, f in ipairs(fields) do
-            if ChatTypeGroup[f[1]] or force then
-              local color = not force and GetChatColor(f[1]) or NORMAL_FONT_COLOR
+            if ChatTypeGroup[f[1]] then
+              local color = GetChatColor(f[1]) or NORMAL_FONT_COLOR
               rootDescription:CreateCheckbox(color:WrapTextInColorCode(f[2] or _G[f[1]]),
                 function()
                   return tab.groups[f[1]] == true
@@ -188,6 +186,105 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
       end)
     end
   end
+
+  do
+    local dropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.ADDONS)
+    dropdown:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
+    dropdown.DropDown:SetDefaultText(addonTable.Locales.NONE_SELECTED)
+    table.insert(allFrames, dropdown)
+    dropdown.DropDown:SetupMenu(function(menu, rootDescription)
+      local fields = LAYOUT.ADDONS
+      if tab.invert then
+        for _, f in ipairs(fields) do
+          local checkbox = rootDescription:CreateCheckbox(f[2],
+            function()
+              return tab.groups[f[1]] ~= false
+            end, function()
+              if tab.groups[f[1]] == nil then
+                tab.groups[f[1]] = false
+              else
+                tab.groups[f[1]] = not tab.groups[f[1]]
+              end
+              if f[1] == "ADDON" then
+                dropdown.DropDown:CloseMenu()
+                dropdown.DropDown:OpenMenu()
+              end
+              addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+            end
+          )
+          if f[1] == "ADDON" then
+            checkbox:SetTooltip(function(tooltip)
+              tooltip:SetText(addonTable.Locales.LEAVE_UNTICKED_ADDONS)
+            end)
+          end
+        end
+      else
+        for _, f in ipairs(fields) do
+          local checkbox = rootDescription:CreateCheckbox(f[2],
+            function()
+              return tab.groups[f[1]] == true
+            end, function()
+              tab.groups[f[1]] = not tab.groups[f[1]]
+              addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+              if f[1] == "ADDON" then
+                dropdown.DropDown:CloseMenu()
+                dropdown.DropDown:OpenMenu()
+              end
+            end
+          )
+          if f[1] == "ADDON" then
+            checkbox:SetTooltip(function(tooltip)
+              tooltip:SetText(addonTable.Locales.LEAVE_UNTICKED_ADDONS)
+            end)
+          end
+        end
+      end
+
+      rootDescription:CreateDivider()
+
+      rootDescription:CreateTitle(addonTable.Locales.SPECIFIC_ADDONS)
+
+      if tab.invert and tab.groups["ADDON"] == false or not tab.groups["ADDON"] then
+        fields = {}
+        for i = 1, C_AddOns.GetNumAddOns() do
+          if C_AddOns.IsAddOnLoaded(i) then
+            local name, title = C_AddOns.GetAddOnInfo(i)
+            table.insert(fields, {name, StripHyperlinks(title)})
+          end
+        end
+        table.sort(fields, function(a, b) return a[2] < b[2] end)
+        if tab.invert then
+          for _, f in ipairs(fields) do
+            rootDescription:CreateCheckbox(f[2],
+              function()
+                return tab.addons[f[1]] ~= false
+              end, function()
+                if tab.addons[f[1]] == nil then
+                  tab.addons[f[1]] = false
+                else
+                  tab.addons[f[1]] = not tab.addons[f[1]]
+                end
+                addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+              end
+            )
+          end
+        else
+          for _, f in ipairs(fields) do
+            rootDescription:CreateCheckbox(f[2],
+              function()
+                return tab.addons[f[1]] == true
+              end, function()
+                tab.addons[f[1]] = not tab.addons[f[1]]
+                addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+              end
+            )
+          end
+        end
+        rootDescription:SetScrollMode(20 * 20)
+      end
+    end)
+  end
+
   container:SetSize(500, 500)
 
   local function UpdateHeader()

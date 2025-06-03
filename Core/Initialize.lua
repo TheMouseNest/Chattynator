@@ -11,6 +11,7 @@ function addonTable.Core.MigrateSettings()
     for _, tab in ipairs(window.tabs) do
       tab.filters = tab.filters or {}
       tab.whispersTemp = {}
+      tab.addons = tab.addons or {}
     end
   end
 end

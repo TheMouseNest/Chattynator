@@ -88,7 +88,9 @@ L["ABBREV_RAID_LEADER"] = "RL"
 L["MESSAGE_FONT"] = "Message font"
 L["MESSAGE_FONT_SIZE"] = "Message font size"
 
-L["ADDON_MESSAGES"] = "Addon Messages"
+L["ALL_ADDONS"] = "All Addons"
+L["SPECIFIC_ADDONS"] = "Specific Addons"
+L["LEAVE_UNTICKED_ADDONS"] = "Leave unticked to control which addons show"
 L["ADDONS"] = "Addons"
 L["DATA_DUMPS"] = "Data Dumps"
 

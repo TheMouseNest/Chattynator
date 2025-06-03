@@ -181,15 +181,27 @@ function addonTable.MessagesMonitorMixin:OnLoad()
       return
     end
 
-    local type
+    local type, source
     if fullTrace:find("DevTools_Dump") then
       type = "DUMP"
     elseif trace:find("Interface/AddOns/Blizzard_") ~= nil and trace:find("PrintHandler") == nil then
       type = "SYSTEM"
     else
       type = "ADDON"
+      local addonPath
+      if trace:find("PrintHandler") ~= nil then
+        addonPath = debugstack(9, 1, 0)
+      else
+        addonPath = debugstack(3, 1, 0)
+      end
+      source = addonPath:match("Interface/AddOns/([^/]+)/")
+      if addonPath:find("/[Ll]ibs?/Ace") then
+        source = "/aceconsole"
+      elseif source == nil then
+        source = "/loadstring"
+      end
     end
-    self:SetIncomingType({type = type, event = "NONE"})
+    self:SetIncomingType({type = type, event = "NONE", source = source})
     self:AddMessage(...)
   end)
 

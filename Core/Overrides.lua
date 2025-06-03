@@ -95,4 +95,11 @@ function addonTable.Core.ApplyOverrides()
       _G["ChatFrame1Tab"].IsVisible = function() return true end -- Workaround for TSM assuming chat tabs are always visible
     end)
   end)
+
+  hooksecurefunc("ChatEdit_DeactivateChat", function(editBox)
+    editBox:Hide()
+  end)
+  hooksecurefunc("ChatEdit_ActivateChat", function(editBox)
+    editBox:Show()
+  end)
 end

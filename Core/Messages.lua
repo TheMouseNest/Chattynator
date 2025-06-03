@@ -404,12 +404,15 @@ function addonTable.MessagesMonitorMixin:CleanStore(store, index)
   end
   for i = index + 1, #store do
     local data = store[i]
-    if data.text:find("|K.-|k") then
+    if data.text:find("|K.-|k") or data.typeInfo.player:find("|K.-|k") then
       data.text = data.text:gsub("|K.-|k", "???")
       data.text = data.text:gsub("|HBNplayer.-|h(.-)|h", "%1")
       if data.typeInfo.player then
         data.typeInfo.player = data.typeInfo.player:gsub("|K.-|k", addonTable.Locales.UNKNOWN)
       end
+    end
+    if data.text:find("censoredmessage:") then
+      data.text = data.text:gsub("|Hcensoredmessage:.-|h.-|h", "[" .. addonTable.Locales.CENSORED_CONTENTS_LOST .. "]")
     end
   end
   return #store

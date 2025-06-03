@@ -36,6 +36,7 @@ addonTable.Constants.Events = {
   "SettingChanged",
   "RefreshStateChange",
   "MessageDisplayChanged",
+  "ResetOneMessageCache",
 
   "SkinLoaded",
 }

@@ -155,17 +155,18 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   end
 
   hooksecurefunc(C_ChatInfo, "UncensorChatLine", function(lineID)
-    local found = false
+    local found
     for index, message in ipairs(self.messages) do
       local id = self.formatters[index].id
       if id == lineID then
-        found = true
+        found = message.id
         message.text = message.Formatter(C_ChatInfo.GetChatLineText(lineID))
         self.messagesProcessed[index] = nil
         break
       end
     end
     if found then
+      addonTable.CallbackRegistry:TriggerEvent("ResetOneMessageCache", found)
       addonTable.CallbackRegistry:TriggerEvent("Render")
     end
   end)

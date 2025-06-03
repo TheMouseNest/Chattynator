@@ -33,6 +33,16 @@ function addonTable.Display.ScrollingMessagesMixin:OnLoad()
     self:UpdateAllocated()
   end)
 
+  addonTable.CallbackRegistry:RegisterCallback("ResetOneMessageCache", function(_, id)
+    for index, frame in ipairs(self.activeFrames) do
+      if frame.data.id == id then
+        frame.data = nil
+        table.remove(self.activeFrames, index)
+        break
+      end
+    end
+  end)
+
   addonTable.CallbackRegistry:RegisterCallback("RefreshStateChange", function(_, state)
     if state[addonTable.Constants.RefreshReason.MessageModifier] then
       self.cleanRender = true

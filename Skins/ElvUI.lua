@@ -22,8 +22,16 @@ local function ConvertTags(tags)
   return res
 end
 
-local hidden = CreateFrame("Frame")
-hidden:Hide()
+local toUpdate = {}
+
+local UIScaleMonitor = CreateFrame("Frame")
+UIScaleMonitor:RegisterEvent("UI_SCALE_CHANGED")
+UIScaleMonitor:SetScript("OnEvent", function()
+  for _, func in ipairs(toUpdate) do
+    func()
+  end
+end)
+
 local skinners = {
   Button = function(frame)
     S:HandleButton(frame)
@@ -173,12 +181,15 @@ local skinners = {
     if tab:GetFontString() == nil then
       tab:SetText(" ")
     end
+    tab:GetFontString():SetWordWrap(false)
+    tab:GetFontString():SetNonSpaceWrap(false)
+    local fsWidth = math.max(tab:GetFontString():GetUnboundedStringWidth(), not tab:GetText():find("|K") and addonTable.Constants.MinTabWidth or 70) + addonTable.Constants.TabPadding
+    tab:GetFontString():SetWidth(fsWidth)
     if tab.minWidth then
-      tab:SetWidth(tab:GetFontString():GetUnboundedStringWidth() + addonTable.Constants.TabPadding)
+      tab:SetWidth(tab:GetFontString():GetWidth() + addonTable.Constants.TabPadding)
     else
-      tab:SetWidth(math.max(tab:GetFontString():GetUnboundedStringWidth(), not tab:GetText():find("|K") and addonTable.Constants.MinTabWidth or 70) + addonTable.Constants.TabPadding)
+      tab:SetWidth(fsWidth + addonTable.Constants.TabPadding)
     end
-    tab:GetFontString():SetWidth(tab:GetWidth() - addonTable.Constants.TabPadding)
     local SetText = tab.SetText
     local text = tab:GetText()
     hooksecurefunc(tab, "SetText", function(_, cleanText)
@@ -186,12 +197,13 @@ local skinners = {
         return
       end
       text = cleanText
+      fsWidth = math.max(tab:GetFontString():GetUnboundedStringWidth(), not tab:GetText():find("|K") and addonTable.Constants.MinTabWidth or 70) + addonTable.Constants.TabPadding
+      tab:GetFontString():SetWidth(fsWidth)
       if tab.minWidth then
-        tab:SetWidth(tab:GetFontString():GetUnboundedStringWidth() + addonTable.Constants.TabPadding)
+        tab:SetWidth(tab:GetFontString():GetWidth() + addonTable.Constants.TabPadding)
       else
-        tab:SetWidth(math.max(tab:GetFontString():GetUnboundedStringWidth(), not tab:GetText():find("|K") and addonTable.Constants.MinTabWidth or 70) + addonTable.Constants.TabPadding)
+        tab:SetWidth(fsWidth + addonTable.Constants.TabPadding)
       end
-      tab:GetFontString():SetWidth(tab:GetWidth() - addonTable.Constants.TabPadding)
     end)
     hooksecurefunc(tab, "SetSelected", function(_, state)
       if not enableHooks then
@@ -208,6 +220,12 @@ local skinners = {
       else
         tab:SetText(text)
         tab:GetFontString():SetTextColor(unpack(E.media.rgbvaluecolor))
+      end
+    end)
+    table.insert(toUpdate, function()
+      tab:SetText(text)
+      if tab.selected ~= nil then
+        tab:SetSelected(tab.selected)
       end
     end)
     if tab.selected ~= nil then

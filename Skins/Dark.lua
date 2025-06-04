@@ -8,6 +8,16 @@ local hoverColor = {r = 59/255, g = 210/255, b = 237/255}
 local voiceActiveColor = {r = 33/255, g = 209/255, b = 45/255}
 local flashTabColor = {r = 247/255, g = 222/255, b = 61/255}
 
+local toUpdate = {}
+
+local UIScaleMonitor = CreateFrame("Frame")
+UIScaleMonitor:RegisterEvent("UI_SCALE_CHANGED")
+UIScaleMonitor:SetScript("OnEvent", function()
+  for _, func in ipairs(toUpdate) do
+    func()
+  end
+end)
+
 local skinners = {
   ChatButton = function(button, tags)
     button:SetSize(26, 28)
@@ -205,22 +215,27 @@ local skinners = {
     end
     tab:GetFontString():SetWordWrap(false)
     tab:GetFontString():SetNonSpaceWrap(false)
+    local fsWidth = math.max(tab:GetFontString():GetUnboundedStringWidth(), not tab:GetText():find("|K") and addonTable.Constants.MinTabWidth or 70)
+    tab:GetFontString():SetWidth(fsWidth)
     if tab.minWidth then
-      tab:SetWidth(tab:GetFontString():GetUnboundedStringWidth() + addonTable.Constants.TabPadding)
+      tab:SetWidth(tab:GetFontString():GetWidth() + addonTable.Constants.TabPadding)
     else
-      tab:SetWidth(math.max(tab:GetFontString():GetUnboundedStringWidth(), not tab:GetText():find("|K") and addonTable.Constants.MinTabWidth or 70) + addonTable.Constants.TabPadding)
+      tab:SetWidth(fsWidth + addonTable.Constants.TabPadding)
     end
-    tab:GetFontString():SetWidth(tab:GetWidth() - addonTable.Constants.TabPadding)
     hooksecurefunc(tab, "SetText", function()
       if not enableHooks then
         return
       end
+      fsWidth = math.max(tab:GetFontString():GetUnboundedStringWidth(), not tab:GetText():find("|K") and addonTable.Constants.MinTabWidth or 70)
+      tab:GetFontString():SetWidth(fsWidth)
       if tab.minWidth then
-        tab:SetWidth(tab:GetFontString():GetUnboundedStringWidth() + addonTable.Constants.TabPadding)
+        tab:SetWidth(tab:GetFontString():GetWidth() + addonTable.Constants.TabPadding)
       else
-        tab:SetWidth(math.max(tab:GetFontString():GetUnboundedStringWidth(), not tab:GetText():find("|K") and addonTable.Constants.MinTabWidth or 70) + addonTable.Constants.TabPadding)
+        tab:SetWidth(fsWidth + addonTable.Constants.TabPadding)
       end
-      tab:GetFontString():SetWidth(tab:GetWidth() - addonTable.Constants.TabPadding)
+    end)
+    table.insert(toUpdate, function()
+      tab:SetText(tab:GetText())
     end)
     tab:GetFontString():SetPoint("TOP", 0, -5)
     tab:HookScript("OnEnter", function()

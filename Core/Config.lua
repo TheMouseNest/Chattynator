@@ -6,7 +6,9 @@ function addonTable.Config.GetEmptyTabConfig(name)
   return {
     name = name,
     groups = {},
-    channels = {}, backgroundColor = "1a1a1a", tabColor = "111111",
+    channels = {},
+    addons = {},
+    backgroundColor = "1a1a1a", tabColor = "111111",
     whispersTemp = {}, filters = {},
     isTemporary = false,
   }

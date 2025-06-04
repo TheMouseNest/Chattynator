@@ -17,7 +17,7 @@ body:
     required: true
 - type: input
   attributes:
-    label: What version of Chatanator?
+    label: What version of Chattynator?
   validations:
     required: true
 - type: textarea

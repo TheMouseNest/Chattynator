@@ -34,9 +34,13 @@ local toUpdate = {}
 local UIScaleMonitor = CreateFrame("Frame")
 UIScaleMonitor:RegisterEvent("UI_SCALE_CHANGED")
 UIScaleMonitor:SetScript("OnEvent", function()
-  for _, func in ipairs(toUpdate) do
-    func()
-  end
+  C_Timer.After(0, function()
+    C_Timer.After(0, function()
+      for _, func in ipairs(toUpdate) do
+        func()
+      end
+    end)
+  end)
 end)
 
 local skinners = {

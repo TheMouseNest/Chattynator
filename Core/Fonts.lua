@@ -28,7 +28,7 @@ end
 
 function addonTable.Core.CreateFont(lsmPath)
   local key = lsmPath
-  local globalName = "ChatanatorFont" .. key
+  local globalName = "ChattynatorFont" .. key
   local path = LibSharedMedia:Fetch("font", lsmPath, true)
   if not path then
     return

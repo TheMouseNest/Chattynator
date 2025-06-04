@@ -266,7 +266,7 @@ local skinners = {
       hooksecurefunc(E:GetModule('Layout'), "RepositionChatDataPanels", AnchorDataPanel)
       hooksecurefunc(E:GetModule('Layout'), "RefreshChatMovers", AnchorDataPanel)
     end
-    if E.db.chat.panelBackdrop ~= "HIDEBOTH" and E.db.chat.panelBackdrop ~= "LEFT" then
+    if E.db.chat.panelBackdrop ~= "HIDEBOTH" then
       frame:CreateBackdrop('Transparent')
       local panelColor = CH.db.panelColor
       frame.backdrop:SetBackdropColor(panelColor.r, panelColor.g, panelColor.b, panelColor.a)

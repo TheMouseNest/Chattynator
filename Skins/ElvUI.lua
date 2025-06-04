@@ -248,6 +248,7 @@ local skinners = {
         frame:SetClampRectInsets(0, 0, isAbove and 25 or 0, position == "top" and not isAbove and -25 or 0)
       end
       local function PositionPanel()
+        AnchorDataPanel()
         addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
           if not enableHooks then
             return
@@ -262,13 +263,14 @@ local skinners = {
       else
         PositionPanel()
       end
-      hooksecurefunc(E:GetModule('Layout'), "RepositionChatDataPanels", function()
-        AnchorDataPanel()
-      end)
+      hooksecurefunc(E:GetModule('Layout'), "RepositionChatDataPanels", AnchorDataPanel)
+      hooksecurefunc(E:GetModule('Layout'), "RefreshChatMovers", AnchorDataPanel)
     end
-    frame:CreateBackdrop('Transparent')
-    local panelColor = CH.db.panelColor
-    frame.backdrop:SetBackdropColor(panelColor.r, panelColor.g, panelColor.b, panelColor.a)
+    if E.db.chat.panelBackdrop ~= "HIDEBOTH" and E.db.chat.panelBackdrop ~= "LEFT" then
+      frame:CreateBackdrop('Transparent')
+      local panelColor = CH.db.panelColor
+      frame.backdrop:SetBackdropColor(panelColor.r, panelColor.g, panelColor.b, panelColor.a)
+    end
   end,
   TopTabButton = function(frame)
     S:HandleTab(frame)

@@ -128,18 +128,6 @@ function addonTable.Display.ChatFrameMixin:RepositionBlizzardWidgets()
     return
   end
   self.arrangedButtons = true
-  local function ArrangeButtons(buttons)
-    local lastButton
-    for _, b in ipairs(buttons) do
-      b:ClearAllPoints()
-      if lastButton == nil then
-        b:SetPoint("TOPRIGHT", self.ScrollingMessages, "TOPLEFT", -5, -8)
-      else
-        b:SetPoint("TOP", lastButton, "BOTTOM", 0, -5)
-      end
-      lastButton = b
-    end
-  end
   self.buttons = {}
 
   if self:GetID() == 1 and not addonTable.Data.BlizzardButtonsAssigned then
@@ -243,8 +231,6 @@ function addonTable.Display.ChatFrameMixin:RepositionBlizzardWidgets()
   end)
   self.ScrollToBottomButton:Hide()
   addonTable.Skins.AddFrame("ChatButton", self.ScrollToBottomButton, {"scrollToEnd"})
-
-  ArrangeButtons(self.buttons)
 end
 
 function addonTable.Display.ChatFrameMixin:AdjustMessageAnchors()
@@ -287,6 +273,13 @@ function addonTable.Display.ChatFrameMixin:SetTabSelected(index)
 end
 
 function addonTable.Display.ChatFrameMixin:UpdateButtons()
+  local offsetX, offsetY = -5, -8
+  for _, b in ipairs(self.buttons) do
+    b:ClearAllPoints()
+    b:SetPoint("TOPRIGHT", self.ScrollingMessages, "TOPLEFT", offsetX, offsetY)
+    offsetY = offsetY - b:GetHeight() - 5
+  end
+
   local heightAvailable = self.ScrollingMessages:GetHeight() - 8 - self.ScrollToBottomButton:GetHeight() - 2
   local currentHeight = 0
   for _, b in ipairs(self.buttons) do

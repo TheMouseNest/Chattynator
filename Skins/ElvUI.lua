@@ -245,7 +245,8 @@ local skinners = {
         LeftChatDataPanel:SetPoint(isAbove and "BOTTOMRIGHT" or "TOPRIGHT", frame, isAbove and "TOPRIGHT" or "BOTTOMRIGHT", -(E.PixelMode and 1 or -1), position == "bottom" and not isAbove and 24 or 0)
         LeftChatDataPanel:SetHeight(23)
         LeftChatToggleButton:SetParent(frame)
-        frame:SetClampRectInsets(0, 0, isAbove and 25 or 0, position == "top" and not isAbove and -25 or 0)
+        local panelEnabled = E.db.datatexts.panels.LeftChatDataPanel.enable
+        frame:SetClampRectInsets(0, 0, panelEnabled and isAbove and 25 or 0, panelEnabled and position == "top" and not isAbove and -25 or 0)
       end
       local function PositionPanel()
         AnchorDataPanel()

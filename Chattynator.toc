@@ -49,6 +49,7 @@ Modifiers/ClassColors.lua
 Modifiers/URLs.lua
 
 Skins/Main.lua
+Skins/Blizzard.lua
 Skins/Dark.lua
 Skins/ElvUI.lua
 Skins/GW2.lua

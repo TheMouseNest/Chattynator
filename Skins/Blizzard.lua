@@ -1,0 +1,239 @@
+---@class addonTableChattynator
+local addonTable = select(2, ...)
+
+local enableHooks = true
+
+local toUpdate = {}
+
+local UIScaleMonitor = CreateFrame("Frame")
+UIScaleMonitor:RegisterEvent("UI_SCALE_CHANGED")
+UIScaleMonitor:SetScript("OnEvent", function()
+  for _, func in ipairs(toUpdate) do
+    func()
+  end
+end)
+
+local tabCounter = 0
+
+local skinners = {
+  ChatButton = function(button, tags)
+    button:SetSize(26, 28)
+
+
+    if tags.toasts then
+    elseif tags.channels then
+    elseif tags.voiceChatNoAudio or tags.voiceChatMuteMic then
+    elseif tags.menu then
+    else
+      button:HookScript("OnMouseDown", function()
+        if not enableHooks then
+          return
+        end
+        button.Icon:AdjustPointsOffset(2, -2)
+      end)
+      button:HookScript("OnMouseUp", function()
+        if not enableHooks then
+          return
+        end
+        button.Icon:AdjustPointsOffset(-2, 2)
+      end)
+
+      button:SetNormalTexture("chatframe-button-up")
+      button:SetPushedTexture("chatframe-button-down")
+      button:SetHighlightTexture("chatframe-button-highlight")
+
+      button.Icon = button:CreateTexture(nil, "OVERLAY")
+      if tags.search then
+        button.Icon:SetTexture("Interface/AddOns/Chattynator/Assets/Search.png")
+      elseif tags.copy then
+        button.Icon:SetTexture("Interface/AddOns/Chattynator/Assets/Copy.png")
+      elseif tags.settings then
+        button.Icon:SetTexture("Interface/AddOns/Chattynator/Assets/SettingsCog.png")
+      elseif tags.scrollToEnd then
+        button.Icon:SetTexture("Interface/AddOns/Chattynator/Assets/ScrollToBottom.png")
+      end
+      button.Icon:SetPoint("CENTER")
+      button.Icon:SetSize(15, 15)
+      button.Icon:SetVertexColor(0.925, 0.804, 0.063)
+    end
+  end,
+  ChatFrame = function(frame, tags)
+    frame.background = CreateFrame("Frame", nil, frame, "FloatingBorderedFrame")
+    frame.background:SetFrameStrata("BACKGROUND")
+    frame.background:SetPoint("TOPLEFT", frame.ScrollingMessages, 0, 2)
+    frame.background:SetPoint("BOTTOMRIGHT", frame.ScrollingMessages)
+
+    for _, region in ipairs({frame.background:GetRegions()}) do
+      region:SetVertexColor(DEFAULT_CHATFRAME_COLOR.r, DEFAULT_CHATFRAME_COLOR.g, DEFAULT_CHATFRAME_COLOR.b, DEFAULT_CHATFRAME_ALPHA)
+    end
+  end,
+  ChatEditBox = function(editBox, tags)
+  end,
+  ChatTab = function(tab, tags)
+    tabCounter = tabCounter + 1
+    tab.background = CreateFrame("Frame", "ChattynatorBlizzardTabStyle" .. tabCounter, tab, "ChatTabArtTemplate")
+    tab.background:SetAllPoints()
+    tab.background.flash = tab.background:CreateTexture(nil, "BACKGROUND")
+    tab.background.flash:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-Tab-Highlight")
+    tab.background.flash:SetBlendMode("ADD")
+    tab.background.flash:SetAllPoints()
+    tab.background.flash:SetAlpha(0)
+    tab.background.flash:SetIgnoreParentAlpha(true)
+    tab.background:SetFrameStrata("BACKGROUND")
+
+    hooksecurefunc(tab, "SetColor", function(_, r, g, b)
+      if not enableHooks then
+        return
+      end
+      tab.background.flash:SetVertexColor(r, g, b)
+      tab.background.ActiveLeft:SetVertexColor(r, g, b)
+      tab.background.glow:SetVertexColor(r, g, b)
+      tab.background.ActiveRight:SetVertexColor(r, g, b)
+      tab.background.ActiveMiddle:SetVertexColor(r, g, b)
+      tab.background.HighlightLeft:SetVertexColor(r, g, b)
+      tab.background.HighlightRight:SetVertexColor(r, g, b)
+      tab.background.HighlightMiddle:SetVertexColor(r, g, b)
+    end)
+    tab.background.ActiveLeft:Hide()
+    tab.background.ActiveRight:Hide()
+    tab.background.ActiveMiddle:Hide()
+    if tab.color then
+      tab:SetColor(tab.color.r, tab.color.g, tab.color.b)
+    end
+    tab:SetHeight(22)
+    tab:SetAlpha(1)
+    tab:SetNormalFontObject("GameFontNormalSmall")
+    if tab:GetFontString() == nil then
+      tab:SetText(" ")
+    end
+    tab:GetFontString():SetWordWrap(false)
+    tab:GetFontString():SetNonSpaceWrap(false)
+    local fsWidth
+    if tab.minWidth then
+      fsWidth = tab:GetFontString():GetUnboundedStringWidth()
+    else
+      fsWidth = math.max(tab:GetFontString():GetUnboundedStringWidth(), not tab:GetText():find("|K") and addonTable.Constants.MinTabWidth or 70) + addonTable.Constants.TabPadding
+    end
+    tab:GetFontString():SetWidth(fsWidth)
+    tab:SetWidth(fsWidth)
+    hooksecurefunc(tab, "SetText", function()
+      if not enableHooks then
+        return
+      end
+      if tab.minWidth then
+        fsWidth = tab:GetFontString():GetUnboundedStringWidth()
+      else
+        fsWidth = math.max(tab:GetFontString():GetUnboundedStringWidth(), not tab:GetText():find("|K") and addonTable.Constants.MinTabWidth or 70) + addonTable.Constants.TabPadding
+      end
+      tab:GetFontString():SetWidth(fsWidth)
+      tab:SetWidth(fsWidth)
+    end)
+    table.insert(toUpdate, function()
+      tab:SetText(tab:GetText())
+    end)
+    tab:HookScript("OnEnter", function()
+      if not enableHooks then
+        return
+      end
+      tab.background.HighlightLeft:Show()
+      tab.background.HighlightRight:Show()
+      tab.background.HighlightMiddle:Show()
+      if not tab.selected then
+        tab:SetAlpha(1)
+        tab.background:SetAlpha(0.8)
+      end
+    end)
+    local function SetSelected(_, state)
+      if not enableHooks then
+        return
+      end
+      if state then
+        tab.background.ActiveLeft:Show()
+        tab.background.ActiveRight:Show()
+        tab.background.ActiveMiddle:Show()
+        tab:SetAlpha(1)
+        tab.background:SetAlpha(1)
+      else
+        tab.background.ActiveLeft:Hide()
+        tab.background.ActiveRight:Hide()
+        tab.background.ActiveMiddle:Hide()
+        tab:SetAlpha(0.5)
+      end
+    end
+    tab:HookScript("OnLeave", function()
+      if not enableHooks then
+        return
+      end
+      tab.background.HighlightLeft:Hide()
+      tab.background.HighlightRight:Hide()
+      tab.background.HighlightMiddle:Hide()
+      SetSelected(tab, tab.selected)
+    end)
+    hooksecurefunc(tab, "SetSelected", SetSelected)
+    hooksecurefunc(tab, "SetColor", function(_, r, g, b)
+      if not enableHooks then
+        return
+      end
+      tab.background.Left:SetVertexColor(r, g, b)
+      tab.background.Right:SetVertexColor(r, g, b)
+      tab.background.Middle:SetVertexColor(r, g, b)
+    end)
+    if tab.color then
+      tab:SetColor(tab.color.r, tab.color.g, tab.color.b)
+    end
+    if tab.selected ~= nil then
+      tab:SetSelected(tab.selected)
+    end
+
+    tab.background.FlashAnimation = tab.background:CreateAnimationGroup()
+    tab.background.FlashAnimation:SetLooping("BOUNCE")
+    local alpha1 = tab.background.FlashAnimation:CreateAnimation("Alpha")
+    alpha1:SetChildKey("flash")
+    alpha1:SetFromAlpha(0)
+    alpha1:SetToAlpha(1)
+    alpha1:SetDuration(0.8)
+    alpha1:SetOrder(1)
+    local alpha2 = tab.background.FlashAnimation:CreateAnimation("Alpha")
+    alpha2:SetChildKey("glow")
+    alpha2:SetFromAlpha(0)
+    alpha2:SetToAlpha(1)
+    alpha2:SetDuration(0.8)
+    alpha2:SetOrder(1)
+    hooksecurefunc(tab, "SetFlashing", function(_, state)
+      if not enableHooks then
+        return
+      end
+      tab.background.FlashAnimation:SetPlaying(state)
+    end)
+  end,
+  ResizeWidget = function(frame, tags)
+    frame:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up")
+    frame:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Down")
+    frame:SetHighlightTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Highlight")
+  end,
+}
+
+local function ConvertTags(tags)
+  local res = {}
+  for _, tag in ipairs(tags) do
+    res[tag] = true
+  end
+  return res
+end
+
+local function SkinFrame(details)
+  local func = skinners[details.regionType]
+  if func then
+    func(details.region, details.tags and ConvertTags(details.tags) or {})
+  end
+end
+
+local function SetConstants()
+end
+
+local function LoadSkin()
+  addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
+  end)
+end
+
+addonTable.Skins.RegisterSkin(addonTable.Locales.BLIZZARD, "blizzard", LoadSkin, SkinFrame, SetConstants, {})

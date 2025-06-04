@@ -215,10 +215,11 @@ local skinners = {
   ChatFrame = function(frame)
     if frame:GetID() == 1 and not addonTable.Skins.IsAddOnLoading("ElvUI_EltreumUI") then
       local position = addonTable.Config.Get(addonTable.Config.Options.EDIT_BOX_POSITION)
+      local isAbove = E.db.chat.LeftChatDataPanelAnchor == 'ABOVE_CHAT'
       LeftChatPanel:ClearAllPoints()
       LeftChatPanel:SetPoint("TOPLEFT", frame)
       LeftChatPanel:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, position == "bottom" and 24 or 0)
-      frame:SetClampRectInsets(0, 0, 0, position == "top" and -24 or 0)
+      frame:SetClampRectInsets(0, 0, isAbove and 24 or 0, position == "top" and not isAbove and -24 or 0)
       addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
         if not enableHooks then
           return
@@ -228,7 +229,7 @@ local skinners = {
           LeftChatPanel:ClearAllPoints()
           LeftChatPanel:SetPoint("TOPLEFT", frame)
           LeftChatPanel:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, position == "bottom" and 24 or 0)
-          frame:SetClampRectInsets(0, 0, 0, position == "top" and -24 or 0)
+          frame:SetClampRectInsets(0, 0, isAbove and 24 or 0, position == "top" and not isAbove and -24 or 0)
         end
       end)
     else

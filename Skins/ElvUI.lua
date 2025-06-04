@@ -233,30 +233,41 @@ local skinners = {
     end
   end,
   ChatFrame = function(frame)
-    if frame:GetID() == 1 and not addonTable.Skins.IsAddOnLoading("ElvUI_EltreumUI") then
-      local position = addonTable.Config.Get(addonTable.Config.Options.EDIT_BOX_POSITION)
-      local isAbove = E.db.chat.LeftChatDataPanelAnchor == 'ABOVE_CHAT'
-      LeftChatPanel:ClearAllPoints()
-      LeftChatPanel:SetPoint("TOPLEFT", frame)
-      LeftChatPanel:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, position == "bottom" and 24 or 0)
-      frame:SetClampRectInsets(0, 0, isAbove and 24 or 0, position == "top" and not isAbove and -24 or 0)
-      addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
-        if not enableHooks then
-          return
-        end
-        if settingName == addonTable.Config.Options.EDIT_BOX_POSITION then
-          position = addonTable.Config.Get(addonTable.Config.Options.EDIT_BOX_POSITION)
-          LeftChatPanel:ClearAllPoints()
-          LeftChatPanel:SetPoint("TOPLEFT", frame)
-          LeftChatPanel:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, position == "bottom" and 24 or 0)
-          frame:SetClampRectInsets(0, 0, isAbove and 24 or 0, position == "top" and not isAbove and -24 or 0)
-        end
+    if frame:GetID() == 1 then
+      local function AnchorDataPanel()
+        local position = addonTable.Config.Get(addonTable.Config.Options.EDIT_BOX_POSITION)
+        local isAbove = E.db.chat.LeftChatDataPanelAnchor == 'ABOVE_CHAT'
+        LeftChatPanel:SetParent(addonTable.hiddenFrame)
+        LeftChatDataPanel:ClearAllPoints()
+        LeftChatDataPanel:SetParent(frame)
+        LeftChatDataPanel:SetPoint(isAbove and "BOTTOMLEFT" or "TOPLEFT", frame, isAbove and "TOPLEFT" or "BOTTOMLEFT", E.db.chat.hideChatToggles and 0 or 19, position == "bottom" and not isAbove and 24 or 0)
+        LeftChatDataPanel:SetPoint(isAbove and "BOTTOMRIGHT" or "TOPRIGHT", frame, isAbove and "TOPRIGHT" or "BOTTOMRIGHT", -(E.PixelMode and 1 or -1), position == "bottom" and not isAbove and 24 or 0)
+        LeftChatDataPanel:SetHeight(23)
+        LeftChatToggleButton:SetParent(frame)
+        frame:SetClampRectInsets(0, 0, isAbove and 25 or 0, position == "top" and not isAbove and -25 or 0)
+      end
+      local function PositionPanel()
+        addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
+          if not enableHooks then
+            return
+          end
+          if settingName == addonTable.Config.Options.EDIT_BOX_POSITION then
+            AnchorDataPanel()
+          end
+        end)
+      end
+      if not LeftChatDataPanel then
+        hooksecurefunc(E:GetModule('Layout'), "CreateChatPanels", PositionPanel)
+      else
+        PositionPanel()
+      end
+      hooksecurefunc(E:GetModule('Layout'), "RepositionChatDataPanels", function()
+        AnchorDataPanel()
       end)
-    else
-      frame:CreateBackdrop()
-      local panelColor = CH.db.panelColor
-      frame.backdrop:SetBackdropColor(panelColor.r, panelColor.g, panelColor.b, panelColor.a)
     end
+    frame:CreateBackdrop('Transparent')
+    local panelColor = CH.db.panelColor
+    frame.backdrop:SetBackdropColor(panelColor.r, panelColor.g, panelColor.b, panelColor.a)
   end,
   TopTabButton = function(frame)
     S:HandleTab(frame)

@@ -183,13 +183,14 @@ local skinners = {
     end
     tab:GetFontString():SetWordWrap(false)
     tab:GetFontString():SetNonSpaceWrap(false)
-    local fsWidth = math.max(tab:GetFontString():GetUnboundedStringWidth(), not tab:GetText():find("|K") and addonTable.Constants.MinTabWidth or 70) + addonTable.Constants.TabPadding
-    tab:GetFontString():SetWidth(fsWidth)
+    local fsWidth
     if tab.minWidth then
-      tab:SetWidth(tab:GetFontString():GetWidth() + addonTable.Constants.TabPadding)
+      fsWidth = tab:GetFontString():GetUnboundedStringWidth()
     else
-      tab:SetWidth(fsWidth + addonTable.Constants.TabPadding)
+      fsWidth = math.max(tab:GetFontString():GetUnboundedStringWidth(), not tab:GetText():find("|K") and addonTable.Constants.MinTabWidth or 70) + addonTable.Constants.TabPadding
     end
+    tab:GetFontString():SetWidth(fsWidth)
+    tab:SetWidth(fsWidth)
     local SetText = tab.SetText
     local text = tab:GetText()
     hooksecurefunc(tab, "SetText", function(_, cleanText)
@@ -197,13 +198,13 @@ local skinners = {
         return
       end
       text = cleanText
-      fsWidth = math.max(tab:GetFontString():GetUnboundedStringWidth(), not tab:GetText():find("|K") and addonTable.Constants.MinTabWidth or 70) + addonTable.Constants.TabPadding
-      tab:GetFontString():SetWidth(fsWidth)
       if tab.minWidth then
-        tab:SetWidth(tab:GetFontString():GetWidth() + addonTable.Constants.TabPadding)
+        fsWidth = tab:GetFontString():GetUnboundedStringWidth()
       else
-        tab:SetWidth(fsWidth + addonTable.Constants.TabPadding)
+        fsWidth = math.max(tab:GetFontString():GetUnboundedStringWidth(), not tab:GetText():find("|K") and addonTable.Constants.MinTabWidth or 70) + addonTable.Constants.TabPadding
       end
+      tab:GetFontString():SetWidth(fsWidth)
+      tab:SetWidth(fsWidth)
     end)
     hooksecurefunc(tab, "SetSelected", function(_, state)
       if not enableHooks then

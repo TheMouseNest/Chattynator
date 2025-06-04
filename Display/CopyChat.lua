@@ -45,7 +45,7 @@ function addonTable.Display.CopyChatMixin:LoadMessages(filterFunc, indexOffset)
   end
 
   self.textBox:SetText(table.concat(messages, "\n"))
-  self.textBox:GetEditBox():HighlightText(0, #self.textBox:GetText())
+  self.textBox:GetEditBox():HighlightText(0, #self.textBox:GetEditBox():GetText())
   C_Timer.After(0, function()
     self.textBox:SetFocus()
     C_Timer.After(0, function()

@@ -78,8 +78,9 @@ local skinners = {
     if tab.minWidth then
       tab:SetWidth(tab:GetFontString():GetUnboundedStringWidth() + addonTable.Constants.TabPadding)
     else
-      tab:SetWidth(math.max(tab:GetFontString():GetUnboundedStringWidth(), addonTable.Constants.MinTabWidth) + addonTable.Constants.TabPadding)
+      tab:SetWidth(math.max(tab:GetFontString():GetUnboundedStringWidth(), not tab:GetText():find("|K") and addonTable.Constants.MinTabWidth or 70) + addonTable.Constants.TabPadding)
     end
+    tab:GetFontString():SetWidth(tab:GetWidth() - addonTable.Constants.TabPadding)
 
     local SetText = tab.SetText
     hooksecurefunc(tab, "SetText", function(_, text)
@@ -92,8 +93,9 @@ local skinners = {
       if tab.minWidth then
         tab:SetWidth(tab:GetFontString():GetUnboundedStringWidth() + addonTable.Constants.TabPadding)
       else
-        tab:SetWidth(math.max(tab:GetFontString():GetUnboundedStringWidth(), addonTable.Constants.MinTabWidth) + addonTable.Constants.TabPadding)
+        tab:SetWidth(math.max(tab:GetFontString():GetUnboundedStringWidth(), not tab:GetText():find("|K") and addonTable.Constants.MinTabWidth or 70) + addonTable.Constants.TabPadding)
       end
+      tab:GetFontString():SetWidth(tab:GetWidth() - addonTable.Constants.TabPadding)
     end)
 
     tab.Left = tab:CreateTexture(nil, "BACKGROUND")

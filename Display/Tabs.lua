@@ -96,13 +96,13 @@ function addonTable.Core.InitializeTabs(chatFrame)
           not data.typeInfo.channel or
           (tab.channels[data.typeInfo.channel.name] == nil and data.typeInfo.channel.isDefault) or
           tab.channels[data.typeInfo.channel.name]
-        ) and (data.typeInfo.type ~= "WHISPER" or tab.whispersTemp[data.typeInfo.player] ~= false)
+        ) and ((data.typeInfo.type ~= "WHISPER" and data.typeInfo.type ~= "BN_WHISPER") or tab.whispersTemp[data.typeInfo.player] ~= false)
         or (data.typeInfo.type == "ADDON" and tab.groups["ADDON"] == false and tab.addons[data.typeInfo.source] ~= false)
       end
     else
       filter = function(data)
         return tab.groups[data.typeInfo.type] or
-          data.typeInfo.type == "WHISPER" and tab.whispersTemp[data.typeInfo.player] or
+          (data.typeInfo.type == "WHISPER" or data.typeInfo.type == "BN_WHISPER") and tab.whispersTemp[data.typeInfo.player] or
           tab.channels[data.typeInfo.channel and data.typeInfo.channel.name] or
           data.typeInfo.type == "ADDON" and not tab.groups["ADDON"] and tab.addons[data.typeInfo.source]
       end
@@ -287,3 +287,31 @@ function addonTable.Core.InitializeTabs(chatFrame)
     addonTable.CallbackRegistry:TriggerEvent("TabSelected", chatFrame:GetID(), currentTab)
   end
 end
+
+addonTable.CallbackRegistry:RegisterCallback("Render", function(_, newMessages)
+  local targetWindow = addonTable.Config.Get(addonTable.Config.Options.NEW_WHISPER_NEW_TAB)
+  if targetWindow ~= 0 and newMessages then
+    for i = 1, newMessages do
+      local m = addonTable.Messages:GetMessageRaw(i)
+      if m.typeInfo.type == "WHISPER" or m.typeInfo.type == "BN_WHISPER" then
+        local window = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[targetWindow]
+        local any = false
+        for _, tab in ipairs(window.tabs) do
+          if tab.whispersTemp[m.typeInfo.player] then
+            any = true
+            break
+          end
+        end
+        if not any then
+          local tabConfig = addonTable.Config.GetEmptyTabConfig(m.typeInfo.player)
+          local c = ChatTypeInfo[m.typeInfo.type]
+          tabConfig.tabColor = CreateColor(c.r, c.g, c.b):GenerateHexColorNoAlpha()
+          tabConfig.whispersTemp[m.typeInfo.player] = true
+          tabConfig.isTemporary = true
+          table.insert(window.tabs, tabConfig)
+          addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+        end
+      end
+    end
+  end
+end)

@@ -43,12 +43,12 @@ function addonTable.Display.ChatFrameMixin:OnLoad()
   addonTable.Skins.AddFrame("ResizeWidget", self.resizeWidget)
   self.resizeWidget:SetShown(not addonTable.Config.Get(addonTable.Config.Options.LOCKED))
 
-  addonTable.CallbackRegistry:RegisterCallback("Render", function(_, ...)
+  addonTable.CallbackRegistry:RegisterCallback("Render", function(_, newMessages)
     if self:GetID() == 0 then
       return
     end
-    self:ApplyFlashing(...)
-    self.ScrollingMessages:Render(...)
+    self:ApplyFlashing(newMessages)
+    self.ScrollingMessages:Render(newMessages)
   end, self)
 
   addonTable.CallbackRegistry:RegisterCallback("ScrollToEndImmediate", function(_, windowID)

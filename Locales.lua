@@ -58,6 +58,7 @@ L["LOCK_CHAT"] = "Lock chat"
 L["EDIT_BOX_POSITION"] = "Edit box position"
 L["BOTTOM"] = "Bottom"
 L["TOP"] = "Top"
+L["NEW_WHISPERS_TO_NEW_TAB"] = "New whispers to new tab"
 
 L["MESSAGE_SPACING"] = "Message spacing"
 L["MESSAGE_FADE_TIME"] = "Message fade time"

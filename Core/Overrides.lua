@@ -49,6 +49,8 @@ function addonTable.Core.ApplyOverrides()
       local tabConfig = addonTable.Config.GetEmptyTabConfig(chatTarget)
       tabConfig.whispersTemp[chatTarget] = true
       tabConfig.isTemporary = true
+      local c = ChatTypeInfo[chatType]
+      tabConfig.tabColor = CreateColor(c.r, c.g, c.b):GenerateHexColorNoAlpha()
       table.insert(config.tabs, tabConfig)
       config.tabs[actualChatFrame.tabIndex].whispersTemp[chatTarget] = false
       addonTable.Core.InitializeTabs(actualChatFrame)

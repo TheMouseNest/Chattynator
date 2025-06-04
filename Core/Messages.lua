@@ -363,9 +363,9 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
     local playerArg = select(2, ...)
     local playerGUID = select(12, ...)
     local playerClass
-    if playerGUID and type(playerArg) == "string" then
+    if playerGUID then
       playerClass = select(2, GetPlayerInfoByGUID(playerGUID))
-    else
+    elseif type(playerArg) ~= "string" then
       playerArg = nil
     end
     self:SetIncomingType({

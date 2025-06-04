@@ -203,11 +203,14 @@ local skinners = {
     if tab:GetFontString() == nil then
       tab:SetText(" ")
     end
+    tab:GetFontString():SetWordWrap(false)
+    tab:GetFontString():SetNonSpaceWrap(false)
     if tab.minWidth then
       tab:SetWidth(tab:GetFontString():GetUnboundedStringWidth() + addonTable.Constants.TabPadding)
     else
-      tab:SetWidth(math.max(tab:GetFontString():GetUnboundedStringWidth(), addonTable.Constants.MinTabWidth) + addonTable.Constants.TabPadding)
+      tab:SetWidth(math.max(tab:GetFontString():GetUnboundedStringWidth(), not tab:GetText():find("|K") and addonTable.Constants.MinTabWidth or 70) + addonTable.Constants.TabPadding)
     end
+    tab:GetFontString():SetWidth(tab:GetWidth() - addonTable.Constants.TabPadding)
     hooksecurefunc(tab, "SetText", function()
       if not enableHooks then
         return
@@ -215,8 +218,9 @@ local skinners = {
       if tab.minWidth then
         tab:SetWidth(tab:GetFontString():GetUnboundedStringWidth() + addonTable.Constants.TabPadding)
       else
-        tab:SetWidth(math.max(tab:GetFontString():GetUnboundedStringWidth(), addonTable.Constants.MinTabWidth) + addonTable.Constants.TabPadding)
+        tab:SetWidth(math.max(tab:GetFontString():GetUnboundedStringWidth(), not tab:GetText():find("|K") and addonTable.Constants.MinTabWidth or 70) + addonTable.Constants.TabPadding)
       end
+      tab:GetFontString():SetWidth(tab:GetWidth() - addonTable.Constants.TabPadding)
     end)
     tab:GetFontString():SetPoint("TOP", 0, -5)
     tab:HookScript("OnEnter", function()

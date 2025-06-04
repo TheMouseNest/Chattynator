@@ -237,6 +237,13 @@ local function SetupLayout(parent)
   end
   table.insert(allFrames, editBoxPositionDropdown)
 
+  local newWhispersNewTab = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.NEW_WHISPERS_TO_NEW_TAB, 28, function(state)
+    addonTable.Config.Set(addonTable.Config.Options.NEW_WHISPER_NEW_TAB, state and 1 or 0)
+  end)
+  newWhispersNewTab.option = addonTable.Config.Options.NEW_WHISPER_NEW_TAB
+  newWhispersNewTab:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
+  table.insert(allFrames, newWhispersNewTab)
+
   local locked = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.LOCK_CHAT, 28, function(state)
     addonTable.Config.Set(addonTable.Config.Options.LOCKED, state)
   end)
@@ -247,7 +254,9 @@ local function SetupLayout(parent)
   container:SetScript("OnShow", function()
     for _, f in ipairs(allFrames) do
       if f.SetValue then
-        if f.option then
+        if f.option == addonTable.Config.Options.NEW_WHISPER_NEW_TAB then
+          f:SetValue(addonTable.Config.Get(f.option) ~= 0)
+        elseif f.option then
           f:SetValue(addonTable.Config.Get(f.option))
         else
           f:SetValue()

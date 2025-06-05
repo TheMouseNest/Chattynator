@@ -303,7 +303,7 @@ addonTable.CallbackRegistry:RegisterCallback("Render", function(_, newMessages)
           end
         end
         if not any then
-          local tabConfig = addonTable.Config.GetEmptyTabConfig(m.typeInfo.player)
+          local tabConfig = addonTable.Config.GetEmptyTabConfig(Ambiguate(m.typeInfo.player, "all"))
           local c = ChatTypeInfo[m.typeInfo.type]
           tabConfig.tabColor = CreateColor(c.r, c.g, c.b):GenerateHexColorNoAlpha()
           tabConfig.whispersTemp[m.typeInfo.player] = true

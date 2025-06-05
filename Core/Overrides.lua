@@ -46,7 +46,7 @@ function addonTable.Core.ApplyOverrides()
         return
       end
       local config = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[actualChatFrame:GetID()]
-      local tabConfig = addonTable.Config.GetEmptyTabConfig(chatTarget)
+      local tabConfig = addonTable.Config.GetEmptyTabConfig(Ambiguate(chatTarget, "all"))
       tabConfig.whispersTemp[chatTarget] = true
       tabConfig.isTemporary = true
       local c = ChatTypeInfo[chatType]

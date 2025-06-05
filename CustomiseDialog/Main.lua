@@ -74,7 +74,7 @@ local function SetupGeneral(parent)
     text:SetText(addonTable.Locales.DONATE)
     text:SetJustifyH("RIGHT")
 
-    local donateLinkDialog = "Baganator_General_Settings_Donate_Dialog"
+    local donateLinkDialog = "Chattynator_General_Settings_Donate_Dialog"
     StaticPopupDialogs[donateLinkDialog] = {
       text = addonTable.Locales.CTRL_C_TO_COPY,
       button1 = DONE,
@@ -114,7 +114,7 @@ local function SetupGeneral(parent)
         profileDropdown.DropDown:GenerateMenu()
       end
     end
-    local makeProfileDialog = "Baganator_MakeProfileDialog"
+    local makeProfileDialog = "Chattynator_MakeProfileDialog"
     StaticPopupDialogs[makeProfileDialog] = {
       text = addonTable.Locales.ENTER_PROFILE_NAME,
       button1 = ACCEPT,
@@ -131,7 +131,7 @@ local function SetupGeneral(parent)
       timeout = 0,
       hideOnEscape = 1,
     }
-    local deleteProfileDialog = "Baganator_DeleteProfileDialog"
+    local deleteProfileDialog = "Chattynator_DeleteProfileDialog"
     StaticPopupDialogs[deleteProfileDialog] = {
       button1 = YES,
       button2 = NO,
@@ -408,8 +408,51 @@ local function SetupFormatting(parent)
   return container
 end
 
+local function SetupThemes(parent)
+  local container = CreateFrame("Frame", nil, parent)
+
+  local allFrames = {}
+
+  local reloadDialog = "Chattynator_ReloadDialog"
+  StaticPopupDialogs[reloadDialog] = {
+    text = addonTable.Locales.RELOAD_REQUIRED,
+    button1 = YES,
+    button2 = NO,
+    OnAccept = function()
+      ReloadUI()
+    end,
+    timeout = 0,
+    hideOnEscape = 1,
+  }
+
+  local themeDropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.THEME, function(value)
+    return addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN) == value
+  end, function(value)
+    addonTable.Config.Set(addonTable.Config.Options.CURRENT_SKIN, value)
+    StaticPopup_Show(reloadDialog)
+  end)
+  themeDropdown:SetPoint("TOP")
+  do
+    local skins = {}
+    for _, skin in pairs(addonTable.Skins.availableSkins) do
+      table.insert(skins, {name = skin.label, value = skin.key})
+    end
+    table.sort(skins, function(a, b) return a.name < b.name end)
+    local entries, values = {}, {}
+    for _, skinDetails in ipairs(skins) do
+      table.insert(entries, skinDetails.name)
+      table.insert(values, skinDetails.value)
+    end
+    themeDropdown:Init(entries, values)
+  end
+  table.insert(allFrames, themeDropdown)
+
+  return container
+end
+
 local TabSetups = {
   {name = GENERAL, callback = SetupGeneral},
+  {name = addonTable.Locales.THEME, callback = SetupThemes},
   {name = addonTable.Locales.LAYOUT, callback = SetupLayout},
   {name = addonTable.Locales.DISPLAY, callback = SetupDisplay},
   {name = addonTable.Locales.FORMATTING, callback = SetupFormatting},

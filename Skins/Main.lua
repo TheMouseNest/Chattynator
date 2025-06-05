@@ -57,7 +57,7 @@ function addonTable.Skins.Initialize()
           addonTable.Config.Get(addonTable.Config.Options.DISABLED_SKINS)[key] = currentSkinKey ~= key
         end
       end
-      currentSkin = addonTable.Skins.availableSkins[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)]
+      --[[currentSkin = addonTable.Skins.availableSkins[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)]
       currentSkinner = currentSkin.skinner
       currentSkin.constants()
       if not currentSkin.initialized then
@@ -66,7 +66,7 @@ function addonTable.Skins.Initialize()
       end
       addonTable.ViewManagement.GenerateFrameGroup(currentSkinKey)
       addonTable.CustomiseDialog.Toggle()
-      addonTable.CallbackRegistry:TriggerEvent("SkinLoaded")
+      addonTable.CallbackRegistry:TriggerEvent("SkinLoaded")]]
     end
   end)
 end

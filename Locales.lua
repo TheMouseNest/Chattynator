@@ -95,7 +95,14 @@ L["LEAVE_UNTICKED_ADDONS"] = "Leave unticked to control which addons show"
 L["ADDONS"] = "Addons"
 L["DATA_DUMPS"] = "Data Dumps"
 
-L["SKINS_DARK"] = "Dark"
+
+L["BLIZZARD"] = "Blizzard"
+L["DARK"] = "Dark"
+L["GW2_UI"] = "GW2 UI"
+L["ELVUI"] = "ElvUI"
+L["THEME"] = "Theme"
+L["RELOAD_REQUIRED"] = "Reload required. Reload now?"
+L["RELOAD"] = "Reload"
 
 L["MESSAGE_TYPES"] = "Message types"
 L["NONE_SELECTED"] = "None Selected"

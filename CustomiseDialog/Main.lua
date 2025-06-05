@@ -447,6 +447,36 @@ local function SetupThemes(parent)
   end
   table.insert(allFrames, themeDropdown)
 
+  local skinKey = addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)
+  local currentSkin = addonTable.Skins.availableSkins[skinKey]
+  for index, option in ipairs(currentSkin.options) do
+    if option.type == "slider" then
+      local slider
+      local optionKey = "skins." .. skinKey .. "." .. option.option
+      slider = addonTable.CustomiseDialog.Components.GetSlider(container, option.text, option.min, option.max, option.valuePattern, function()
+        addonTable.Config.Set(optionKey, slider:GetValue() / (option.scale or 1))
+      end)
+      slider.option = optionKey
+      slider.scale = option.scale
+      slider:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, index == 1 and -30 or 0)
+      table.insert(allFrames, slider)
+    end
+  end
+
+  container:SetScript("OnShow", function()
+    for _, f in ipairs(allFrames) do
+      if f.SetValue then
+        if f.option and f.scale then
+          f:SetValue(addonTable.Config.Get(f.option) * f.scale)
+        elseif f.option then
+          f:SetValue(addonTable.Config.Get(f.option))
+        else
+          f:SetValue()
+        end
+      end
+    end
+  end)
+
   return container
 end
 

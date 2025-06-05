@@ -104,6 +104,9 @@ L["THEME"] = "Theme"
 L["RELOAD_REQUIRED"] = "Reload required. Reload now?"
 L["RELOAD"] = "Reload"
 
+L["TAB_TRANSPARENCY"] = "Tab transparency"
+L["CHAT_TRANSPARENCY"] = "Chat transparency"
+
 L["MESSAGE_TYPES"] = "Message types"
 L["NONE_SELECTED"] = "None Selected"
 L["REWARDS"] = "Rewards"

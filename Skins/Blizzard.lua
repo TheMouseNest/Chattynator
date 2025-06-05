@@ -15,6 +15,10 @@ end)
 
 local tabCounter = 0
 
+local chatTabs = {}
+local chatFrames = {}
+local chatButtons = {}
+
 local skinners = {
   ChatButton = function(button, tags)
     button:SetSize(26, 28)
@@ -58,18 +62,23 @@ local skinners = {
     end
   end,
   ChatFrame = function(frame, tags)
+    local alpha = 1 - addonTable.Config.Get("skins.blizzard.chat_transparency")
+    table.insert(chatFrames, frame)
     frame.background = CreateFrame("Frame", nil, frame, "FloatingBorderedFrame")
     frame.background:SetFrameStrata("BACKGROUND")
     frame.background:SetPoint("TOPLEFT", frame.ScrollingMessages, 0, 2)
     frame.background:SetPoint("BOTTOMRIGHT", frame.ScrollingMessages)
 
     for _, region in ipairs({frame.background:GetRegions()}) do
-      region:SetVertexColor(DEFAULT_CHATFRAME_COLOR.r, DEFAULT_CHATFRAME_COLOR.g, DEFAULT_CHATFRAME_COLOR.b, DEFAULT_CHATFRAME_ALPHA)
+      region:SetVertexColor(DEFAULT_CHATFRAME_COLOR.r, DEFAULT_CHATFRAME_COLOR.g, DEFAULT_CHATFRAME_COLOR.b)
     end
+    frame.background:SetAlpha(alpha)
   end,
   ChatEditBox = function(editBox, tags)
   end,
   ChatTab = function(tab, tags)
+    local alpha = 1 - addonTable.Config.Get("skins.blizzard.tab_transparency")
+    table.insert(chatTabs, tab)
     tabCounter = tabCounter + 1
     tab.background = CreateFrame("Frame", "ChattynatorBlizzardTabStyle" .. tabCounter, tab, "ChatTabArtTemplate")
     tab.background:SetAllPoints()
@@ -80,6 +89,7 @@ local skinners = {
     tab.background.flash:SetAlpha(0)
     tab.background.flash:SetIgnoreParentAlpha(true)
     tab.background:SetFrameStrata("BACKGROUND")
+    tab.background:SetAlpha(alpha)
 
     hooksecurefunc(tab, "SetColor", function(_, r, g, b)
       if not enableHooks then
@@ -233,7 +243,43 @@ end
 
 local function LoadSkin()
   addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
+    if settingName == "skins.blizzard.tab_transparency" then
+      local alpha = 1 - addonTable.Config.Get(settingName)
+      for _, tab in ipairs(chatTabs) do
+        tab.background:SetAlpha(alpha)
+      end
+    elseif settingName == "skins.blizzard.chat_transparency" then
+      local alpha = 1 - addonTable.Config.Get(settingName)
+      for _, frame in ipairs(chatFrames) do
+        frame.background:SetAlpha(alpha)
+      end
+    end
   end)
 end
 
-addonTable.Skins.RegisterSkin(addonTable.Locales.BLIZZARD, "blizzard", LoadSkin, SkinFrame, SetConstants, {})
+addonTable.Skins.RegisterSkin(addonTable.Locales.BLIZZARD, "blizzard", LoadSkin, SkinFrame, SetConstants, {
+  {
+    type = "slider",
+    min = 0,
+    max = 100,
+    lowText = "0%",
+    highText = "100%",
+    scale = 100,
+    text = addonTable.Locales.CHAT_TRANSPARENCY,
+    valuePattern = "%s%%",
+    option = "chat_transparency",
+    default = 0.75,
+  },
+  {
+    type = "slider",
+    min = 0,
+    max = 100,
+    lowText = "0%",
+    highText = "100%",
+    scale = 100,
+    text = addonTable.Locales.TAB_TRANSPARENCY,
+    valuePattern = "%s%%",
+    option = "tab_transparency",
+    default = 0,
+  },
+})

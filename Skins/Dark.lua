@@ -18,8 +18,13 @@ UIScaleMonitor:SetScript("OnEvent", function()
   end
 end)
 
+local chatTabs = {}
+local chatFrames = {}
+local chatButtons = {}
+
 local skinners = {
   ChatButton = function(button, tags)
+    table.insert(chatButtons, button)
     button:SetSize(26, 28)
     button:SetNormalTexture("Interface/AddOns/Chattynator/Assets/ChatButton.png")
     button:GetNormalTexture():SetVertexColor(0.15, 0.15, 0.15)
@@ -136,13 +141,15 @@ local skinners = {
     end
   end,
   ChatFrame = function(frame, tags)
+    local alpha = 1 - addonTable.Config.Get("skins.dark.chat_transparency")
+    table.insert(chatFrames, frame)
     frame.background = frame:CreateTexture(nil, "BACKGROUND")
     frame.background:SetTexture("Interface/AddOns/Chattynator/Assets/ChatBackground")
     frame.background:SetTexCoord(0, 1, 1, 0)
     frame.background:SetPoint("TOP", frame.ScrollingMessages, 0, 5)
     frame.background:SetPoint("LEFT")
     frame.background:SetPoint("BOTTOMRIGHT", frame.ScrollingMessages, 0, -5)
-    frame.background:SetAlpha(0.8)
+    frame.background:SetAlpha(alpha)
 
     if frame.backgroundColor then
       frame.background:SetVertexColor(frame.backgroundColor.r, frame.backgroundColor.g, frame.backgroundColor.b)
@@ -168,6 +175,8 @@ local skinners = {
     background:SetPoint("RIGHT", editBox)
   end,
   ChatTab = function(tab, tags)
+    local alpha = 1 - addonTable.Config.Get("skins.dark.tab_transparency")
+    table.insert(chatTabs, tab)
     tab:SetHeight(22)
     tab:SetAlpha(1)
     tab.Left = tab:CreateTexture(nil, "BACKGROUND")
@@ -175,16 +184,19 @@ local skinners = {
     tab.Left:SetHeight(22)
     tab.Left:SetWidth(6)
     tab.Left:SetPoint("TOPLEFT")
+    tab.Left:SetAlpha(alpha)
     tab.Right = tab:CreateTexture(nil, "BACKGROUND")
     tab.Right:SetTexture("Interface/AddOns/Chattynator/Assets/ChatTabRight")
     tab.Right:SetHeight(22)
     tab.Right:SetWidth(6)
     tab.Right:SetPoint("TOPRIGHT")
+    tab.Right:SetAlpha(alpha)
     tab.Middle = tab:CreateTexture(nil, "BACKGROUND")
     tab.Middle:SetTexture("Interface/AddOns/Chattynator/Assets/ChatTabMiddle")
     tab.Middle:SetHeight(22)
     tab.Middle:SetPoint("LEFT", 6, 0)
     tab.Middle:SetPoint("RIGHT", -6, 0)
+    tab.Middle:SetAlpha(alpha)
     tab.LeftFlash = tab:CreateTexture(nil, "BACKGROUND")
     tab.LeftFlash:SetTexture("Interface/AddOns/Chattynator/Assets/ChatTabLeft")
     tab.LeftFlash:SetHeight(24)
@@ -364,7 +376,45 @@ end
 
 local function LoadSkin()
   addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
+    if settingName == "skins.dark.tab_transparency" then
+      local alpha = 1 - addonTable.Config.Get(settingName)
+      for _, tab in ipairs(chatTabs) do
+        tab.Left:SetAlpha(alpha)
+        tab.Right:SetAlpha(alpha)
+        tab.Middle:SetAlpha(alpha)
+      end
+    elseif settingName == "skins.dark.chat_transparency" then
+      local alpha = 1 - addonTable.Config.Get(settingName)
+      for _, frame in ipairs(chatFrames) do
+        frame.background:SetAlpha(alpha)
+      end
+    end
   end)
 end
 
-addonTable.Skins.RegisterSkin(addonTable.Locales.DARK, "dark", LoadSkin, SkinFrame, SetConstants, {})
+addonTable.Skins.RegisterSkin(addonTable.Locales.DARK, "dark", LoadSkin, SkinFrame, SetConstants, {
+  {
+    type = "slider",
+    min = 0,
+    max = 100,
+    lowText = "0%",
+    highText = "100%",
+    scale = 100,
+    text = addonTable.Locales.CHAT_TRANSPARENCY,
+    valuePattern = "%s%%",
+    option = "chat_transparency",
+    default = 0.2,
+  },
+  {
+    type = "slider",
+    min = 0,
+    max = 100,
+    lowText = "0%",
+    highText = "100%",
+    scale = 100,
+    text = addonTable.Locales.TAB_TRANSPARENCY,
+    valuePattern = "%s%%",
+    option = "tab_transparency",
+    default = 0,
+  },
+})

@@ -217,7 +217,7 @@ local skinners = {
     tab:GetFontString():SetNonSpaceWrap(false)
     local fsWidth
     if tab.minWidth then
-      fsWidth = tab:GetFontString():GetUnboundedStringWidth()
+      fsWidth = tab:GetFontString():GetUnboundedStringWidth() + addonTable.Constants.TabPadding
     else
       fsWidth = math.max(tab:GetFontString():GetUnboundedStringWidth(), not tab:GetText():find("|K") and addonTable.Constants.MinTabWidth or 70) + addonTable.Constants.TabPadding
     end

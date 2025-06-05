@@ -244,7 +244,7 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
 
       rootDescription:CreateTitle(addonTable.Locales.SPECIFIC_ADDONS)
 
-      if tab.invert and tab.groups["ADDON"] == false or not tab.groups["ADDON"] then
+      if tab.invert and tab.groups["ADDON"] == false or not tab.invert and not tab.groups["ADDON"] then
         fields = {}
         for i = 1, C_AddOns.GetNumAddOns() do
           if C_AddOns.IsAddOnLoaded(i) then

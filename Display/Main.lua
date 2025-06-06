@@ -171,6 +171,26 @@ function addonTable.Display.ChatFrameMixin:RepositionBlizzardWidgets()
       addonTable.Skins.AddFrame("ChatButton", ChatFrameToggleVoiceMuteButton, {"voiceChatMuteMic"})
     end
 
+    if FriendsMicroButton then
+      FriendsMicroButton:SetParent(self)
+      FriendsMicroButton:SetScript("OnMouseDown", nil)
+      FriendsMicroButton:SetScript("OnMouseUp", nil)
+      FriendsMicroButton:ClearAllPoints()
+      FriendsMicroButton:SetPoint("RIGHT", self.ScrollingMessages, "LEFT", -5, 0)
+      FriendsMicroButton:SetPoint("TOP", 0, -2)
+      FriendsMicroButton:SetFrameStrata("HIGH")
+      local SetPoint = FriendsMicroButton.SetPoint
+      hooksecurefunc(FriendsMicroButton, "SetPoint", function(_, _, frame)
+        if frame ~= self.ScrollingMessages then
+          FriendsMicroButton:SetParent(self)
+          FriendsMicroButton:ClearAllPoints()
+          SetPoint(FriendsMicroButton, "RIGHT", self.ScrollingMessages, "LEFT", -5, 0)
+          SetPoint(FriendsMicroButton, "TOP", 0, -2)
+        end
+      end)
+      addonTable.Skins.AddFrame("ChatButton", FriendsMicroButton, {"toasts"})
+    end
+
     ChatFrameMenuButton:SetParent(self)
     ChatFrameMenuButton:ClearAllPoints()
     ChatFrameMenuButton:SetScript("OnMouseDown", nil)

@@ -129,12 +129,6 @@ local skinners = {
           button:GetScript("OnEnter")(button)
         end
       end)
-      button:HookScript("OnEnter", function()
-        if not enableHooks then
-          return
-        end
-        button.Icon:SetVertexColor(hoverColor.r, hoverColor.g, hoverColor.b)
-      end)
       button:HookScript("OnLeave", function()
         if not enableHooks then
           return

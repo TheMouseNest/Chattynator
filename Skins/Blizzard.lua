@@ -151,18 +151,22 @@ local skinners = {
       if not tab.selected then
         tab:SetAlpha(1)
         tab.background:SetAlpha(0.8)
+      else
+        tab.background:SetAlpha(1)
       end
     end)
     local function SetSelected(_, state)
       if not enableHooks then
         return
       end
+      if not tab:IsMouseOver() then
+        tab.background:SetAlpha(alpha)
+      end
       if state then
         tab.background.ActiveLeft:Show()
         tab.background.ActiveRight:Show()
         tab.background.ActiveMiddle:Show()
         tab:SetAlpha(1)
-        tab.background:SetAlpha(1)
       else
         tab.background.ActiveLeft:Hide()
         tab.background.ActiveRight:Hide()

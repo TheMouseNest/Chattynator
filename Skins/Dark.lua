@@ -270,15 +270,14 @@ local skinners = {
       if not enableHooks then
         return
       end
+      if not tab:IsMouseOver() then
+        tab.Left:SetAlpha(alpha)
+        tab.Right:SetAlpha(alpha)
+        tab.Middle:SetAlpha(alpha)
+      end
       if state then
-        tab.Left:SetAlpha(0.8)
-        tab.Right:SetAlpha(0.8)
-        tab.Middle:SetAlpha(0.8)
         tab:SetAlpha(1)
       else
-        tab.Left:SetAlpha(0.8)
-        tab.Right:SetAlpha(0.8)
-        tab.Middle:SetAlpha(0.8)
         tab:SetAlpha(0.5)
       end
     end

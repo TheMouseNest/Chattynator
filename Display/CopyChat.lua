@@ -4,6 +4,32 @@ local addonTable = select(2, ...)
 ---@class ButtonFrameTemplate
 addonTable.Display.CopyChatMixin = {}
 
+local simplePatterns = {
+  T = "t",
+  A = "a",
+  K = "k",
+  W = "w",
+}
+local complexPatterns = {
+  H = "h",
+}
+
+local substitutions = {
+  {"%f[|]|K.-%f[|]|k", "???"},
+  {"%f[|]|W.-%f[|]|w", "???"},
+  {"%f[|]|T.-%f[|]|t", "???"},
+  {"%f[|]|A:Professions%-ChatIcon%-Quality%-Tier(%d):.-%f[|]|a", "%1*"},
+  {"%f[|]|A.-%f[|]|a", "???"},
+  {"%f[|]|H.-%f[|]|h(.-)%f[|]|h", "%1"}
+}
+
+local function CustomCleanup(text)
+  for _, p in ipairs(substitutions) do
+    text = text:gsub(p[1], p[2])
+  end
+  return text
+end
+
 function addonTable.Display.CopyChatMixin:OnLoad()
   self:Hide()
 
@@ -38,7 +64,7 @@ function addonTable.Display.CopyChatMixin:LoadMessages(filterFunc, indexOffset)
       m = addonTable.Messages:GetMessageProcessed(index)
       local color = CreateColor(m.color.r, m.color.g, m.color.b)
       local text = color:WrapTextInColorCode(m.text):gsub("|K(.-)|k", "???")
-      text = StripHyperlinks(text, true, true, false, false)
+      text = CustomCleanup(text)
       table.insert(messages, 1, text)
     end
     index = index + 1

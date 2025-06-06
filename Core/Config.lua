@@ -17,7 +17,7 @@ end
 function addonTable.Config.GetEmptyWindowConfig()
   return {
     position = {"CENTER", "UIParent", "CENTER", 0, 0},
-    size = {500, 270},
+    size = {500, 280},
     tabs = {}
   }
 end
@@ -27,7 +27,7 @@ local settings = {
   WINDOWS = {key = "windows", default = {
     {
       position = {"BOTTOMLEFT", "UIParent", "BOTTOMLEFT", 0, 40},
-      size = {500, 270},
+      size = {500, 280},
       tabs = {
         {
           name = "GENERAL",
@@ -104,13 +104,15 @@ local settings = {
   ENABLE_COMBAT_MESSAGES = {key = "enable_combat_messages", default = false},
   DEBUG = {key = "debug", default = false},
 
-  APPLIED_MESSAGE_IDS = {key = "applied_message_ids", default = false},
+  APPLIED_MESSAGE_IDS = {key = "applied_message_ids", default = false, transfer = true},
+  APPLIED_PLAYER_TABLE = {key = "applied_player_table_3", default = false, transfer = true},
 }
 
 addonTable.Config.RefreshType = {}
 
 addonTable.Config.Options = {}
 addonTable.Config.Defaults = {}
+local transferToProfile = {}
 
 for key, details in pairs(settings) do
   if details.refresh then
@@ -119,6 +121,9 @@ for key, details in pairs(settings) do
       refreshType[r] = true
     end
     addonTable.Config.RefreshType[details.key] = refreshType
+  end
+  if details.transfer then
+    transferToProfile[details.key] = true
   end
   addonTable.Config.Options[key] = details.key
   addonTable.Config.Defaults[details.key] = details.default
@@ -298,6 +303,9 @@ function addonTable.Config.MakeProfile(newProfileName, clone)
     CHATTYNATOR_CONFIG.Profiles[newProfileName] = CopyTable(addonTable.Config.CurrentProfile)
   else
     CHATTYNATOR_CONFIG.Profiles[newProfileName] = {}
+    for key in pairs(transferToProfile) do
+      CHATTYNATOR_CONFIG.Profiles[newProfileName][key] = addonTable.Config.Get(key)
+    end
   end
   addonTable.Config.ChangeProfile(newProfileName)
 end

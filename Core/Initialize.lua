@@ -14,6 +14,7 @@ function addonTable.Core.MigrateSettings()
       tab.addons = tab.addons or {}
     end
   end
+  addonTable.Skins.InstallOptions()
 end
 
 local hidden = CreateFrame("Frame")

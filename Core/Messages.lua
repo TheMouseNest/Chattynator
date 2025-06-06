@@ -10,7 +10,7 @@ local function GetNewLog()
   return { current = {}, historical = {}, version = 1, cleanIndex = 0}
 end
 
-local function AddHistoricalIDs()
+local function ConvertFormat()
   if not addonTable.Config.Get(addonTable.Config.Options.APPLIED_MESSAGE_IDS) then
     local idRoot = #CHATTYNATOR_MESSAGE_LOG.historical + 1
     for index, entry in ipairs(CHATTYNATOR_MESSAGE_LOG.current) do
@@ -34,6 +34,34 @@ local function AddHistoricalIDs()
         historicalIndex = historicalIndex + 1
       else
         addonTable.Config.Set(addonTable.Config.Options.APPLIED_MESSAGE_IDS, true)
+        frame:SetScript("OnUpdate", nil)
+      end
+    end)
+  end
+  if not addonTable.Config.Get(addonTable.Config.Options.APPLIED_PLAYER_TABLE) then
+    for _, entry in ipairs(CHATTYNATOR_MESSAGE_LOG.current) do
+      if type(entry.typeInfo.player) ~= "table" then
+        entry.typeInfo.player = {name = entry.typeInfo.player, class = entry.typeInfo.playerClass}
+        entry.player = nil
+      end
+    end
+    local frame = CreateFrame("Frame")
+    local historicalIndex = 1
+    frame:SetScript("OnUpdate", function()
+      if CHATTYNATOR_MESSAGE_LOG.historical[historicalIndex] then
+        if type(CHATTYNATOR_MESSAGE_LOG.historical[historicalIndex].data) == "string" and C_EncodingUtil then
+          local resolved = C_EncodingUtil.DeserializeJSON(CHATTYNATOR_MESSAGE_LOG.historical[historicalIndex].data)
+          for _, entry in ipairs(resolved) do
+            if type(entry.typeInfo.player) ~= "table" then
+              entry.typeInfo.player = {name = entry.typeInfo.player, class = entry.typeInfo.playerClass}
+              entry.player = nil
+            end
+          end
+          CHATTYNATOR_MESSAGE_LOG.historical[historicalIndex].data = C_EncodingUtil.SerializeJSON(resolved)
+        end
+        historicalIndex = historicalIndex + 1
+      else
+        addonTable.Config.Set(addonTable.Config.Options.APPLIED_PLAYER_TABLE, true)
         frame:SetScript("OnUpdate", nil)
       end
     end)
@@ -63,10 +91,11 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   if CHATTYNATOR_MESSAGE_LOG.version ~= 1 then
     CHATTYNATOR_MESSAGE_LOG = GetNewLog()
   end
+
+  ConvertFormat()
+
   CHATTYNATOR_MESSAGE_LOG.cleanIndex = CHATTYNATOR_MESSAGE_LOG.cleanIndex or 0
   CHATTYNATOR_MESSAGE_LOG.cleanIndex = self:CleanStore(CHATTYNATOR_MESSAGE_LOG.current, CHATTYNATOR_MESSAGE_LOG.cleanIndex)
-
-  AddHistoricalIDs()
 
   self.store = CHATTYNATOR_MESSAGE_LOG.current
   self.storeCount = #self.store
@@ -370,8 +399,7 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
     self:SetIncomingType({
       type = ChatTypeGroupInverted[eventName] or "NONE",
       event = eventName,
-      player = playerArg,
-      playerClass = playerClass,
+      player = playerArg and {name = playerArg, class = playerClass},
       channel = channelName and {name = channelName, index = channelIndex, isDefault = self.defaultChannels[channelName], zoneID = channelID} or nil,
     })
     self.lockType = true
@@ -415,11 +443,11 @@ function addonTable.MessagesMonitorMixin:CleanStore(store, index)
   end
   for i = index + 1, #store do
     local data = store[i]
-    if data.text:find("|K.-|k") or (data.typeInfo.player and data.typeInfo.player:find("|K.-|k")) then
+    if data.text:find("|K.-|k") or (data.typeInfo.player and data.typeInfo.player.name:find("|K.-|k")) then
       data.text = data.text:gsub("|K.-|k", "???")
       data.text = data.text:gsub("|HBNplayer.-|h(.-)|h", "%1")
       if data.typeInfo.player then
-        data.typeInfo.player = data.typeInfo.player:gsub("|K.-|k", addonTable.Locales.UNKNOWN)
+        data.typeInfo.player = data.typeInfo.player.name:gsub("|K.-|k", addonTable.Locales.UNKNOWN)
       end
     end
     if data.text:find("censoredmessage:") then

@@ -3,8 +3,8 @@ local addonTable = select(2, ...)
 
 local playerPattern = "(|Hplayer:[^|]+|h%[?)([^|%[%]][^c%[%]][^%[%]]-)(%]?|h)"
 local function Color(data)
-  if data.typeInfo.playerClass then
-    local color = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)[data.typeInfo.playerClass]
+  if data.typeInfo.player.class then
+    local color = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)[data.typeInfo.player.class]
     local hex = CreateColor(color.r, color.g, color.b):GenerateHexColorMarkup()
     data.text = data.text:gsub(playerPattern, "%1" .. hex .. "%2|r%3")
   end

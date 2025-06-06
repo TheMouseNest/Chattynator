@@ -3,6 +3,18 @@ local addonTable = select(2, ...)
 
 local customisers = {}
 
+local reloadDialog = "Chattynator_ReloadDialog"
+StaticPopupDialogs[reloadDialog] = {
+  text = addonTable.Locales.RELOAD_REQUIRED,
+  button1 = YES,
+  button2 = NO,
+  OnAccept = function()
+    ReloadUI()
+  end,
+  timeout = 0,
+  hideOnEscape = 1,
+}
+
 local function SetupGeneral(parent)
   local container = CreateFrame("Frame", nil, parent)
 
@@ -110,8 +122,12 @@ local function SetupGeneral(parent)
     local clone = false
     local function ValidateAndCreate(profileName)
       if profileName ~= "" and CHATTYNATOR_CONFIG.Profiles[profileName] == nil then
+        local oldSkin = addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)
         addonTable.Config.MakeProfile(profileName, clone)
         profileDropdown.DropDown:GenerateMenu()
+        if addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN) ~= oldSkin then
+          StaticPopup_Show(reloadDialog)
+        end
       end
     end
     local makeProfileDialog = "Chattynator_MakeProfileDialog"
@@ -149,7 +165,11 @@ local function SetupGeneral(parent)
         local button = rootDescription:CreateRadio(name ~= "DEFAULT" and name or LIGHTBLUE_FONT_COLOR:WrapTextInColorCode(DEFAULT), function()
           return CHATTYNATOR_CURRENT_PROFILE == name
         end, function()
+          local oldSkin = addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)
           addonTable.Config.ChangeProfile(name)
+          if addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN) ~= oldSkin then
+            StaticPopup_Show(reloadDialog)
+          end
         end)
         if name ~= "DEFAULT" and name ~= CHATTYNATOR_CURRENT_PROFILE then
           button:AddInitializer(function(button, description, menu)
@@ -412,18 +432,6 @@ local function SetupThemes(parent)
   local container = CreateFrame("Frame", nil, parent)
 
   local allFrames = {}
-
-  local reloadDialog = "Chattynator_ReloadDialog"
-  StaticPopupDialogs[reloadDialog] = {
-    text = addonTable.Locales.RELOAD_REQUIRED,
-    button1 = YES,
-    button2 = NO,
-    OnAccept = function()
-      ReloadUI()
-    end,
-    timeout = 0,
-    hideOnEscape = 1,
-  }
 
   local themeDropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.THEME, function(value)
     return addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN) == value

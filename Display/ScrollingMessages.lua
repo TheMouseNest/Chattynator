@@ -236,7 +236,7 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
   local allocatedHeight = 0
   local shownMessages = {}
   local index = 1
-  local correctedOffset = false
+  local correctedOffset = nil
   while allocatedHeight < viewportHeight + self.scrollOffset do
     local m = addonTable.Messages:GetMessageRaw(index)
     if not m then
@@ -258,6 +258,7 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
           return
         else
           self.scrollOffset = self.scrollOffset + shownMessages[#shownMessages].extentBottom
+          correctedOffset = shownMessages[#shownMessages].extentBottom
         end
       end
       allocatedHeight = allocatedHeight + heights[self.key] + messageSpacing
@@ -265,8 +266,13 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
     index = index + 1
   end
 
-  if #shownMessages > 0 and shownMessages[#shownMessages].extentTop < self.scrollOffset + viewportHeight and self.scrollOffset ~= 0 then
-    self.scrollOffset = math.max(0, allocatedHeight - viewportHeight)
+  if newMessages == #shownMessages then
+    self.scrollOffset = self.scrollOffset + allocatedHeight
+    correctedOffset = allocatedHeight
+  end
+
+  if #shownMessages > 0 and shownMessages[#shownMessages].extentTop < self.scrollOffset + viewportHeight and self.scrollOffset ~= 0 and (not correctedOffset or self.scrollOffset > correctedOffset) then
+    self.scrollOffset = math.max(0, allocatedHeight - viewportHeight, correctedOffset or 0)
     self.destination = self.scrollOffset
     if self.scrollCallback then
       self.scrollCallback(self.destination)

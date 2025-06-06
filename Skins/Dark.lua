@@ -270,7 +270,8 @@ local skinners = {
       if not enableHooks then
         return
       end
-      if not tab:IsMouseOver() then
+      alpha = 1 - addonTable.Config.Get("skins.dark.tab_transparency")
+      if not tab:IsMouseMotionFocus() then
         tab.Left:SetAlpha(alpha)
         tab.Right:SetAlpha(alpha)
         tab.Middle:SetAlpha(alpha)

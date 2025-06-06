@@ -4,16 +4,6 @@ local addonTable = select(2, ...)
 ---@class ButtonFrameTemplate
 addonTable.Display.CopyChatMixin = {}
 
-local simplePatterns = {
-  T = "t",
-  A = "a",
-  K = "k",
-  W = "w",
-}
-local complexPatterns = {
-  H = "h",
-}
-
 local substitutions = {
   {"%f[|]|K.-%f[|]|k", "???"},
   {"%f[|]|W.-%f[|]|w", "???"},

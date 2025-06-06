@@ -99,11 +99,12 @@ local settings = {
   CLASS_COLORS = {key = "class_colors", default = true, refresh = {addonTable.Constants.RefreshReason.MessageModifier}},
   LINK_URLS = {key = "link_urls", default = true, refresh = {addonTable.Constants.RefreshReason.MessageModifier}},
 
-  APPLIED_MESSAGE_IDS = {key = "applied_message_ids", default = false},
   NEW_WHISPER_NEW_TAB = {key = "new_whisper_new_tab", default = 0},
 
   ENABLE_COMBAT_MESSAGES = {key = "enable_combat_messages", default = false},
   DEBUG = {key = "debug", default = false},
+
+  APPLIED_MESSAGE_IDS = {key = "applied_message_ids", default = false},
 }
 
 addonTable.Config.RefreshType = {}

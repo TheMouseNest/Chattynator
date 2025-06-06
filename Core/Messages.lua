@@ -145,7 +145,6 @@ function addonTable.MessagesMonitorMixin:OnLoad()
       ["OPENING"] = true,
       ["PET_INFO"] = true,
       ["COMBAT_MISC_INFO"] = true,
-      ["COMBAT_XP_GAIN"] = true,
     }
   end
   for event, group in pairs(ChatTypeGroupInverted) do
@@ -615,6 +614,12 @@ local ignoreTypes = {
   ["CHANNEL"] = true,
   ["DUMP"] = true,
   ["BN_INLINE_TOAST_ALERT"] = true,
+
+  ["TRADESKILLS"] = true,
+  ["OPENING"] = true,
+  ["PET_INFO"] = true,
+  ["COMBAT_MISC_INFO"] = true,
+  ["COMBAT_XP_GAIN"] = true,
 }
 
 local ignoreEvents = {

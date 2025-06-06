@@ -69,6 +69,8 @@ local LAYOUT = {
   }
 }
 
+table.insert(LAYOUT.OTHER_COMBAT, 1, {"COMBAT_XP_GAIN"})
+
 local order = {
   {CHAT, "MESSAGES"},
   {CHANNELS, nil},

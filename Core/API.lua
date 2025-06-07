@@ -20,19 +20,25 @@ function Chattynator.API.AddModifier(func)
   wrapper = function(data)
     local state = xpcall(function() func(data) end, CallErrorHandler)
     if not state then
-      Chattynator.API.RemoveModifier(wrapper)
+      Chattynator.API.RemoveModifier(func)
     end
   end
   dynamicModFuncToWrapper[func] = wrapper
-  addonTable.Messages.AddLiveModifier(wrapper)
+  addonTable.Messages:AddLiveModifier(wrapper)
 end
 
 ---@param func function(data)
 function Chattynator.API.RemoveModifier(func)
   if dynamicModFuncToWrapper[func] then
-    addonTable.Messages.RemoveLiveModifier(dynamicModFuncToWrapper[func])
+    addonTable.Messages:RemoveLiveModifier(dynamicModFuncToWrapper[func])
     dynamicModFuncToWrapper[func] = nil
   end
+end
+
+---@param id string
+function Chattynator.API.InvalidateMessage(id)
+  assert(type(id) == "string")
+  addonTable.Messages:InvalidateProcessedMessage(id)
 end
 
 addonTable.API.RejectionFilters = {}

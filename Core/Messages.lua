@@ -184,18 +184,16 @@ function addonTable.MessagesMonitorMixin:OnLoad()
 
   hooksecurefunc(C_ChatInfo, "UncensorChatLine", function(lineID)
     local found
-    for index, message in ipairs(self.messages) do
-      local id = self.formatters[index].id
-      if id == lineID then
+    for index, formatter in pairs(self.formatters) do
+      if lineID == formatter.lineID then
+        local message = self.messages[index]
         found = message.id
-        message.text = message.Formatter(C_ChatInfo.GetChatLineText(lineID))
-        self.messagesProcessed[index] = nil
+        message.text = formatter.Formatter(C_ChatInfo.GetChatLineText(lineID))
         break
       end
     end
     if found then
-      addonTable.CallbackRegistry:TriggerEvent("ResetOneMessageCache", found)
-      addonTable.CallbackRegistry:TriggerEvent("Render")
+      self:InvalidateProcessedMessage(found)
     end
   end)
 
@@ -301,6 +299,21 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   self:SetInset()
 end
 
+function addonTable.MessagesMonitorMixin:InvalidateProcessedMessage(id)
+  for index, message in ipairs(self.messages) do
+    if message.id == id then
+      self.messagesProcessed[index] = nil
+      self.heights[index] = nil
+      addonTable.CallbackRegistry:TriggerEvent("ResetOneMessageCache", id)
+      if self:GetScript("OnUpdate") == nil and self.playerLoginFired then
+        self:SetScript("OnUpdate", function()
+          addonTable.CallbackRegistry:TriggerEvent("Render")
+        end)
+      end
+    end
+  end
+end
+
 function addonTable.MessagesMonitorMixin:SetInset()
   self.sizingFontString:SetFontObject(self.font)
   self.sizingFontString:SetTextScale(self.scalingFactor)
@@ -402,6 +415,7 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
       player = playerArg and {name = playerArg, class = playerClass, race = playerRace, sex = playerSex},
       channel = channelName and {name = channelName, index = channelIndex, isDefault = self.defaultChannels[channelName], zoneID = channelID} or nil,
     })
+    self.lineID = select(11, ...)
     self.lockType = true
     ChatFrame_OnEvent(self, eventName, ...)
     self.lockType = false
@@ -452,6 +466,9 @@ function addonTable.MessagesMonitorMixin:CleanStore(store, index)
     end
     if data.text:find("censoredmessage:") then
       data.text = data.text:gsub("|Hcensoredmessage:.-|h.-|h", "[" .. addonTable.Locales.CENSORED_CONTENTS_LOST .. "]")
+    end
+    if data.text:find("reportcensoredmessage:") then
+      data.text = data.text:gsub("|Hreportcensoredmessage:.-|h.-|h", "[???]")
     end
   end
   return #store
@@ -670,7 +687,7 @@ function addonTable.MessagesMonitorMixin:GetFont() -- Compatibility with any emo
   return self.font and _G[self.font]:GetFont()
 end
 
-function addonTable.MessagesMonitorMixin:AddMessage(text, r, g, b, id, _, _, _, _, Formatter)
+function addonTable.MessagesMonitorMixin:AddMessage(text, r, g, b, _, _, _, _, _, Formatter)
   if text == "" then
     if not self.lockType then
       self.incomingType = nil
@@ -694,8 +711,9 @@ function addonTable.MessagesMonitorMixin:AddMessage(text, r, g, b, id, _, _, _, 
   table.insert(self.messages, data)
   self.formatters[self.messageCount + 1] = {
     formatter = Formatter,
-    id = id,
+    lineID = self.lineID,
   }
+  self.lineID = nil
   if self:ShouldLog(data) then
     self.storeCount = self.storeCount + 1
     self.store[self.storeCount] = data

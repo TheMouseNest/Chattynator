@@ -28,7 +28,6 @@ else
   addonTable.Constants.ButtonFrameOffset = 0
 end
 addonTable.Constants.Events = {
-  "ScrollToEndImmediate",
   "Render",
 
   "TabSelected",

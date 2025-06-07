@@ -51,12 +51,6 @@ function addonTable.Display.ChatFrameMixin:OnLoad()
     self.ScrollingMessages:Render(newMessages)
   end, self)
 
-  addonTable.CallbackRegistry:RegisterCallback("ScrollToEndImmediate", function(_, windowID)
-    if windowID == self:GetID() then
-      self:SetTabSelected(self.tabIndex)
-    end
-  end, self)
-
   addonTable.CallbackRegistry:RegisterCallback("RefreshStateChange", function(_, refreshState)
     if self:GetID() ~= 0 and refreshState[addonTable.Constants.RefreshReason.Tabs] then
       addonTable.Core.InitializeTabs(self)
@@ -279,16 +273,34 @@ function addonTable.Display.ChatFrameMixin:PositionEditBox()
 end
 
 function addonTable.Display.ChatFrameMixin:SetFilter(func)
+  if addonTable.API.RejectionFilters[self:GetID()] and addonTable.API.RejectionFilters[self:GetID()][self.tabIndex] then
+    local filters = addonTable.API.RejectionFilters[self:GetID()] and addonTable.API.RejectionFilters[self:GetID()][self.tabIndex]
+    local oldFunc = func
+    func = function(data)
+      if not oldFunc(data) then
+        return false
+      end
+      local copy = CopyTable(data)
+      for _, f in ipairs(filters) do
+        if not f(copy) then
+          return false
+        end
+      end
+      return true
+    end
+  end
   self.ScrollingMessages:SetFilter(func)
 end
 
 function addonTable.Display.ChatFrameMixin:SetBackgroundColor(r, g, b)
-  self.backgroundColor = {r= r, g = g, b = b}
+  self.backgroundColor = {r = r, g = g, b = b}
 end
 
-function addonTable.Display.ChatFrameMixin:SetTabSelected(index)
+function addonTable.Display.ChatFrameMixin:SetTabSelectedAndFilter(index, func)
   self.tabIndex = index
-  self.tabChanged = true
+
+  self:SetFilter(func)
+
   self.ScrollingMessages:Reset()
 end
 

@@ -7,3 +7,4 @@ addonTable.CustomiseDialog = {}
 addonTable.Data = {}
 addonTable.Skins = {}
 addonTable.Modifiers = {}
+addonTable.API = {}

@@ -114,9 +114,8 @@ function addonTable.Core.InitializeTabs(chatFrame)
         DisableCombatLog(chatFrame)
       end
       if mouseButton == "LeftButton" then
-        chatFrame:SetFilter(filter)
         chatFrame:SetBackgroundColor(bgColor.r, bgColor.g, bgColor.b)
-        chatFrame:SetTabSelected(tabButton:GetID())
+        chatFrame:SetTabSelectedAndFilter(tabButton:GetID(), filter)
         chatFrame.ScrollingMessages:Render()
         for _, otherTab in ipairs(allTabs) do
           otherTab:SetSelected(false)
@@ -280,7 +279,7 @@ function addonTable.Core.InitializeTabs(chatFrame)
   chatFrame:SetFilter(allTabs[currentTab].filter)
   chatFrame:SetBackgroundColor(allTabs[currentTab].bgColor.r, allTabs[currentTab].bgColor.g, allTabs[currentTab].bgColor.b)
   if currentTab ~= chatFrame.tabIndex then
-    chatFrame:SetTabSelected(currentTab)
+    chatFrame:SetTabSelectedAndFilter(currentTab, allTabs[currentTab].filter)
     chatFrame.ScrollingMessages:Render()
     addonTable.CallbackRegistry:TriggerEvent("TabSelected", chatFrame:GetID(), currentTab)
   elseif forceSelected then

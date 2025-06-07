@@ -13,7 +13,7 @@ UIScaleMonitor:SetScript("OnEvent", function()
   end
 end)
 
-local tabCounter = 0
+local counter = 0
 
 local chatTabs = {}
 local chatFrames = {}
@@ -66,6 +66,7 @@ local skinners = {
     table.insert(chatFrames, frame)
     frame.background = CreateFrame("Frame", nil, frame, "FloatingBorderedFrame")
     frame.background:SetFrameStrata("BACKGROUND")
+    frame.background:SetFrameLevel(frame:GetFrameLevel() - 1)
     frame.background:SetPoint("TOPLEFT", frame.ScrollingMessages, 0, 2)
     frame.background:SetPoint("BOTTOMRIGHT", frame.ScrollingMessages)
 
@@ -79,8 +80,8 @@ local skinners = {
   ChatTab = function(tab, tags)
     local alpha = 1 - addonTable.Config.Get("skins.blizzard.tab_transparency")
     table.insert(chatTabs, tab)
-    tabCounter = tabCounter + 1
-    tab.background = CreateFrame("Frame", "ChattynatorBlizzardTabStyle" .. tabCounter, tab, "ChatTabArtTemplate")
+    counter = counter + 1
+    tab.background = CreateFrame("Frame", "ChattynatorBlizzardTabStyle" .. counter, tab, "ChatTabArtTemplate")
     if not tab.background.ActiveLeft then
       tab.background.ActiveLeft = _G[tab.background:GetName() .. "SelectedLeft"]
       tab.background.ActiveRight = _G[tab.background:GetName() .. "SelectedRight"]
@@ -109,6 +110,7 @@ local skinners = {
     tab.background.flash:SetIgnoreParentAlpha(true)
     tab.background:SetFrameStrata("BACKGROUND")
     tab.background:SetAlpha(alpha)
+    tab.background:SetFrameLevel(tab:GetFrameLevel() - 1)
 
     hooksecurefunc(tab, "SetColor", function(_, r, g, b)
       if not enableHooks then

@@ -81,7 +81,26 @@ local skinners = {
     table.insert(chatTabs, tab)
     tabCounter = tabCounter + 1
     tab.background = CreateFrame("Frame", "ChattynatorBlizzardTabStyle" .. tabCounter, tab, "ChatTabArtTemplate")
+    if not tab.background.ActiveLeft then
+      tab.background.ActiveLeft = _G[tab.background:GetName() .. "SelectedLeft"]
+      tab.background.ActiveRight = _G[tab.background:GetName() .. "SelectedRight"]
+      tab.background.ActiveMiddle = _G[tab.background:GetName() .. "SelectedMiddle"]
+      tab.background.HighlightLeft = _G[tab.background:GetName() .. "HighlightLeft"]
+      tab.background.HighlightRight = _G[tab.background:GetName() .. "HighlightRight"]
+      tab.background.HighlightMiddle = _G[tab.background:GetName() .. "HighlightMiddle"]
+      tab.background.Left = _G[tab.background:GetName() .. "Left"]
+      tab.background.Right = _G[tab.background:GetName() .. "Right"]
+      tab.background.Middle = _G[tab.background:GetName() .. "Middle"]
+    end
     tab.background:SetAllPoints()
+    if addonTable.Constants.IsClassic then
+      tab.background:AdjustPointsOffset(0, 10)
+      tab.background.Left:ClearAllPoints()
+      tab.background.Left:SetPoint("TOPLEFT", -3, 0)
+      tab.background.Right:ClearAllPoints()
+      tab.background.Right:SetPoint("TOPRIGHT", 3, 0)
+      tab.background.Middle:SetPoint("RIGHT", tab.background.Right, "LEFT")
+    end
     tab.background.flash = tab.background:CreateTexture(nil, "BACKGROUND")
     tab.background.flash:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-Tab-Highlight")
     tab.background.flash:SetBlendMode("ADD")
@@ -96,8 +115,8 @@ local skinners = {
         return
       end
       tab.background.flash:SetVertexColor(r, g, b)
-      tab.background.ActiveLeft:SetVertexColor(r, g, b)
       tab.background.glow:SetVertexColor(r, g, b)
+      tab.background.ActiveLeft:SetVertexColor(r, g, b)
       tab.background.ActiveRight:SetVertexColor(r, g, b)
       tab.background.ActiveMiddle:SetVertexColor(r, g, b)
       tab.background.HighlightLeft:SetVertexColor(r, g, b)

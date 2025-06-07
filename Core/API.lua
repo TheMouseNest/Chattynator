@@ -15,12 +15,12 @@ local dynamicModFuncToWrapper = {}
 -- Permits non-destructive (ie backing data is unaffected) modification
 -- of messages before display.
 ---@param func function(data)
-function Chattynator.API.AddDynamicModifier(func)
+function Chattynator.API.AddModifier(func)
   local wrapper
   wrapper = function(data)
     local state = xpcall(function() func(data) end, CallErrorHandler)
     if not state then
-      Chattynator.API.RemoveDynamicFilter(wrapper)
+      Chattynator.API.RemoveModifier(wrapper)
     end
   end
   dynamicModFuncToWrapper[func] = wrapper
@@ -28,7 +28,7 @@ function Chattynator.API.AddDynamicModifier(func)
 end
 
 ---@param func function(data)
-function Chattynator.API.RemoveDynamicModifier(func)
+function Chattynator.API.RemoveModifier(func)
   if dynamicModFuncToWrapper[func] then
     addonTable.Messages.RemoveLiveModifier(dynamicModFuncToWrapper[func])
     dynamicModFuncToWrapper[func] = nil
@@ -44,7 +44,7 @@ local rejectionFuncToWrapper = {}
 ---@param func function(data) -> boolean
 ---@param windowIndex number
 ---@param tabIndex number
-function Chattynator.API.AddRejectionFilter(func, windowIndex, tabIndex)
+function Chattynator.API.AddFilter(func, windowIndex, tabIndex)
   if not addonTable.API.RejectionFilters[windowIndex] then
     addonTable.API.RejectionFilters[windowIndex] = {}
     rejectionFuncToWrapper[windowIndex] = {}
@@ -75,7 +75,7 @@ end
 
 ---@param func function(data)
 ---@param windowIndex number
-function Chattynator.API.RemoveRejectionFilter(func, windowIndex, tabIndex)
+function Chattynator.API.RemoveFilter(func, windowIndex, tabIndex)
   if not addonTable.API.RejectionFilters[windowIndex] then
     addonTable.API.RejectionFilters[windowIndex] = {}
   end

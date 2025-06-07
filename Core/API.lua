@@ -11,7 +11,11 @@ end
 
 local dynamicModFuncToWrapper = {}
 -- TODO: Test this
-function Chattynator.API.AddDynamicFilter(func)
+
+-- Permits non-destructive (ie backing data is unaffected) modification
+-- of messages before display.
+---@param func function(data)
+function Chattynator.API.AddDynamicModifier(func)
   local wrapper
   wrapper = function(data)
     local state = xpcall(function() func(data) end, CallErrorHandler)
@@ -23,7 +27,8 @@ function Chattynator.API.AddDynamicFilter(func)
   addonTable.Messages.AddLiveModifier(wrapper)
 end
 
-function Chattynator.API.RemoveDynamicFilter(func)
+---@param func function(data)
+function Chattynator.API.RemoveDynamicModifier(func)
   if dynamicModFuncToWrapper[func] then
     addonTable.Messages.RemoveLiveModifier(dynamicModFuncToWrapper[func])
     dynamicModFuncToWrapper[func] = nil
@@ -33,6 +38,12 @@ end
 addonTable.API.RejectionFilters = {}
 
 local rejectionFuncToWrapper = {}
+-- Have the `func` return false to reject the message, return true to accept.
+-- Returning nothing will cause the message to be rejected.
+-- This is non-destructive, messages will still be stored in backing data normally.
+---@param func function(data) -> boolean
+---@param windowIndex number
+---@param tabIndex number
 function Chattynator.API.AddRejectionFilter(func, windowIndex, tabIndex)
   if not addonTable.API.RejectionFilters[windowIndex] then
     addonTable.API.RejectionFilters[windowIndex] = {}
@@ -62,6 +73,8 @@ function Chattynator.API.AddRejectionFilter(func, windowIndex, tabIndex)
   end
 end
 
+---@param func function(data)
+---@param windowIndex number
 function Chattynator.API.RemoveRejectionFilter(func, windowIndex, tabIndex)
   if not addonTable.API.RejectionFilters[windowIndex] then
     addonTable.API.RejectionFilters[windowIndex] = {}
@@ -80,6 +93,7 @@ function Chattynator.API.RemoveRejectionFilter(func, windowIndex, tabIndex)
   end
 end
 
+---@param state boolean
 function Chattynator.API.FilterTimePlayed(state)
   if state then
     addonTable.Messages:UnregisterEvent("TIME_PLAYED_MSG")

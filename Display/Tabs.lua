@@ -37,9 +37,11 @@ StaticPopupDialogs[renameDialog] = {
   hideOnEscape = 1,
 }
 
+---@class TabsBarMixin: Frame
 addonTable.Display.TabsBarMixin = {}
 
 function addonTable.Display.TabsBarMixin:OnLoad()
+  ---@class ChatFrameMixin
   self.chatFrame = self:GetParent()
   self:SetupPool()
 end
@@ -85,6 +87,14 @@ function addonTable.Display.TabsBarMixin:SetupPool()
   self:SetScript("OnSizeChanged", function()
     self:SetScript("OnUpdate", self.UpdateScrolling)
   end)
+
+  self:SetClipsChildren(true)
+end
+
+function addonTable.Display.TabsBarMixin:UpdateScrolling()
+  for _, tabButton in ipairs(self.Tabs) do
+    tabButton:SetShown(tabButton:GetRight() <= self:GetRight())
+  end
 end
 
 function addonTable.Display.TabsBarMixin:ApplyFlashing(newMessages)

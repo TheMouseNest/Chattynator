@@ -126,8 +126,13 @@ end
 ---@param g number?
 ---@param b number?
 function Chattynator.API.AddMessageToWindowAndTab(windowIndex, tabIndex, message, r, g, b)
-  local addonPath = debugstack(3, 1, 0)
+  local addonPath = debugstack(2, 1, 0)
   local source = addonPath:match("Interface/AddOns/([^/]+)/")
+  if addonPath:find("/[Ll]ibs?/Ace") then
+    source = "/aceconsole"
+  elseif source == nil then
+    source = "/loadstring"
+  end
   addonTable.Messages:SetIncomingType({type = "ADDON", event = "NONE", source = source, tabTag = windowIndex .. "_" .. tabIndex})
   addonTable.Messages:AddMessage(message, r, g, b)
 end

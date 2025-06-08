@@ -1,38 +1,6 @@
 ---@class addonTableChattynator
 local addonTable = select(2, ...)
 
-function addonTable.Core.GetTabsPool(parent)
-  return CreateFramePool("Button", parent, nil, nil, false,
-    function(tabButton)
-      tabButton:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-      tabButton:RegisterForDrag("LeftButton")
-      tabButton:SetScript("OnDragStart", function()
-        if addonTable.Config.Get(addonTable.Config.Options.LOCKED) then
-          return
-        end
-        if tabButton:GetID() == 1 then
-          parent:StartMoving()
-        end
-      end)
-      tabButton:SetScript("OnDragStop", function()
-        parent:StopMovingOrSizing()
-        parent:SavePosition()
-      end)
-      function tabButton:SetSelected(state)
-        self:SetFlashing(false)
-        self.selected = state
-      end
-      function tabButton:SetColor(r, g, b)
-        self.color = {r = r, g = g, b = b}
-      end
-      function tabButton:SetFlashing(state)
-        self.flashing = state
-      end
-      addonTable.Skins.AddFrame("ChatTab", tabButton)
-    end
-  )
-end
-
 local function DisableCombatLog(chatFrame)
   ChatFrame2:SetParent(addonTable.hiddenFrame)
   chatFrame.ScrollingMessages:Show()
@@ -69,95 +37,171 @@ StaticPopupDialogs[renameDialog] = {
   hideOnEscape = 1,
 }
 
-function addonTable.Core.InitializeTabs(chatFrame)
-  local forceSelected = false
-  if not chatFrame.tabsPool then
-    forceSelected = true
-    chatFrame.tabsPool = addonTable.Core.GetTabsPool(chatFrame)
-  else -- Might have shown combat log at some point
-    DisableCombatLog(chatFrame)
+addonTable.Display.TabsBarMixin = {}
+
+function addonTable.Display.TabsBarMixin:OnLoad()
+  self.chatFrame = self:GetParent()
+  self:SetupPool()
+end
+
+function addonTable.Display.TabsBarMixin:Reset()
+  self.Tabs = {}
+end
+
+function addonTable.Display.TabsBarMixin:SetupPool()
+  self.tabsPool = CreateFramePool("Button", self, nil, nil, false,
+    function(tabButton)
+      tabButton:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+      tabButton:RegisterForDrag("LeftButton")
+      tabButton:SetScript("OnDragStart", function()
+        if addonTable.Config.Get(addonTable.Config.Options.LOCKED) then
+          return
+        end
+        if tabButton:GetID() == 1 then
+          self.chatFrame:StartMoving()
+        end
+      end)
+      tabButton:SetScript("OnDragStop", function()
+        self.chatFrame:StopMovingOrSizing()
+        self.chatFrame:SavePosition()
+      end)
+      function tabButton:SetSelected(state)
+        self:SetFlashing(false)
+        self.selected = state
+      end
+      function tabButton:SetColor(r, g, b)
+        self.color = {r = r, g = g, b = b}
+      end
+      function tabButton:SetFlashing(state)
+        self.flashing = state
+      end
+      tabButton:SetScript("OnSizeChanged", function()
+        self:SetScript("OnUpdate", self.UpdateScrolling)
+      end)
+      addonTable.Skins.AddFrame("ChatTab", tabButton)
+    end
+  )
+
+  self:SetScript("OnSizeChanged", function()
+    self:SetScript("OnUpdate", self.UpdateScrolling)
+  end)
+end
+
+function addonTable.Display.TabsBarMixin:ApplyFlashing(newMessages)
+  if not newMessages then
+    return
   end
-  chatFrame.tabsPool:ReleaseAll()
+  local messages = {}
+  while newMessages > 0 do
+    newMessages = newMessages - 1
+    table.insert(messages,  addonTable.Messages:GetMessageRaw(1 + #messages))
+  end
+  local tabsMatching = {}
+  for index, tab in ipairs(self.Tabs) do
+    if tab.filter and FindInTableIf(messages, tab.filter) ~= nil then
+      tabsMatching[index] = true
+    end
+  end
+
+  if tabsMatching[self.chatFrame.tabIndex] then
+    return
+  end
+
+  for index in pairs(tabsMatching) do
+    self.Tabs[index]:SetFlashing(true)
+  end
+end
+
+function addonTable.Display.TabsBarMixin:GetFilter(tabData, tabTag)
+  if tabData.invert then
+    return function(data)
+      return tabData.groups[data.typeInfo.type] ~= false and (data.typeInfo.tabTag == nil or data.typeInfo.tabTag == tabTag) and
+        (
+        not data.typeInfo.channel or
+        (tabData.channels[data.typeInfo.channel.name] == nil and data.typeInfo.channel.isDefault) or
+        tabData.channels[data.typeInfo.channel.name]
+      ) and ((data.typeInfo.type ~= "WHISPER" and data.typeInfo.type ~= "BN_WHISPER") or tabData.whispersTemp[data.typeInfo.player and data.typeInfo.player.name] ~= false)
+      or (data.typeInfo.type == "ADDON" and tabData.groups["ADDON"] == false and tabData.addons[data.typeInfo.source] ~= false and (data.typeInfo.tabTag == nil or data.typeInfo.tabTag == tabTag))
+    end
+  else
+    return function(data)
+      return tabData.groups[data.typeInfo.type] and (data.typeInfo.tabTag == nil or data.typeInfo.tabTag == tabTag) or
+        (data.typeInfo.type == "WHISPER" or data.typeInfo.type == "BN_WHISPER") and tabData.whispersTemp[data.typeInfo.player and data.typeInfo.player.name] or
+        tabData.channels[data.typeInfo.channel and data.typeInfo.channel.name] or
+        data.typeInfo.type == "ADDON" and not tabData.groups["ADDON"] and tabData.addons[data.typeInfo.source] and (data.typeInfo.tabTag == nil or data.typeInfo.tabTag == tabTag)
+    end
+  end
+end
+
+function addonTable.Display.TabsBarMixin:RefreshTabs()
+  local forceSelected = false
+  if not self.chatFrame.tabsPool then
+    forceSelected = true
+  else -- Might have shown combat log at some point
+    DisableCombatLog(self.chatFrame)
+  end
+  self.tabsPool:ReleaseAll()
   local allTabs = {}
   local lastButton
-  for index, tab in ipairs(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[chatFrame:GetID()].tabs) do
-    local tabButton = chatFrame.tabsPool:Acquire()
+  for index, tabData in ipairs(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self.chatFrame:GetID()].tabs) do
+    local tabButton = self.tabsPool:Acquire()
     tabButton.minWidth = false
     tabButton:SetID(index)
     tabButton:Show()
-    tabButton:SetText(_G[tab.name] or tab.name or UNKNOWN)
-    local tabColor = CreateColorFromRGBHexString(tab.tabColor)
-    local bgColor = CreateColorFromRGBHexString(tab.backgroundColor)
-    local filter
-    local tabTag = chatFrame:GetID() .. "_" .. index
-    if tab.invert then
-      filter = function(data)
-        return tab.groups[data.typeInfo.type] ~= false and (data.typeInfo.tabTag == nil or data.typeInfo.tabTag == tabTag) and
-          (
-          not data.typeInfo.channel or
-          (tab.channels[data.typeInfo.channel.name] == nil and data.typeInfo.channel.isDefault) or
-          tab.channels[data.typeInfo.channel.name]
-        ) and ((data.typeInfo.type ~= "WHISPER" and data.typeInfo.type ~= "BN_WHISPER") or tab.whispersTemp[data.typeInfo.player and data.typeInfo.player.name] ~= false)
-        or (data.typeInfo.type == "ADDON" and tab.groups["ADDON"] == false and tab.addons[data.typeInfo.source] ~= false and (data.typeInfo.tabTag == nil or data.typeInfo.tabTag == tabTag))
-      end
-    else
-      filter = function(data)
-        return tab.groups[data.typeInfo.type] and (data.typeInfo.tabTag == nil or data.typeInfo.tabTag == tabTag) or
-          (data.typeInfo.type == "WHISPER" or data.typeInfo.type == "BN_WHISPER") and tab.whispersTemp[data.typeInfo.player and data.typeInfo.player.name] or
-          tab.channels[data.typeInfo.channel and data.typeInfo.channel.name] or
-          data.typeInfo.type == "ADDON" and not tab.groups["ADDON"] and tab.addons[data.typeInfo.source] and (data.typeInfo.tabTag == nil or data.typeInfo.tabTag == tabTag)
-      end
-    end
-    tabButton.filter = filter
+    tabButton:SetText(_G[tabData.name] or tabData.name or UNKNOWN)
+    local tabColor = CreateColorFromRGBHexString(tabData.tabColor)
+    local bgColor = CreateColorFromRGBHexString(tabData.backgroundColor)
+    tabButton.filter = self:GetFilter(tabData, tabTag)
     tabButton.bgColor = bgColor
     tabButton:SetScript("OnClick", function(_, mouseButton)
-      if chatFrame:GetID() == 1 then
-        DisableCombatLog(chatFrame)
-      end
       if mouseButton == "LeftButton" then
-        chatFrame:SetBackgroundColor(bgColor.r, bgColor.g, bgColor.b)
-        chatFrame:SetTabSelectedAndFilter(tabButton:GetID(), filter)
-        chatFrame.ScrollingMessages:Render()
-        for _, otherTab in ipairs(allTabs) do
+        if self.chatFrame:GetID() == 1 then
+          DisableCombatLog(self.chatFrame)
+        end
+        self.chatFrame:SetBackgroundColor(tabButton.bgColor.r, tabButton.bgColor.g, tabButton.bgColor.b)
+        self.chatFrame:SetTabSelectedAndFilter(tabButton:GetID(), tabButton.filter)
+        self.chatFrame.ScrollingMessages:Render()
+        for _, otherTab in ipairs(self.Tabs) do
           otherTab:SetSelected(false)
         end
         tabButton:SetSelected(true)
-        addonTable.CallbackRegistry:TriggerEvent("TabSelected", chatFrame:GetID(), tabButton:GetID())
+        addonTable.CallbackRegistry:TriggerEvent("TabSelected", self.chatFrame:GetID(), tabButton:GetID())
       elseif mouseButton == "RightButton" then
         MenuUtil.CreateContextMenu(tabButton, function(_, rootDescription)
           rootDescription:CreateButton(addonTable.Locales.TAB_SETTINGS, function()
-            addonTable.CustomiseDialog.ToggleTabFilters(chatFrame:GetID(), tabButton:GetID())
+            addonTable.CustomiseDialog.ToggleTabFilters(self.chatFrame:GetID(), tabButton:GetID())
           end)
           rootDescription:CreateButton(addonTable.Locales.GLOBAL_SETTINGS, function()
             addonTable.CustomiseDialog.Toggle()
           end)
           rootDescription:CreateDivider()
-          if tab.isTemporary or not addonTable.Config.Get(addonTable.Config.Options.LOCKED) then
+          if tabData.isTemporary or not addonTable.Config.Get(addonTable.Config.Options.LOCKED) then
             rootDescription:CreateButton(addonTable.Locales.LOCK_CHAT, function()
               addonTable.Config.Set(addonTable.Config.Options.LOCKED, true)
             end)
             rootDescription:CreateButton(addonTable.Locales.RENAME_TAB, function()
-              StaticPopup_Show(renameDialog, nil, nil, {window = chatFrame:GetID(), tab = tabButton:GetID()})
+              StaticPopup_Show(renameDialog, nil, nil, {window = self.chatFrame:GetID(), tab = tabButton:GetID()})
             end)
             if tabButton:GetID() ~= 1 then
               rootDescription:CreateButton(addonTable.Locales.MOVE_TO_NEW_WINDOW, function()
                 local newChatFrame = addonTable.Core.MakeChatFrame()
 
                 local windows = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)
-                windows[newChatFrame:GetID()].tabs[1] = windows[chatFrame:GetID()].tabs[tabButton:GetID()]
-                table.remove(windows[chatFrame:GetID()].tabs, tabButton:GetID())
+                windows[newChatFrame:GetID()].tabs[1] = windows[self.chatFrame:GetID()].tabs[tabButton:GetID()]
+                table.remove(windows[self.chatFrame:GetID()].tabs, tabButton:GetID())
                 newChatFrame:Reset()
                 newChatFrame.ScrollingMessages:Render()
                 addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
               end)
             end
-            if tabButton:GetID() == 1 and chatFrame:GetID() ~= 1 then
+            if tabButton:GetID() == 1 and self.chatFrame:GetID() ~= 1 then
               rootDescription:CreateButton(addonTable.Locales.CLOSE_WINDOW, function()
-                addonTable.Core.DeleteChatFrame(chatFrame:GetID())
+                addonTable.Core.DeleteChatFrame(self.chatFrame:GetID())
               end)
             elseif tabButton:GetID() ~= 1 then
               rootDescription:CreateButton(addonTable.Locales.CLOSE_TAB, function()
-                table.remove(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[chatFrame:GetID()].tabs, index)
+                local allTabData = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self.chatFrame:GetID()].tabs
+                table.remove(allTabData, tabButton:GetID())
                 addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
               end)
             end
@@ -171,7 +215,7 @@ function addonTable.Core.InitializeTabs(chatFrame)
     end)
 
     if lastButton == nil then
-      tabButton:SetPoint("BOTTOMLEFT", chatFrame, "TOPLEFT", 32, -22)
+      tabButton:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, -22)
     else
       tabButton:SetPoint("LEFT", lastButton, "RIGHT", 10, 0)
     end
@@ -180,8 +224,8 @@ function addonTable.Core.InitializeTabs(chatFrame)
     lastButton = tabButton
   end
 
-  if chatFrame:GetID() == 1 and addonTable.Config.Get(addonTable.Config.Options.SHOW_COMBAT_LOG) then
-    local combatLogButton = chatFrame.tabsPool:Acquire()
+  if self.chatFrame:GetID() == 1 and addonTable.Config.Get(addonTable.Config.Options.SHOW_COMBAT_LOG) then
+    local combatLogButton = self.tabsPool:Acquire()
     combatLogButton.filter = nil
     combatLogButton.minWidth = false
     combatLogButton:SetID(#allTabs + 1)
@@ -192,20 +236,20 @@ function addonTable.Core.InitializeTabs(chatFrame)
         for _, otherTab in ipairs(allTabs) do
           otherTab:SetSelected(false)
         end
-        chatFrame:SetBackgroundColor(0.15, 0.15, 0.15)
+        self.chatFrame:SetBackgroundColor(0.15, 0.15, 0.15)
         combatLogButton:SetSelected(true)
-        chatFrame.ScrollingMessages:Hide()
+        self.chatFrame.ScrollingMessages:Hide()
         CombatLogQuickButtonFrame_Custom:SetParent(ChatFrame2)
         CombatLogQuickButtonFrame_Custom:ClearAllPoints()
-        CombatLogQuickButtonFrame_Custom:SetPoint("TOPLEFT", chatFrame.ScrollingMessages, 0, 0)
-        CombatLogQuickButtonFrame_Custom:SetPoint("TOPRIGHT", chatFrame.ScrollingMessages, 0, 0)
-        ChatFrame2:SetParent(chatFrame)
+        CombatLogQuickButtonFrame_Custom:SetPoint("TOPLEFT", self.chatFrame.ScrollingMessages, 0, 0)
+        CombatLogQuickButtonFrame_Custom:SetPoint("TOPRIGHT", self.chatFrame.ScrollingMessages, 0, 0)
+        ChatFrame2:SetParent(self.chatFrame)
         if ChatFrame2ResizeButton then
           ChatFrame2ResizeButton:SetParent(addonTable.hiddenFrame)
         end
         ChatFrame2:ClearAllPoints()
-        ChatFrame2:SetPoint("TOPLEFT", chatFrame.ScrollingMessages, 0, -22)
-        ChatFrame2:SetPoint("BOTTOMRIGHT", chatFrame.ScrollingMessages, -15, 0)
+        ChatFrame2:SetPoint("TOPLEFT", self.chatFrame.ScrollingMessages, 0, -22)
+        ChatFrame2:SetPoint("BOTTOMRIGHT", self.chatFrame.ScrollingMessages, -15, 0)
         ChatFrame2Background:SetParent(addonTable.hiddenFrame)
         ChatFrame2BottomRightTexture:SetParent(addonTable.hiddenFrame)
         ChatFrame2BottomLeftTexture:SetParent(addonTable.hiddenFrame)
@@ -249,7 +293,7 @@ function addonTable.Core.InitializeTabs(chatFrame)
     combatLogButton:SetColor(combatLogColor.r, combatLogColor.g, combatLogColor.b)
 
     if lastButton == nil then
-      combatLogButton:SetPoint("BOTTOMLEFT", chatFrame, "TOPLEFT", 32, -22)
+      combatLogButton:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, -22)
     else
       combatLogButton:SetPoint("LEFT", lastButton, "RIGHT", 10, 0)
     end
@@ -259,11 +303,11 @@ function addonTable.Core.InitializeTabs(chatFrame)
   end
 
   if not addonTable.Config.Get(addonTable.Config.Options.LOCKED) then
-    local newTab = chatFrame.tabsPool:Acquire()
+    local newTab = self.tabsPool:Acquire()
     newTab.minWidth = true
     newTab:SetText(addonTable.Constants.NewTabMarkup)
     newTab:SetScript("OnClick", function()
-      table.insert(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[chatFrame:GetID()].tabs, addonTable.Config.GetEmptyTabConfig(addonTable.Locales.NEW_TAB))
+      table.insert(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self.chatFrame:GetID()].tabs, addonTable.Config.GetEmptyTabConfig(addonTable.Locales.NEW_TAB))
       addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
     end)
     newTab:Show()
@@ -271,7 +315,7 @@ function addonTable.Core.InitializeTabs(chatFrame)
     table.insert(allTabs, newTab)
 
     if lastButton == nil then
-      newTab:SetPoint("BOTTOMLEFT", chatFrame, "TOPLEFT", 32, -22)
+      newTab:SetPoint("BOTTOMLEFT", self.chatFrame, "TOPLEFT", 32, -22)
     else
       newTab:SetPoint("LEFT", lastButton, "RIGHT", 10, 0)
     end
@@ -281,17 +325,17 @@ function addonTable.Core.InitializeTabs(chatFrame)
   for _, tab in ipairs(allTabs) do
     tab:SetSelected(false)
   end
-  chatFrame.Tabs = allTabs
-  local currentTab = chatFrame.tabIndex and math.min(chatFrame.tabIndex, #addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[chatFrame:GetID()].tabs) or 1
+  self.Tabs = allTabs
+  local currentTab = self.chatFrame.tabIndex and math.min(self.chatFrame.tabIndex, #addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self.chatFrame:GetID()].tabs) or 1
   allTabs[currentTab]:SetSelected(true)
-  chatFrame:SetFilter(allTabs[currentTab].filter)
-  chatFrame:SetBackgroundColor(allTabs[currentTab].bgColor.r, allTabs[currentTab].bgColor.g, allTabs[currentTab].bgColor.b)
-  if currentTab ~= chatFrame.tabIndex then
-    chatFrame:SetTabSelectedAndFilter(currentTab, allTabs[currentTab].filter)
-    chatFrame.ScrollingMessages:Render()
-    addonTable.CallbackRegistry:TriggerEvent("TabSelected", chatFrame:GetID(), currentTab)
+  self.chatFrame:SetFilter(allTabs[currentTab].filter)
+  self.chatFrame:SetBackgroundColor(allTabs[currentTab].bgColor.r, allTabs[currentTab].bgColor.g, allTabs[currentTab].bgColor.b)
+  if currentTab ~= self.chatFrame.tabIndex then
+    self.chatFrame:SetTabSelectedAndFilter(currentTab, allTabs[currentTab].filter)
+    self.chatFrame.ScrollingMessages:Render()
+    addonTable.CallbackRegistry:TriggerEvent("TabSelected", self.chatFrame:GetID(), currentTab)
   elseif forceSelected then
-    addonTable.CallbackRegistry:TriggerEvent("TabSelected", chatFrame:GetID(), currentTab)
+    addonTable.CallbackRegistry:TriggerEvent("TabSelected", self.chatFrame:GetID(), currentTab)
   end
 end
 

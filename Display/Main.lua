@@ -43,17 +43,24 @@ function addonTable.Display.ChatFrameMixin:OnLoad()
   addonTable.Skins.AddFrame("ResizeWidget", self.resizeWidget)
   self.resizeWidget:SetShown(not addonTable.Config.Get(addonTable.Config.Options.LOCKED))
 
+  self.TabsBar = CreateFrame("Frame", nil, self)
+  Mixin(self.TabsBar, addonTable.Display.TabsBarMixin)
+  self.TabsBar:OnLoad()
+  self.TabsBar:SetPoint("TOPLEFT", 32, 0)
+  self.TabsBar:SetPoint("TOPRIGHT")
+  self.TabsBar:SetHeight(22)
+
   addonTable.CallbackRegistry:RegisterCallback("Render", function(_, newMessages)
     if self:GetID() == 0 then
       return
     end
-    self:ApplyFlashing(newMessages)
+    self.TabsBar:ApplyFlashing(newMessages)
     self.ScrollingMessages:Render(newMessages)
   end, self)
 
   addonTable.CallbackRegistry:RegisterCallback("RefreshStateChange", function(_, refreshState)
     if self:GetID() ~= 0 and refreshState[addonTable.Constants.RefreshReason.Tabs] then
-      addonTable.Core.InitializeTabs(self)
+      self.TabsBar:RefreshTabs()
       self.ScrollingMessages:Render()
     end
     if refreshState[addonTable.Constants.RefreshReason.MessageWidget] then
@@ -98,14 +105,15 @@ function addonTable.Display.ChatFrameMixin:Reset()
   self.filterFunc = nil
 
   self.tabIndex = 1
-  self.Tabs = {}
+
+  self.TabsBar:Reset()
 
   self:RepositionBlizzardWidgets()
   self:UpdateButtons()
   self:AdjustMessageAnchors()
   self.ScrollingMessages:Reset()
 
-  addonTable.Core.InitializeTabs(self)
+  self.TabsBar:RefreshTabs()
 end
 
 function addonTable.Display.ChatFrameMixin:SavePosition()
@@ -319,30 +327,5 @@ function addonTable.Display.ChatFrameMixin:UpdateButtons()
   for _, b in ipairs(self.buttons) do
     currentHeight = currentHeight + b:GetHeight() + 5
     b:SetShown(currentHeight <= heightAvailable)
-  end
-end
-
-function addonTable.Display.ChatFrameMixin:ApplyFlashing(newMessages)
-  if not newMessages then
-    return
-  end
-  local messages = {}
-  while newMessages > 0 do
-    newMessages = newMessages - 1
-    table.insert(messages,  addonTable.Messages:GetMessageRaw(1 + #messages))
-  end
-  local tabsMatching = {}
-  for index, tab in ipairs(self.Tabs) do
-    if tab.filter and FindInTableIf(messages, tab.filter) ~= nil then
-      tabsMatching[index] = true
-    end
-  end
-
-  if tabsMatching[self.tabIndex] then
-    return
-  end
-
-  for index in pairs(tabsMatching) do
-    self.Tabs[index]:SetFlashing(true)
   end
 end

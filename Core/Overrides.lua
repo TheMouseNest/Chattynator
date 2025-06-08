@@ -23,8 +23,8 @@ function addonTable.Core.ApplyOverrides()
         tabConfig.channels[channelName] = true
         table.insert(config.tabs, tabConfig)
         config.tabs[actualChatFrame.tabIndex].channels[channelName] = false
-        addonTable.Core.InitializeTabs(actualChatFrame)
-        actualChatFrame.Tabs[#config.tabs]:Click()
+        actualChatFrame.TabsBar:RefreshTabs()
+        actualChatFrame.TabsBar.Tabs[#config.tabs]:Click()
       end)
     end)
   end)
@@ -53,8 +53,8 @@ function addonTable.Core.ApplyOverrides()
       tabConfig.tabColor = CreateColor(c.r, c.g, c.b):GenerateHexColorNoAlpha()
       table.insert(config.tabs, tabConfig)
       config.tabs[actualChatFrame.tabIndex].whispersTemp[chatTarget] = false
-      addonTable.Core.InitializeTabs(actualChatFrame)
-      actualChatFrame.Tabs[#config.tabs]:Click()
+      actualChatFrame.TabsBar:RefreshTabs()
+      actualChatFrame.TabsBar.Tabs[#config.tabs]:Click()
       actualChatFrame = nil
     end
   end

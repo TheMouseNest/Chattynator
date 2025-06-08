@@ -36,7 +36,8 @@ Core/Overrides.lua
 Core/Initialize.lua
 Core/SlashCmd.lua
 Core/CommandHistory.lua
-Core/API.lua
+
+API/Main.lua
 
 Display/Main.lua
 Display/Tabs.lua

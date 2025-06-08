@@ -10,7 +10,6 @@ function Chattynator.API.GetHyperlinkHandler()
 end
 
 local dynamicModFuncToWrapper = {}
--- TODO: Test this
 
 -- Permits non-destructive (ie backing data is unaffected) modification
 -- of messages before display.
@@ -106,4 +105,29 @@ function Chattynator.API.FilterTimePlayed(state)
   else
     addonTable.Messages:RegisterEvent("TIME_PLAYED_MSG")
   end
+end
+
+
+function Chattynator.API.GetWindowsAndTabs()
+  local windows = {}
+  for index, w in ipairs(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)) do
+    table.insert(windows, {})
+    for _, t in ipairs(w.tabs) do
+      table.insert(windows[index], t.name)
+    end
+  end
+  return windows
+end
+
+---@param windowIndex number
+---@param tabIndex number
+---@param message string
+---@param r number?
+---@param g number?
+---@param b number?
+function Chattynator.API.AddMessageToWindowAndTab(windowIndex, tabIndex, message, r, g, b)
+  local addonPath = debugstack(3, 1, 0)
+  local source = addonPath:match("Interface/AddOns/([^/]+)/")
+  addonTable.Messages:SetIncomingType({type = "ADDON", event = "NONE", source = source, tabTag = windowIndex .. "_" .. tabIndex})
+  addonTable.Messages:AddMessage(message, r, g, b)
 end

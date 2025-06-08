@@ -97,13 +97,13 @@ function addonTable.Core.InitializeTabs(chatFrame)
           not data.typeInfo.channel or
           (tab.channels[data.typeInfo.channel.name] == nil and data.typeInfo.channel.isDefault) or
           tab.channels[data.typeInfo.channel.name]
-        ) and ((data.typeInfo.type ~= "WHISPER" and data.typeInfo.type ~= "BN_WHISPER") or tab.whispersTemp[data.typeInfo.player.name] ~= false)
+        ) and ((data.typeInfo.type ~= "WHISPER" and data.typeInfo.type ~= "BN_WHISPER") or tab.whispersTemp[data.typeInfo.player and data.typeInfo.player.name] ~= false)
         or (data.typeInfo.type == "ADDON" and tab.groups["ADDON"] == false and tab.addons[data.typeInfo.source] ~= false and (data.typeInfo.tabTag == nil or data.typeInfo.tabTag == tabTag))
       end
     else
       filter = function(data)
         return tab.groups[data.typeInfo.type] and (data.typeInfo.tabTag == nil or data.typeInfo.tabTag == tabTag) or
-          (data.typeInfo.type == "WHISPER" or data.typeInfo.type == "BN_WHISPER") and tab.whispersTemp[data.typeInfo.player.name] or
+          (data.typeInfo.type == "WHISPER" or data.typeInfo.type == "BN_WHISPER") and tab.whispersTemp[data.typeInfo.player and data.typeInfo.player.name] or
           tab.channels[data.typeInfo.channel and data.typeInfo.channel.name] or
           data.typeInfo.type == "ADDON" and not tab.groups["ADDON"] and tab.addons[data.typeInfo.source] and (data.typeInfo.tabTag == nil or data.typeInfo.tabTag == tabTag)
       end

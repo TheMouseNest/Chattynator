@@ -107,7 +107,7 @@ local settings = {
   DEBUG = {key = "debug", default = false},
 
   APPLIED_MESSAGE_IDS = {key = "applied_message_ids", default = false, transfer = true},
-  APPLIED_PLAYER_TABLE = {key = "applied_player_table_3", default = false, transfer = true},
+  APPLIED_PLAYER_TABLE = {key = "applied_player_table_5", default = false, transfer = true},
 }
 
 addonTable.Config.RefreshType = {}

@@ -40,9 +40,11 @@ local function ConvertFormat()
   end
   if not addonTable.Config.Get(addonTable.Config.Options.APPLIED_PLAYER_TABLE) then
     for _, entry in ipairs(CHATTYNATOR_MESSAGE_LOG.current) do
-      if type(entry.typeInfo.player) ~= "table" then
+      if type(entry.typeInfo.player) == "string" then
         entry.typeInfo.player = {name = entry.typeInfo.player, class = entry.typeInfo.playerClass}
         entry.player = nil
+      elseif type(entry.typeInfo.player) == "table" and next(entry.typeInfo.player) == nil then
+        entry.typeInfo.player = nil
       end
     end
     local frame = CreateFrame("Frame")
@@ -52,9 +54,11 @@ local function ConvertFormat()
         if type(CHATTYNATOR_MESSAGE_LOG.historical[historicalIndex].data) == "string" and C_EncodingUtil then
           local resolved = C_EncodingUtil.DeserializeJSON(CHATTYNATOR_MESSAGE_LOG.historical[historicalIndex].data)
           for _, entry in ipairs(resolved) do
-            if type(entry.typeInfo.player) ~= "table" then
+            if type(entry.typeInfo.player) == "string" then
               entry.typeInfo.player = {name = entry.typeInfo.player, class = entry.typeInfo.playerClass}
               entry.player = nil
+            elseif type(entry.typeInfo.player) == "table" and next(entry.typeInfo.player) == nil then
+              entry.typeInfo.player = nil
             end
           end
           CHATTYNATOR_MESSAGE_LOG.historical[historicalIndex].data = C_EncodingUtil.SerializeJSON(resolved)
@@ -406,7 +410,7 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
     local playerClass, playerRace, playerSex, _
     if playerGUID then
       playerClass, _, playerRace, playerSex = select(2, GetPlayerInfoByGUID(playerGUID))
-    elseif type(playerArg) ~= "string" then
+    elseif type(playerArg) ~= "string" or playerArg == "" then
       playerArg = nil
     end
     self:SetIncomingType({
@@ -461,7 +465,7 @@ function addonTable.MessagesMonitorMixin:CleanStore(store, index)
       data.text = data.text:gsub("|K.-|k", "???")
       data.text = data.text:gsub("|HBNplayer.-|h(.-)|h", "%1")
       if data.typeInfo.player then
-        data.typeInfo.player = data.typeInfo.player.name:gsub("|K.-|k", addonTable.Locales.UNKNOWN)
+        data.typeInfo.player.name = data.typeInfo.player.name:gsub("|K.-|k", addonTable.Locales.UNKNOWN)
       end
     end
     if data.text:find("censoredmessage:") then

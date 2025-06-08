@@ -71,8 +71,10 @@ function addonTable.Display.ChatFrameMixin:OnLoad()
       return
     end
     if settingName == addonTable.Config.Options.WINDOWS then
+      self:ClearAllPoints()
       self:SetPoint(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].position))
       self:SetSize(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].size))
+      self:UpdateButtons()
     elseif settingName == addonTable.Config.Options.EDIT_BOX_POSITION and self:GetID() == 1 then
       self:PositionEditBox()
     end

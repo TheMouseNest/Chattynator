@@ -199,6 +199,9 @@ function addonTable.Core.InitializeTabs(chatFrame)
         CombatLogQuickButtonFrame_Custom:SetPoint("TOPLEFT", chatFrame.ScrollingMessages, 0, 0)
         CombatLogQuickButtonFrame_Custom:SetPoint("TOPRIGHT", chatFrame.ScrollingMessages, 0, 0)
         ChatFrame2:SetParent(chatFrame)
+        if ChatFrame2ResizeButton then
+          ChatFrame2ResizeButton:SetParent(addonTable.hiddenFrame)
+        end
         ChatFrame2:ClearAllPoints()
         ChatFrame2:SetPoint("TOPLEFT", chatFrame.ScrollingMessages, 0, -22)
         ChatFrame2:SetPoint("BOTTOMRIGHT", chatFrame.ScrollingMessages, -15, 0)
@@ -214,6 +217,10 @@ function addonTable.Core.InitializeTabs(chatFrame)
         if ChatFrame2ButtonFrameBackground then
           ChatFrame2ButtonFrameBackground:SetParent(addonTable.hiddenFrame)
           ChatFrame2ButtonFrameRightTexture:SetParent(addonTable.hiddenFrame)
+        end
+        if ChatFrame2ButtonFrameUpButton then
+          ChatFrame2ButtonFrameUpButton:SetParent(addonTable.hiddenFrame)
+          ChatFrame2ButtonFrameDownButton:SetParent(addonTable.hiddenFrame)
         end
         ChatFrame2:Show()
       elseif mouseButton == "RightButton" then

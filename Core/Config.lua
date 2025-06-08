@@ -74,7 +74,9 @@ local settings = {
         },
       },
     },]]
-  }},
+  },
+    refresh = {addonTable.Constants.RefreshReason.Tabs}
+  },
 
   EDIT_BOX_POSITION = {key = "edit_box_position", default = "bottom"},
 

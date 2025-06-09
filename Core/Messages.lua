@@ -528,7 +528,7 @@ function addonTable.MessagesMonitorMixin:GetMessageProcessed(reverseIndex)
     return self.messagesProcessed[index]
   end
   local new = CopyTable(self.messages[index])
-  for _, func in ipairs(self.liveModifiers) do
+  for _, func in pairs(self.liveModifiers) do
     func(new)
   end
   self.heights[index] = nil

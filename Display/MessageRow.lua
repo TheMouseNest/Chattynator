@@ -78,5 +78,9 @@ function addonTable.Display.MessageRowMixin:SetData(data)
   self.animationFinalTime = 0
   self.animationDestination = 0
   self.animationFinalAlpha = nil
-  self:SetAlpha(0)
+  if self:GetParent().fancyEffects then
+    self:SetAlpha(0)
+  else
+    self:SetAlpha(1)
+  end
 end

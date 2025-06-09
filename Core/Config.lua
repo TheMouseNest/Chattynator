@@ -104,6 +104,7 @@ local settings = {
   NEW_WHISPER_NEW_TAB = {key = "new_whisper_new_tab", default = 0},
 
   ENABLE_COMBAT_MESSAGES = {key = "enable_combat_messages", default = false},
+  FANCY_EFFECTS = {key = "fancy_effects", default = true},
   DEBUG = {key = "debug", default = false},
 
   APPLIED_MESSAGE_IDS = {key = "applied_message_ids", default = false, transfer = true},

@@ -26,6 +26,8 @@ function addonTable.Display.ScrollingMessagesMixin:OnLoad()
   self.scrollInterpolator = CreateInterpolator(InterpolatorUtil.InterpolateEaseOut)
   self.destination = 0
 
+  self.fancyEffects = addonTable.Config.Get(addonTable.Config.Options.FANCY_EFFECTS)
+
   self.timestampOffset = GetTime() - time()
 
   addonTable.CallbackRegistry:RegisterCallback("MessageDisplayChanged", function()
@@ -72,6 +74,8 @@ function addonTable.Display.ScrollingMessagesMixin:OnLoad()
     end
     if settingName == addonTable.Config.Options.ENABLE_MESSAGE_FADE then
       self:UpdateAlphas()
+    elseif settingName == addonTable.Config.Options.FANCY_EFFECTS then
+      self.fancyEffects = addonTable.Config.Get(addonTable.Config.Options.FANCY_EFFECTS)
     end
   end)
 
@@ -87,6 +91,10 @@ function addonTable.Display.ScrollingMessagesMixin:ScrollTo(target, easyMode)
   self.destination = math.max(0, target)
   if self.scrollCallback then
     self.scrollCallback(self.destination)
+  end
+  if not self.fancyEffects then
+    self.scrollOffset = self.destination
+    return
   end
   if self.destination == self.scrollOffset then -- Already done
     self:UpdateAlphas()
@@ -128,8 +136,10 @@ function addonTable.Display.ScrollingMessagesMixin:OnMouseWheel(delta)
 end
 
 function addonTable.Display.ScrollingMessagesMixin:UpdateAllocated()
+  local viewportWidth = self:GetWidth()
   for _, f in ipairs(self.allocated) do
     f:UpdateWidgets(self.currentStringWidth)
+    f:SetWidth(viewportWidth)
     self.cleanRender = true
   end
 end
@@ -145,6 +155,10 @@ function addonTable.Display.ScrollingMessagesMixin:UpdateWidth()
 end
 
 function addonTable.Display.ScrollingMessagesMixin:UpdateAlphas(elapsed)
+  if not self.fancyEffects then
+    return
+  end
+
   if elapsed then
     self.accumulatedTime = (self.accumulatedTime or 0) + elapsed
     if self.animationsPending then
@@ -284,6 +298,10 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
     shift = self.scrollOffset
   end
 
+  if not self.fancyEffects then
+    self.scrollOffset = self.destination
+  end
+
   local known = {}
   self.startingIndex = nil
   for _, info in ipairs(shownMessages) do
@@ -307,6 +325,7 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
   end
   self.cleanRender = false
   self.activeFrames = {}
+  local viewportWidth = self:GetWidth()
   for _, info in ipairs(shownMessages) do
     if info.show then
       local frame = toReuse[info.data.id]
@@ -315,9 +334,9 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
         if not frame then
           frame = self.messagePool:Acquire()
           table.insert(self.allocated, frame)
+          frame:SetWidth(viewportWidth)
         end
         frame:Show()
-        frame:SetWidth(self:GetWidth())
         frame:SetHeight(info.height + messageSpacing)
         frame:SetData(info.data)
       end

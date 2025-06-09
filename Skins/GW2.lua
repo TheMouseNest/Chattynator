@@ -79,7 +79,11 @@ local skinners = {
     if tab:GetFontString() == nil then
       tab:SetText(" ")
     end
-    tab:GetFontString():GwSetFontTemplate(DAMAGE_TEXT_FONT, GW.TextSizeType.NORMAL)
+    if tab:GetFontString().GwSetFontTemplate then
+      tab:GetFontString():GwSetFontTemplate(DAMAGE_TEXT_FONT, GW.TextSizeType.NORMAL)
+    else
+      tab:GetFontString():SetFont(DAMAGE_TEXT_FONT, 11, "")
+    end
     tab:GetFontString():SetTextColor(1, 1, 1)
     tab:GetFontString():SetPoint("TOP", 0, -5)
     if tab:GetText() == newTabMarkup then
@@ -158,9 +162,11 @@ local skinners = {
     _G[frame:GetName() .. "Left"]:GwKill()
     _G[frame:GetName() .. "Right"]:GwKill()
     _G[frame:GetName() .. "Mid"]:GwKill()
-    _G[frame:GetName() .. "FocusLeft"]:GwKill()
-    _G[frame:GetName() .. "FocusRight"]:GwKill()
-    _G[frame:GetName() .. "FocusMid"]:GwKill()
+    if _G[frame:GetName() .. "FocusLeft"] then
+      _G[frame:GetName() .. "FocusLeft"]:GwKill()
+      _G[frame:GetName() .. "FocusRight"]:GwKill()
+      _G[frame:GetName() .. "FocusMid"]:GwKill()
+    end
     if GW.settings.CHAT_USE_GW2_STYLE then
       local chatFont = GW.Libs.LSM:Fetch("font", "GW2_UI_Chat")
       local _, _, fontFlags = frame:GetFont()
@@ -251,8 +257,12 @@ local skinners = {
     end)
 
     if tags.toasts then
-      button.Icon = button:CreateTexture(nil, "ARTWORK")
-      button.FriendsButton:GwKill()
+      if not button.Icon then
+        button.Icon = button:CreateTexture(nil, "ARTWORK")
+      end
+      if button.FriendsButton then
+        button.FriendsButton:GwKill()
+      end
       button:SetSize(32, 35)
       button.Icon:SetTexture("Interface/AddOns/GW2_UI/textures/chat/SocialChatButton")
       button.Icon:SetDrawLayer("ARTWORK")

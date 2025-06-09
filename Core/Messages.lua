@@ -409,14 +409,11 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
 
     addonTable.CallbackRegistry:TriggerEvent("Render")
   else
-    local channelIndex = select(8, ...)
+    local playerArg, _, _, _, _, _, channelID, channelIndex, _, _, _, playerGUID = ...
     local channelName = self.channelMap[channelIndex]
-    local channelID = select(7, ...)
-    local playerArg = select(2, ...)
-    local playerGUID = select(12, ...)
     local playerClass, playerRace, playerSex, _
     if playerGUID then
-      playerClass, _, playerRace, playerSex = select(2, GetPlayerInfoByGUID(playerGUID))
+      _, playerClass, _, playerRace, playerSex = GetPlayerInfoByGUID(playerGUID)
     elseif type(playerArg) ~= "string" or playerArg == "" then
       playerArg = nil
     end

@@ -219,11 +219,18 @@ function addonTable.MessagesMonitorMixin:OnLoad()
     else
       type = "ADDON"
       local addonPath
-      if trace:find("PrintHandler") ~= nil then
-        addonPath = debugstack(9, 1, 0)
-      else
-        addonPath = debugstack(2, 1, 0)
+      local offset = 0
+      -- Workaround for another addon weirdly raw hooking AddMessage (ie oRA3)
+      while debugstack(2 + offset, 1, 0) == "[C]: in function '?'\n..." do
+        offset = offset + 1
       end
+      -- Different position based on `print` or `AddMessage`
+      if trace:find("PrintHandler") ~= nil then
+        addonPath = debugstack(9 + offset, 1, 0)
+      else
+        addonPath = debugstack(3 + offset, 1, 0)
+      end
+      -- Special case, AceConsole will be shared between addons
       source = addonPath:match("Interface/AddOns/([^/]+)/")
       if addonPath:find("/[Ll]ibs?/Ace") then
         source = "/aceconsole"

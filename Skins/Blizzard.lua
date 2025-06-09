@@ -27,7 +27,6 @@ local skinners = {
     if tags.toasts then
     elseif tags.channels then
     elseif tags.voiceChatNoAudio or tags.voiceChatMuteMic then
-    elseif tags.menu then
     else
       button:HookScript("OnMouseDown", function()
         if not enableHooks then
@@ -55,9 +54,11 @@ local skinners = {
         button.Icon:SetTexture("Interface/AddOns/Chattynator/Assets/SettingsCog.png")
       elseif tags.scrollToEnd then
         button.Icon:SetTexture("Interface/AddOns/Chattynator/Assets/ScrollToBottom.png")
+      elseif tags.menu then
+        button.Icon:SetTexture("Interface/AddOns/Chattynator/Assets/ChatMenu.png")
       end
       button.Icon:SetPoint("CENTER")
-      button.Icon:SetSize(15, 15)
+      button.Icon:SetSize(12, 12)
       button.Icon:SetVertexColor(0.925, 0.804, 0.063)
     end
   end,

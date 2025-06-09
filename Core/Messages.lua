@@ -222,7 +222,7 @@ function addonTable.MessagesMonitorMixin:OnLoad()
       if trace:find("PrintHandler") ~= nil then
         addonPath = debugstack(9, 1, 0)
       else
-        addonPath = debugstack(3, 1, 0)
+        addonPath = debugstack(2, 1, 0)
       end
       source = addonPath:match("Interface/AddOns/([^/]+)/")
       if addonPath:find("/[Ll]ibs?/Ace") then

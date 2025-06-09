@@ -409,7 +409,7 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
 
     addonTable.CallbackRegistry:TriggerEvent("Render")
   else
-    local playerArg, _, _, _, _, _, channelID, channelIndex, _, _, _, playerGUID = ...
+    local _, playerArg, _, _, _, _, channelID, channelIndex, _, _, _, playerGUID = ...
     local channelName = self.channelMap[channelIndex]
     local playerClass, playerRace, playerSex, _
     if playerGUID then

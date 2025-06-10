@@ -74,6 +74,7 @@ function addonTable.Core.ApplyOverrides()
   local frame = CreateFrame("Frame")
   frame:RegisterEvent("PLAYER_ENTERING_WORLD")
   frame:SetScript("OnEvent", function()
+    frame:UnregisterEvent("PLAYER_ENTERING_WORLD")
     C_Timer.After(0, function()
       FloatingChatFrameManager:UnregisterAllEvents()
       for _, tabName in pairs(CHAT_FRAMES) do

@@ -112,6 +112,19 @@ function addonTable.Core.Initialize()
     table.insert(addonTable.allChatFrames, chatFrame)
   end
 
+  addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
+    if settingName == addonTable.Config.Options.WINDOWS then
+      local windows = addonTable.Config.Get(settingName)
+      while #windows > #addonTable.allChatFrames do
+        local chatFrame = addonTable.ChatFramePool:Acquire()
+        chatFrame:SetID(#addonTable.allChatFrames + 1)
+        chatFrame:Reset()
+        chatFrame:Show()
+        table.insert(addonTable.allChatFrames, chatFrame)
+      end
+    end
+  end)
+
   addonTable.CopyFrame = CreateFrame("Frame", "ChattynatorCopyChatDialog", UIParent, "ButtonFrameTemplate")
   Mixin(addonTable.CopyFrame, addonTable.Display.CopyChatMixin)
   addonTable.CopyFrame:OnLoad()
@@ -138,13 +151,17 @@ function addonTable.Core.MakeChatFrame()
 end
 
 function addonTable.Core.DeleteChatFrame(id)
-  addonTable.allChatFrames[id]:SetID(0)
-  addonTable.ChatFramePool:Release(addonTable.allChatFrames[id])
+  addonTable.Core.ReleaseClosedChatFrame(id)
   table.remove(addonTable.Config.Get(addonTable.Config.Options.WINDOWS), id)
-  table.remove(addonTable.allChatFrames, id)
   for index, frame in ipairs(addonTable.allChatFrames) do
     frame:SetID(index)
   end
+end
+
+function addonTable.Core.ReleaseClosedChatFrame(id)
+  addonTable.allChatFrames[id]:SetID(0)
+  addonTable.ChatFramePool:Release(addonTable.allChatFrames[id])
+  table.remove(addonTable.allChatFrames, id)
 end
 
 local frame = CreateFrame("Frame")

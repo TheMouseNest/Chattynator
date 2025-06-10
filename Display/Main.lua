@@ -77,10 +77,15 @@ function addonTable.Display.ChatFrameMixin:OnLoad()
       return
     end
     if settingName == addonTable.Config.Options.WINDOWS then
-      self:ClearAllPoints()
-      self:SetPoint(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].position))
-      self:SetSize(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].size))
-      self.ButtonsBar:Update()
+      local ownWindowData = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()]
+      if not ownWindowData then
+        addonTable.Core.ReleaseClosedChatFrame(self:GetID())
+      else
+        self:ClearAllPoints()
+        self:SetPoint(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].position))
+        self:SetSize(unpack(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetID()].size))
+        self.ButtonsBar:Update()
+      end
     elseif settingName == addonTable.Config.Options.BUTTON_POSITION then
       self.ButtonsBar:Update()
       self:ApplyButtonPositionAnchors()

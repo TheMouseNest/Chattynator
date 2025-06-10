@@ -597,11 +597,17 @@ function addonTable.MessagesMonitorMixin:ReduceMessages()
   self.heights = {}
   self.formatters = {}
   self.messagesProcessed = {}
-  for i = self.messageCount - conversionThreshold / 2, self.messageCount do
+  for i = math.max(1, math.floor(self.messageCount - conversionThreshold / 2)), self.messageCount do
     table.insert(self.messages, oldMessages[i])
-    self.heights[#self.messages] = oldHeights[i]
-    self.formatters[#self.messages] = oldFormatters[i]
-    self.messagesProcessed[#self.messages] = oldProcessed[i]
+    if oldHeights[i] then
+      self.heights[#self.messages] = oldHeights[i]
+    end
+    if oldFormatters[i] then
+      self.formatters[#self.messages] = oldFormatters[i]
+    end
+    if oldProcessed[i] then
+      self.messagesProcessed[#self.messages] = oldProcessed[i]
+    end
   end
   self.newMessageStartPoint = self.newMessageStartPoint - (#oldMessages - #self.messages)
   self.messageCount = #self.messages

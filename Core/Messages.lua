@@ -664,6 +664,10 @@ end
 local ignoreTypes = {
   ["ADDON"] = true,
   ["SYSTEM"] = true,
+  ["ERRORS"] = true,
+  ["AFK"] = true,
+  ["DND"] = true,
+  ["IGNORED"] = true,
   ["CHANNEL"] = true,
   ["DUMP"] = true,
   ["BN_INLINE_TOAST_ALERT"] = true,
@@ -673,6 +677,8 @@ local ignoreTypes = {
   ["PET_INFO"] = true,
   ["COMBAT_MISC_INFO"] = true,
   ["COMBAT_XP_GAIN"] = true,
+  ["COMBAT_FACTION_CHANGE"] = true,
+  ["COMBAT_HONOR_GAIN"] = true,
 }
 
 local ignoreEvents = {

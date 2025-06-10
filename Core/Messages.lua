@@ -364,6 +364,10 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
     if not self.seenMOTD then
       self:ShowGMOTD()
     end
+  elseif eventName == "PLAYER_REGEN_ENABLED" then
+    self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+    self:ReduceMessages()
+    self:UpdateStores()
   elseif eventName == "UPDATE_CHAT_COLOR" then
     local group, r, g, b = ...
     if group then
@@ -560,6 +564,10 @@ function addonTable.MessagesMonitorMixin:UpdateStores()
   if self.storeCount < conversionThreshold then
     return
   end
+  if InCombatLockdown() then
+    self:RegisterEvent("PLAYER_REGEN_ENABLED")
+    return
+  end
 
   local newStore = {}
   for i = 1, self.storeCount - conversionThreshold / 2 - 1 do
@@ -586,6 +594,10 @@ end
 
 function addonTable.MessagesMonitorMixin:ReduceMessages()
   if self.messageCount < conversionThreshold then
+    return
+  end
+  if InCombatLockdown() then
+    self:RegisterEvent("PLAYER_REGEN_ENABLED")
     return
   end
 

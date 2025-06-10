@@ -41,6 +41,7 @@ API/Main.lua
 
 Display/Main.lua
 Display/Tabs.lua
+Display/Buttons.lua
 Display/ScrollingMessages.lua
 Display/MessageRow.lua
 Display/CopyChat.lua

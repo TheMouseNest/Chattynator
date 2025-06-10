@@ -238,12 +238,33 @@ local function SetupLayout(parent)
   showSeparator:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
   table.insert(allFrames, showSeparator)
 
+  local buttonPositionDropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.BUTTONS_POSITION, function(value)
+    return addonTable.Config.Get(addonTable.Config.Options.BUTTON_POSITION) == value
+  end, function(value)
+    addonTable.Config.Set(addonTable.Config.Options.BUTTON_POSITION, value)
+  end)
+  buttonPositionDropdown:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
+  do
+    local entries = {
+      addonTable.Locales.LEFT_ALWAYS,
+      addonTable.Locales.LEFT_HOVER,
+      addonTable.Locales.TOP_HOVER,
+    }
+    local values = {
+      "left_always",
+      "left_hover",
+      "top_hover",
+    }
+    buttonPositionDropdown:Init(entries, values)
+  end
+  table.insert(allFrames, buttonPositionDropdown)
+
   local editBoxPositionDropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.EDIT_BOX_POSITION, function(value)
     return addonTable.Config.Get(addonTable.Config.Options.EDIT_BOX_POSITION) == value
   end, function(value)
     addonTable.Config.Set(addonTable.Config.Options.EDIT_BOX_POSITION, value)
   end)
-  editBoxPositionDropdown:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
+  editBoxPositionDropdown:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
   do
     local entries = {
       addonTable.Locales.BOTTOM,

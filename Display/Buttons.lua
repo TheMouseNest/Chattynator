@@ -250,6 +250,6 @@ function addonTable.Display.ButtonsBarMixin:Update()
       b.fitsSize = currentWidth <= widthAvailable
       b:SetShown(self.active and b.fitsSize)
     end
-    self:SetWidth(math.min(widthAvailable, currentWidth))
+    self:SetSize(math.min(widthAvailable, currentWidth), 26)
   end
 end

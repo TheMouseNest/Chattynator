@@ -207,6 +207,9 @@ function addonTable.Display.ButtonsBarMixin:Update()
   if position:match("^left") then
     local offsetX, offsetY = -5, 20
     self.ScrollToBottomButton:ClearAllPoints()
+    if not addonTable.Config.Get(addonTable.Config.Options.SHOW_TABS) then
+      offsetY = -2
+    end
     if position == "left_hover" then
       offsetX, offsetY = 26 + 2, -2
       self.ScrollToBottomButton:SetPoint("BOTTOMLEFT", self:GetParent().ScrollingMessages, "BOTTOMLEFT", 2, 5)

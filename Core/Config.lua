@@ -103,6 +103,7 @@ local settings = {
 
   NEW_WHISPER_NEW_TAB = {key = "new_whisper_new_tab", default = 0},
   BUTTON_POSITION = {key = "button_position", default = "left_always"},
+  SHOW_TABS = {key = "show_tabs", default = true},
 
   ENABLE_COMBAT_MESSAGES = {key = "enable_combat_messages", default = false},
   DEBUG = {key = "debug", default = false},

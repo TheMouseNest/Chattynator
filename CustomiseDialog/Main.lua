@@ -238,12 +238,19 @@ local function SetupLayout(parent)
   showSeparator:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
   table.insert(allFrames, showSeparator)
 
+  local showTabs = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_TABS, 28, function(state)
+    addonTable.Config.Set(addonTable.Config.Options.SHOW_TABS, state)
+  end)
+  showTabs.option = addonTable.Config.Options.SHOW_TABS
+  showTabs:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
+  table.insert(allFrames, showTabs)
+
   local buttonPositionDropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.BUTTONS_POSITION, function(value)
     return addonTable.Config.Get(addonTable.Config.Options.BUTTON_POSITION) == value
   end, function(value)
     addonTable.Config.Set(addonTable.Config.Options.BUTTON_POSITION, value)
   end)
-  buttonPositionDropdown:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
+  buttonPositionDropdown:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, 0)
   do
     local entries = {
       addonTable.Locales.LEFT_ALWAYS,

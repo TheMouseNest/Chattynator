@@ -92,6 +92,9 @@ function addonTable.Display.ChatFrameMixin:OnLoad()
       self.ScrollingMessages:Render()
     elseif settingName == addonTable.Config.Options.EDIT_BOX_POSITION and self:GetID() == 1 then
       self:PositionEditBox()
+    elseif settingName == addonTable.Config.Options.SHOW_TABS then
+      self:ApplyTabsShowing()
+      self.ButtonsBar:Update()
     end
   end)
 
@@ -122,6 +125,7 @@ function addonTable.Display.ChatFrameMixin:Reset()
   self.ButtonsBar:Update()
   self:AdjustMessageAnchors()
   self:ApplyButtonPositionAnchors()
+  self:ApplyTabsShowing()
   self.ScrollingMessages:Reset()
 
   self.TabsBar:RefreshTabs()
@@ -158,12 +162,24 @@ end
 
 function addonTable.Display.ChatFrameMixin:ApplyButtonPositionAnchors()
   local position = addonTable.Config.Get(addonTable.Config.Options.BUTTON_POSITION)
+  self.ButtonsBar:SetPoint("TOPLEFT", self.ScrollingMessages)
   if position == "left_always" then
     self.ScrollingMessages:SetPoint("TOPLEFT", 34, -27)
     self.TabsBar:SetPoint("TOPLEFT", 32, 0)
   else
     self.ScrollingMessages:SetPoint("TOPLEFT", 2, -27)
     self.TabsBar:SetPoint("TOPLEFT", 4, 0)
+  end
+end
+
+function addonTable.Display.ChatFrameMixin:ApplyTabsShowing()
+  local position = addonTable.Config.Get(addonTable.Config.Options.BUTTON_POSITION)
+  if addonTable.Config.Get(addonTable.Config.Options.SHOW_TABS) then
+    self.TabsBar:Show()
+    self.ScrollingMessages:SetPoint("TOPLEFT", position == "left_always" and 34 or 2, -27)
+  else
+    self.ScrollingMessages:SetPoint("TOPLEFT", position == "left_always" and 34 or 2, -5)
+    self.TabsBar:Hide()
   end
 end
 

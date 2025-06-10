@@ -16,6 +16,9 @@ function addonTable.Display.ButtonsBarMixin:OnLoad()
       self.ScrollToBottomButton:SetShown(destination ~= 0)
     end
   end
+
+  self.hookedButtons = false
+  self.active = false
 end
 
 function addonTable.Display.ButtonsBarMixin:AddBlizzardButtons()
@@ -144,8 +147,57 @@ function addonTable.Display.ButtonsBarMixin:AddButtons()
   addonTable.Skins.AddFrame("ChatButton", self.ScrollToBottomButton, {"scrollToEnd"})
 end
 
+function addonTable.Display.ButtonsBarMixin:OnEnter()
+  for _, b in ipairs(self.buttons) do
+    b:SetShown(b.fitsSize)
+  end
+  self.active = true
+end
+
+function addonTable.Display.ButtonsBarMixin:OnLeave()
+  if self:IsMouseOver() then
+    return
+  end
+  if self.hideTimer then
+    self.hideTimer:Cancel()
+  end
+  self.hideTimer = C_Timer.NewTimer(2, function()
+    for _, b in ipairs(self.buttons) do
+      b:Hide()
+    end
+    self.active = false
+  end)
+end
+
 function addonTable.Display.ButtonsBarMixin:Update()
   local position = addonTable.Config.Get(addonTable.Config.Options.BUTTON_POSITION)
+
+  if position:match("hover") then
+    self:SetScript("OnEnter", self.OnEnter)
+    self:SetScript("OnLeave", self.OnLeave)
+    if not self.hookedButtons then
+      self.hookedButtons = true
+      for _, b in ipairs(self.buttons) do
+        b:HookScript("OnEnter", function()
+          self:OnEnter()
+        end)
+        b:HookScript("OnLeave", function()
+          self:OnLeave()
+        end)
+        b:Hide()
+      end
+      self.active = false
+    end
+  else
+    self.active = true
+    self:SetScript("OnEnter", nil)
+    self:SetScript("OnLeave", nil)
+    if self.hideTimer then
+      self.hideTimer:Cancel()
+      self.hideTimer = nil
+    end
+  end
+
   if position:match("^left") then
     local offsetX, offsetY = -5, 20
     self.ScrollToBottomButton:ClearAllPoints()
@@ -155,6 +207,8 @@ function addonTable.Display.ButtonsBarMixin:Update()
     else
       self.ScrollToBottomButton:SetPoint("BOTTOMRIGHT", self:GetParent().ScrollingMessages, "BOTTOMLEFT", -5, 5)
     end
+    self:ClearAllPoints()
+    self:SetPoint("TOPRIGHT", self:GetParent().ScrollingMessages, "TOPLEFT", offsetX, offsetY)
     for _, b in ipairs(self.buttons) do
       local anchor = {"TOPRIGHT", self:GetParent().ScrollingMessages, "TOPLEFT", offsetX, offsetY}
       if b == QuickJoinToastButton or b == FriendsMicroButton then
@@ -169,12 +223,16 @@ function addonTable.Display.ButtonsBarMixin:Update()
     local currentHeight = 0
     for _, b in ipairs(self.buttons) do
       currentHeight = currentHeight + b:GetHeight() + 5
-      b:SetShown(currentHeight <= heightAvailable)
+      b.fitsSize = currentHeight <= heightAvailable
+      b:SetShown(self.active and b.fitsSize)
     end
+    self:SetSize(22, math.min(heightAvailable, currentHeight))
   elseif position == "top_hover" then
     local offsetX, offsetY = 2, -2
     self.ScrollToBottomButton:ClearAllPoints()
     self.ScrollToBottomButton:SetPoint("BOTTOMLEFT", self:GetParent().ScrollingMessages, "BOTTOMLEFT", 2, 5)
+    self:ClearAllPoints()
+    self:SetPoint("TOPLEFT", self:GetParent().ScrollingMessages, "TOPLEFT", offsetX, offsetY)
     for _, b in ipairs(self.buttons) do
       local anchor = {"TOPLEFT", self:GetParent().ScrollingMessages, "TOPLEFT", offsetX, offsetY}
       if b == QuickJoinToastButton or b == FriendsMicroButton then
@@ -189,7 +247,9 @@ function addonTable.Display.ButtonsBarMixin:Update()
     local currentWidth = 0
     for _, b in ipairs(self.buttons) do
       currentWidth = currentWidth + b:GetWidth() + 5
-      b:SetShown(currentWidth <= widthAvailable)
+      b.fitsSize = currentWidth <= widthAvailable
+      b:SetShown(self.active and b.fitsSize)
     end
+    self:SetWidth(math.min(widthAvailable, currentWidth))
   end
 end

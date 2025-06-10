@@ -151,6 +151,9 @@ function addonTable.Display.ButtonsBarMixin:OnEnter()
   for _, b in ipairs(self.buttons) do
     b:SetShown(b.fitsSize)
   end
+  if self.hideTimer then
+    self.hideTimer:Cancel()
+  end
   self.active = true
 end
 
@@ -187,6 +190,9 @@ function addonTable.Display.ButtonsBarMixin:Update()
         b:Hide()
       end
       self.active = false
+    end
+    if self.active then
+      self:OnLeave() -- Hide if necessary
     end
   else
     self.active = true

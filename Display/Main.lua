@@ -89,6 +89,7 @@ function addonTable.Display.ChatFrameMixin:OnLoad()
     elseif settingName == addonTable.Config.Options.BUTTON_POSITION then
       self.ButtonsBar:Update()
       self:ApplyButtonPositionAnchors()
+      self.ScrollingMessages:Render()
     elseif settingName == addonTable.Config.Options.EDIT_BOX_POSITION and self:GetID() == 1 then
       self:PositionEditBox()
     end

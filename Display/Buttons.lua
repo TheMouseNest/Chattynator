@@ -176,16 +176,21 @@ function addonTable.Display.ButtonsBarMixin:Update()
   local position = addonTable.Config.Get(addonTable.Config.Options.BUTTON_POSITION)
 
   if position:match("hover") then
+    self.lockActive = false
     self:SetScript("OnEnter", self.OnEnter)
     self:SetScript("OnLeave", self.OnLeave)
     if not self.hookedButtons then
       self.hookedButtons = true
       for _, b in ipairs(self.buttons) do
         b:HookScript("OnEnter", function()
-          self:OnEnter()
+          if not self.lockActive then
+            self:OnEnter()
+          end
         end)
         b:HookScript("OnLeave", function()
-          self:OnLeave()
+          if not self.lockActive then
+            self:OnLeave()
+          end
         end)
         b:Hide()
       end
@@ -196,6 +201,7 @@ function addonTable.Display.ButtonsBarMixin:Update()
     end
   else
     self.active = true
+    self.lockActive = true -- Prevent hooked stuff hiding the buttons
     self:SetScript("OnEnter", nil)
     self:SetScript("OnLeave", nil)
     if self.hideTimer then

@@ -67,7 +67,20 @@ local skinners = {
       button.Icon:SetDrawLayer("ARTWORK")
       button.Icon:SetSize(12, 12)
       button.Icon:ClearAllPoints()
-      button.Icon:SetPoint("TOP", 0, -2)
+      button.Icon:SetPoint("TOP", 0, -2);
+      (button.FriendCount or FriendsMicroButtonCount):SetTextColor(intensity, intensity, intensity)
+      button:HookScript("OnEnter", function()
+        if not enableHooks then
+          return
+        end
+        (button.FriendCount or FriendsMicroButtonCount):SetTextColor(hoverColor.r, hoverColor.g, hoverColor.b)
+      end)
+      button:HookScript("OnLeave", function()
+        if not enableHooks then
+          return
+        end
+        (button.FriendCount or FriendsMicroButtonCount):SetTextColor(intensity, intensity, intensity)
+      end)
     elseif tags.channels then
       hooksecurefunc(button, "SetIconToState", function(self, state)
         if not enableHooks then

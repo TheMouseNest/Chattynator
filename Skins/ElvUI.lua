@@ -339,12 +339,5 @@ if addonTable.Skins.IsAddOnLoading("ElvUI") then
   frame:RegisterEvent("PLAYER_LOGIN")
   frame:RegisterEvent("ADDON_LOADED")
   addonTable.Skins.RegisterSkin(addonTable.Locales.ELVUI, "elvui", LoadSkin, SkinFrame, SetConstants, {
-    {
-      type = "checkbox",
-      text = addonTable.Locales.USE_EXPRESSWAY_FONT_ON_ITEMS,
-      option = "use_bag_font",
-      rightText = addonTable.Locales.RELOAD_REQUIRED,
-      default = false,
-    },
   }, true)
 end

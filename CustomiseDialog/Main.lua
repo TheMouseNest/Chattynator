@@ -486,9 +486,9 @@ local function SetupThemes(parent)
   local skinKey = addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)
   local currentSkin = addonTable.Skins.availableSkins[skinKey]
   for index, option in ipairs(currentSkin.options) do
+    local optionKey = "skins." .. skinKey .. "." .. option.option
     if option.type == "slider" then
       local slider
-      local optionKey = "skins." .. skinKey .. "." .. option.option
       slider = addonTable.CustomiseDialog.Components.GetSlider(container, option.text, option.min, option.max, option.valuePattern, function()
         addonTable.Config.Set(optionKey, slider:GetValue() / (option.scale or 1))
       end)
@@ -496,6 +496,13 @@ local function SetupThemes(parent)
       slider.scale = option.scale
       slider:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, index == 1 and -30 or 0)
       table.insert(allFrames, slider)
+    elseif option.type == "checkbox" then
+      local checkbox = addonTable.CustomiseDialog.Components.GetCheckbox(container, option.text, 28, function(state)
+        addonTable.Config.Set(optionKey, state)
+      end)
+      checkbox.option = optionKey
+      checkbox:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
+      table.insert(allFrames, checkbox)
     end
   end
 

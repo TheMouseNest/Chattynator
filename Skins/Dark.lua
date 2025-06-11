@@ -138,8 +138,12 @@ local skinners = {
     local alpha = 1 - addonTable.Config.Get("skins.dark.chat_transparency")
     table.insert(chatFrames, frame)
     frame.background = frame:CreateTexture(nil, "BACKGROUND")
-    frame.background:SetTexture("Interface/AddOns/Chattynator/Assets/ChatBackground")
-    frame.background:SetTexCoord(0, 1, 1, 0)
+    if addonTable.Config.Get("skins.dark.solid_chat_background") then
+      frame.background:SetColorTexture(0, 0, 0)
+    else
+      frame.background:SetTexture("Interface/AddOns/Chattynator/Assets/ChatBackground")
+      frame.background:SetTexCoord(0, 1, 1, 0)
+    end
     frame.background:SetPoint("TOP", frame.ScrollingMessages, 0, 5)
     frame.background:SetPoint("LEFT")
     frame.background:SetPoint("BOTTOMRIGHT", frame.ScrollingMessages, 0, -5)
@@ -382,11 +386,29 @@ local function LoadSkin()
       for _, frame in ipairs(chatFrames) do
         frame.background:SetAlpha(alpha)
       end
+    elseif settingName == "skins.dark.solid_chat_background" then
+      local isSolid = addonTable.Config.Get(settingName)
+      if isSolid then
+        for _, frame in ipairs(chatFrames) do
+          frame.background:SetColorTexture(0, 0, 0)
+        end
+      else
+        for _, frame in ipairs(chatFrames) do
+          frame.background:SetTexture("Interface/AddOns/Chattynator/Assets/ChatBackground")
+          frame.background:SetTexCoord(0, 1, 1, 0)
+        end
+      end
     end
   end)
 end
 
 addonTable.Skins.RegisterSkin(addonTable.Locales.DARK, "dark", LoadSkin, SkinFrame, SetConstants, {
+  {
+    type = "checkbox",
+    text = addonTable.Locales.SOLID_CHAT_BACKGROUND,
+    option = "solid_chat_background",
+    default = false,
+  },
   {
     type = "slider",
     min = 0,

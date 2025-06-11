@@ -45,6 +45,7 @@ end
 function addonTable.Display.CopyChatMixin:LoadMessages(filterFunc, indexOffset)
   local messages = {}
   local index = indexOffset or 1
+  local showTimestamp = addonTable.Config.Get(addonTable.Config.Options.COPY_TIMESTAMPS)
   while #messages < 200 do
     local m = addonTable.Messages:GetMessageRaw(index)
     if not m then
@@ -53,7 +54,11 @@ function addonTable.Display.CopyChatMixin:LoadMessages(filterFunc, indexOffset)
     if m.recordedBy == addonTable.Data.CharacterName and (not filterFunc or filterFunc(m)) then
       m = addonTable.Messages:GetMessageProcessed(index)
       local color = CreateColor(m.color.r, m.color.g, m.color.b)
-      local text = color:WrapTextInColorCode(m.text):gsub("|K(.-)|k", "???")
+      local timestamp = ""
+      if showTimestamp then
+        timestamp = GRAY_FONT_COLOR:WrapTextInColorCode("[" .. date(addonTable.Messages.timestampFormat, m.timestamp) .. "] ")
+      end
+      local text = timestamp .. color:WrapTextInColorCode(m.text):gsub("|K(.-)|k", "???")
       text = CustomCleanup(text)
       table.insert(messages, 1, text)
     end

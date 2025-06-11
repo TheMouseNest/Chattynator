@@ -105,6 +105,7 @@ local settings = {
   BUTTON_POSITION = {key = "button_position", default = "left_always"},
   SHOW_TABS = {key = "show_tabs", default = true},
 
+  COPY_TIMESTAMPS = {key = "copy_timestamps", default = true},
   ENABLE_COMBAT_MESSAGES = {key = "enable_combat_messages", default = false},
   DEBUG = {key = "debug", default = false},
 

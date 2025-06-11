@@ -90,13 +90,13 @@ local skinners = {
     end)
 
     if tags.toasts then
-      button.Icon = button.FriendsButton
-      button.FriendsButton:SetTexture("Interface/AddOns/Chattynator/Assets/ChatSocial.png")
-      button.FriendsButton:SetVertexColor(intensity, intensity, intensity)
-      button.FriendsButton:SetDrawLayer("ARTWORK")
-      button.FriendsButton:SetSize(12, 12)
-      button.FriendsButton:ClearAllPoints()
-      button.FriendsButton:SetPoint("TOP", 0, -2)
+      button.Icon = button.FriendsButton or button:CreateTexture(nil, "ARTWORK")
+      button.Icon:SetTexture("Interface/AddOns/Chattynator/Assets/ChatSocial.png")
+      button.Icon:SetVertexColor(intensity, intensity, intensity)
+      button.Icon:SetDrawLayer("ARTWORK")
+      button.Icon:SetSize(12, 12)
+      button.Icon:ClearAllPoints()
+      button.Icon:SetPoint("TOP", 0, -2)
 
       button:HookScript("OnEnter", function()
         if not enableHooks then

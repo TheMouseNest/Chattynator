@@ -169,5 +169,6 @@ frame:RegisterEvent("ADDON_LOADED")
 frame:SetScript("OnEvent", function(_, eventName, data)
   if eventName == "ADDON_LOADED" and data == "Chattynator" then
     addonTable.Core.Initialize()
+    addonTable.API.Initialize()
   end
 end)

@@ -10,6 +10,7 @@ function Chattynator.API.GetHyperlinkHandler()
 end
 
 local dynamicModFuncToWrapper = {}
+local dynamicModFuncQueue = {}
 
 -- Permits non-destructive (ie backing data is unaffected) modification
 -- of messages before display.
@@ -23,11 +24,24 @@ function Chattynator.API.AddModifier(func)
     end
   end
   dynamicModFuncToWrapper[func] = wrapper
-  addonTable.Messages:AddLiveModifier(wrapper)
+  if not addonTable.Messages then
+    table.insert(dynamicModFuncQueue, wrapper)
+  else
+    addonTable.Messages:AddLiveModifier(wrapper)
+  end
 end
 
 ---@param func function(data)
 function Chattynator.API.RemoveModifier(func)
+  if not addonTable.Messages then
+    local index = tIndexOf(dynamicModFuncQueue, dynamicModFuncToWrapper[func])
+    if index then
+      table.remove(dynamicModFuncQueue, index)
+    end
+    dynamicModFuncToWrapper[func] = nil
+    return
+  end
+
   if dynamicModFuncToWrapper[func] then
     addonTable.Messages:RemoveLiveModifier(dynamicModFuncToWrapper[func])
     dynamicModFuncToWrapper[func] = nil
@@ -126,6 +140,9 @@ end
 ---@param g number?
 ---@param b number?
 function Chattynator.API.AddMessageToWindowAndTab(windowIndex, tabIndex, message, r, g, b)
+  if not addonTable.Messages then
+    print(message)
+  end
   local addonPath = debugstack(2, 1, 0)
   local source = addonPath:match("Interface/AddOns/([^/]+)/")
   if addonPath:find("/[Ll]ibs?/Ace") then
@@ -135,4 +152,10 @@ function Chattynator.API.AddMessageToWindowAndTab(windowIndex, tabIndex, message
   end
   addonTable.Messages:SetIncomingType({type = "ADDON", event = "NONE", source = source, tabTag = windowIndex .. "_" .. tabIndex})
   addonTable.Messages:AddMessage(message, r, g, b)
+end
+
+function addonTable.API.Initialize()
+  for _, func in ipairs(dynamicModFuncQueue) do
+    addonTable.Messages:AddLiveModifier(func)
+  end
 end

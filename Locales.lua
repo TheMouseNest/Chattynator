@@ -112,6 +112,8 @@ L["RELOAD"] = "Reload"
 L["TAB_TRANSPARENCY"] = "Tab transparency"
 L["CHAT_TRANSPARENCY"] = "Chat transparency"
 L["SOLID_CHAT_BACKGROUND"] = "Solid chat background"
+L["BACKGROUND_COLOR"] = "Background Color"
+L["TAB_COLOR"] = "Tab Color"
 
 L["MESSAGE_TYPES"] = "Message types"
 L["NONE_SELECTED"] = "None Selected"

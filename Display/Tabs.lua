@@ -151,6 +151,7 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
     tabButton:SetText(_G[tabData.name] or tabData.name or UNKNOWN)
     local tabColor = CreateColorFromRGBHexString(tabData.tabColor)
     local bgColor = CreateColorFromRGBHexString(tabData.backgroundColor)
+    local tabTag = self.chatFrame:GetID() .. "_" .. index
     tabButton.filter = self:GetFilter(tabData, tabTag)
     tabButton.bgColor = bgColor
     tabButton:SetScript("OnClick", function(_, mouseButton)
@@ -182,6 +183,48 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
             rootDescription:CreateButton(addonTable.Locales.RENAME_TAB, function()
               StaticPopup_Show(renameDialog, nil, nil, {window = self.chatFrame:GetID(), tab = tabButton:GetID()})
             end)
+            do
+              local oldColor = tabData.tabColor
+              local colorInfo = {
+                r = tabColor.r, g = tabColor.g, b = tabColor.b,
+                swatchFunc = function()
+                  tabColor.r, tabColor.g, tabColor.b =  ColorPickerFrame:GetColorRGB()
+                  tabData.tabColor = tabColor:GenerateHexColorNoAlpha()
+                  addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+                end,
+                cancelFunc = function()
+                  tabData.tabColor = oldColor
+                  addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+                end,
+              }
+              rootDescription:CreateColorSwatch(addonTable.Locales.TAB_COLOR,
+                function()
+                  ColorPickerFrame:SetupColorPickerAndShow(colorInfo)
+                end,
+                colorInfo
+              )
+            end
+            do
+              local oldColor = tabData.backgroundColor
+              local colorInfo = {
+                r = bgColor.r, g = bgColor.g, b = bgColor.b,
+                swatchFunc = function()
+                  bgColor.r, bgColor.g, bgColor.b =  ColorPickerFrame:GetColorRGB()
+                  tabData.backgroundColor = bgColor:GenerateHexColorNoAlpha()
+                  addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+                end,
+                cancelFunc = function()
+                  tabData.backgroundColor = oldColor
+                  addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+                end,
+              }
+              rootDescription:CreateColorSwatch(addonTable.Locales.BACKGROUND_COLOR,
+                function()
+                  ColorPickerFrame:SetupColorPickerAndShow(colorInfo)
+                end,
+                colorInfo
+              )
+            end
             if tabButton:GetID() ~= 1 then
               rootDescription:CreateButton(addonTable.Locales.MOVE_TO_NEW_WINDOW, function()
                 local newChatFrame = addonTable.Core.MakeChatFrame()

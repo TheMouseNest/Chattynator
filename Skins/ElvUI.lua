@@ -53,6 +53,8 @@ local skinners = {
       end
     end
     S:HandleEditBox(editBox)
+    local _, size = editBox:GetFont()
+    editBox:FontTemplate(LSM:Fetch('font', CH.db.font), size, CH.db.fontOutline)
   end,
   TabButton = function(frame)
     S:HandleTab(frame)
@@ -178,6 +180,7 @@ local skinners = {
     end
     tab:GetFontString():SetWordWrap(false)
     tab:GetFontString():SetNonSpaceWrap(false)
+    tab:GetFontString():FontTemplate(LSM:Fetch('font', CH.db.tabFont), CH.db.tabFontSize, CH.db.tabFontOutline)
     local fsWidth
     if tab.minWidth then
       fsWidth = tab:GetFontString():GetUnboundedStringWidth() + addonTable.Constants.TabPadding

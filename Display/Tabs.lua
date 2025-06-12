@@ -260,7 +260,7 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
     if lastButton == nil then
       tabButton:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, -22)
     else
-      tabButton:SetPoint("LEFT", lastButton, "RIGHT", 10, 0)
+      tabButton:SetPoint("LEFT", lastButton, "RIGHT", addonTable.Constants.TabSpacing, 0)
     end
     tabButton:SetColor(tabColor.r, tabColor.g, tabColor.b)
     table.insert(allTabs, tabButton)
@@ -338,7 +338,7 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
     if lastButton == nil then
       combatLogButton:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, -22)
     else
-      combatLogButton:SetPoint("LEFT", lastButton, "RIGHT", 10, 0)
+      combatLogButton:SetPoint("LEFT", lastButton, "RIGHT", addonTable.Constants.TabSpacing, 0)
     end
 
     table.insert(allTabs, combatLogButton)
@@ -360,7 +360,7 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
     if lastButton == nil then
       newTab:SetPoint("BOTTOMLEFT", self.chatFrame, "TOPLEFT", 32, -22)
     else
-      newTab:SetPoint("LEFT", lastButton, "RIGHT", 10, 0)
+      newTab:SetPoint("LEFT", lastButton, "RIGHT", addonTable.Constants.TabSpacing, 0)
     end
     lastButton = newTab
   end

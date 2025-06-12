@@ -14,6 +14,18 @@ function addonTable.Core.MigrateSettings()
       tab.addons = tab.addons or {}
     end
   end
+  local buttonPositionMap = {
+    left_always = "outside_left",
+    left_hover = "inside_left",
+    top_hover = "outside_tabs",
+  }
+  local position = addonTable.Config.Get(addonTable.Config.Options.BUTTON_POSITION)
+  if buttonPositionMap[position] then
+    addonTable.Config.Set(addonTable.Config.Options.BUTTON_POSITION, buttonPositionMap[position])
+    if position:match("hover") then
+      addonTable.Config.Set(addonTable.Config.Options.SHOW_BUTTONS_ON_HOVER, true)
+    end
+  end
   addonTable.Skins.InstallOptions()
 end
 

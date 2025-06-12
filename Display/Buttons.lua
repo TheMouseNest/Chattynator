@@ -175,7 +175,7 @@ end
 function addonTable.Display.ButtonsBarMixin:Update()
   local position = addonTable.Config.Get(addonTable.Config.Options.BUTTON_POSITION)
 
-  if position:match("hover") then
+  if addonTable.Config.Get(addonTable.Config.Options.SHOW_BUTTONS_ON_HOVER) then
     self.lockActive = false
     self:SetScript("OnEnter", self.OnEnter)
     self:SetScript("OnLeave", self.OnLeave)
@@ -210,13 +210,13 @@ function addonTable.Display.ButtonsBarMixin:Update()
     end
   end
 
-  if position:match("^left") then
+  if position:match("left") then
     local offsetX, offsetY = -5, 20
     self.ScrollToBottomButton:ClearAllPoints()
     if not addonTable.Config.Get(addonTable.Config.Options.SHOW_TABS) then
       offsetY = -2
     end
-    if position == "left_hover" then
+    if position:match("inside") then
       offsetX, offsetY = 26 + 2, -2
       self.ScrollToBottomButton:SetPoint("BOTTOMLEFT", self:GetParent().ScrollingMessages, "BOTTOMLEFT", 2, 5)
     else
@@ -242,8 +242,14 @@ function addonTable.Display.ButtonsBarMixin:Update()
       b:SetShown(self.active and b.fitsSize)
     end
     self:SetSize(22, math.min(heightAvailable, currentHeight))
-  elseif position == "top_hover" then
+  elseif position:match("tabs") then
     local offsetX, offsetY = 2, -2
+    if position:match("outside") then
+      offsetY = 27 + 28 + 2
+      if not addonTable.Config.Get(addonTable.Config.Options.SHOW_TABS) then
+        offsetY = offsetY - 23
+      end
+    end
     self.ScrollToBottomButton:ClearAllPoints()
     self.ScrollToBottomButton:SetPoint("BOTTOMLEFT", self:GetParent().ScrollingMessages, "BOTTOMLEFT", 2, 5)
     self:ClearAllPoints()

@@ -102,7 +102,8 @@ local settings = {
   LINK_URLS = {key = "link_urls", default = true, refresh = {addonTable.Constants.RefreshReason.MessageModifier}},
 
   NEW_WHISPER_NEW_TAB = {key = "new_whisper_new_tab", default = 0},
-  BUTTON_POSITION = {key = "button_position", default = "left_always"},
+  BUTTON_POSITION = {key = "button_position", default = "outside_left"},
+  SHOW_BUTTONS_ON_HOVER = {key = "show_buttons_on_hover", default = false},
   SHOW_TABS = {key = "show_tabs", default = true},
 
   COPY_TIMESTAMPS = {key = "copy_timestamps", default = true},

@@ -102,6 +102,9 @@ local skinners = {
       tab.background.Right:ClearAllPoints()
       tab.background.Right:SetPoint("TOPRIGHT", 3, 0)
       tab.background.Middle:SetPoint("RIGHT", tab.background.Right, "LEFT")
+    else
+      tab.background.Left:AdjustPointsOffset(-3, 0)
+      tab.background.Right:AdjustPointsOffset(3, 0)
     end
     tab.background.flash = tab.background:CreateTexture(nil, "BACKGROUND")
     tab.background.flash:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-Tab-Highlight")

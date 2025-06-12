@@ -337,6 +337,9 @@ if addonTable.Skins.IsAddOnLoading("ElvUI") then
       table.insert(ElvUI[1].INCOMPATIBLE_ADDONS.Chat, "Chattynator")
     end
   end)
+  if ElvUI then
+    table.insert(ElvUI[1].INCOMPATIBLE_ADDONS.Chat, "Chattynator")
+  end
   frame:RegisterEvent("PLAYER_LOGIN")
   frame:RegisterEvent("ADDON_LOADED")
   addonTable.Skins.RegisterSkin(addonTable.Locales.ELVUI, "elvui", LoadSkin, SkinFrame, SetConstants, {

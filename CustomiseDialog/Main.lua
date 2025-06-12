@@ -262,13 +262,13 @@ local function SetupLayout(parent)
     local entries = {
       addonTable.Locales.LEFT_OUTSIDE,
       addonTable.Locales.LEFT_INSIDE,
-      --addonTable.Locales.TABS_BELOW,
+      addonTable.Locales.TABS_BELOW,
       addonTable.Locales.TABS_ABOVE,
     }
     local values = {
       "outside_left",
       "inside_left",
-      --"inside_tabs",
+      "inside_tabs",
       "outside_tabs",
     }
     buttonPositionDropdown:Init(entries, values)

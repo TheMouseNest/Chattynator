@@ -17,7 +17,7 @@ function addonTable.Core.MigrateSettings()
   local buttonPositionMap = {
     left_always = "outside_left",
     left_hover = "inside_left",
-    top_hover = "outside_tabs",
+    top_hover = "inside_tabs",
   }
   local position = addonTable.Config.Get(addonTable.Config.Options.BUTTON_POSITION)
   if buttonPositionMap[position] then

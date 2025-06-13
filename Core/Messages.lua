@@ -636,9 +636,11 @@ function addonTable.MessagesMonitorMixin:UpdateChannels()
     for i = 1, #channelDetails, 3 do
       local name = channelDetails[i + 1]
       local _, fullName = GetChannelName(name)
-      local zoneID = C_ChatInfo.GetChannelInfoFromIdentifier(fullName).zoneChannelID
-      table.insert(self.channelList, fullName)
-      table.insert(self.zoneChannelList, zoneID)
+      if fullName then
+        local zoneID = C_ChatInfo.GetChannelInfoFromIdentifier(fullName).zoneChannelID
+        table.insert(self.channelList, fullName)
+        table.insert(self.zoneChannelList, zoneID)
+      end
     end
   end
 

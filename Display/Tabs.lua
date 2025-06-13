@@ -302,6 +302,7 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
         ChatFrame2TopTexture:SetParent(addonTable.hiddenFrame)
         ChatFrame2RightTexture:SetParent(addonTable.hiddenFrame)
         ChatFrame2LeftTexture:SetParent(addonTable.hiddenFrame)
+        ChatFrame2:SetClampRectInsets(0, 0, 0, 0)
         if ChatFrame2ButtonFrameBackground then
           ChatFrame2ButtonFrameBackground:SetParent(addonTable.hiddenFrame)
           ChatFrame2ButtonFrameRightTexture:SetParent(addonTable.hiddenFrame)

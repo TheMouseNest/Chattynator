@@ -222,6 +222,7 @@ function addonTable.Display.ButtonsBarMixin:Update()
     else
       self.ScrollToBottomButton:SetPoint("BOTTOMRIGHT", self:GetParent().ScrollingMessages, "BOTTOMLEFT", -5, 5)
     end
+    local startingOffsetY = offsetY
     self:ClearAllPoints()
     self:SetPoint("TOPRIGHT", self:GetParent().ScrollingMessages, "TOPLEFT", offsetX, offsetY)
     for _, b in ipairs(self.buttons) do
@@ -234,7 +235,7 @@ function addonTable.Display.ButtonsBarMixin:Update()
       offsetY = offsetY - b:GetHeight() - 5
     end
 
-    local heightAvailable = self:GetParent().ScrollingMessages:GetHeight() - 8 - self.ScrollToBottomButton:GetHeight() - 2 + 20
+    local heightAvailable = self:GetParent().ScrollingMessages:GetHeight() - 8 - self.ScrollToBottomButton:GetHeight() + startingOffsetY + 20
     local currentHeight = 0
     for _, b in ipairs(self.buttons) do
       currentHeight = currentHeight + b:GetHeight() + 5

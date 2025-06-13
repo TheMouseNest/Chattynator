@@ -413,7 +413,7 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
 
     addonTable.CallbackRegistry:TriggerEvent("Render")
   else
-    local _, playerArg, _, _, _, _, channelID, channelIndex, _, _, _, playerGUID = ...
+    local _, playerArg, _, _, _, _, channelID, channelIndex, _, _, lineID, playerGUID = ...
     local channelName = self.channelMap[channelIndex]
     local playerClass, playerRace, playerSex, _
     if playerGUID then
@@ -427,11 +427,12 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
       player = playerArg and {name = playerArg, class = playerClass, race = playerRace, sex = playerSex},
       channel = channelName and {name = channelName, index = channelIndex, isDefault = self.defaultChannels[channelName], zoneID = channelID} or nil,
     })
-    self.lineID = select(11, ...)
+    self.lineID = lineID
     self.lockType = true
     ChatFrame_OnEvent(self, eventName, ...)
     self.lockType = false
     self.incomingType = nil
+    self.lineID = nil
   end
 end
 
@@ -744,15 +745,15 @@ function addonTable.MessagesMonitorMixin:AddMessage(text, r, g, b, _, _, _, _, _
   if addonTable.Data.CharacterName == nil then
     table.insert(self.awaitingRecorderSet, {data, self.messageCount + 1})
   end
-  if not self.lockType then
-    self.incomingType = nil
-  end
   table.insert(self.messages, data)
   self.formatters[self.messageCount + 1] = {
-    formatter = Formatter,
+    Formatter = Formatter,
     lineID = self.lineID,
   }
-  self.lineID = nil
+  if not self.lockType then
+    self.incomingType = nil
+    self.lineID = nil
+  end
   if self:ShouldLog(data) then
     self.storeCount = self.storeCount + 1
     self.store[self.storeCount] = data

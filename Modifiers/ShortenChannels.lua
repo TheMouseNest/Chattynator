@@ -124,14 +124,14 @@ local chatTypeToPatterns = {
 local patterns
 
 local function Shorten(data)
-  data.text = data.text:gsub(patterns.player.p, patterns.player.r)
+  data.text = data.text:gsub(patterns.player.p, patterns.player.r, 1)
   if data.typeInfo.channel and data.typeInfo.type ~= "CHANNEL" then
-    data.text = data.text:gsub(patterns.channel.p, patterns.channel.r(data))
+    data.text = data.text:gsub(patterns.channel.p, patterns.channel.r(data), 1)
   elseif data.typeInfo.type == "GUILD" and data.typeInfo.event == "CHAT_MSG_GUILD" then
-    data.text = data.text:gsub(patterns.guild.p, patterns.guild.r)
+    data.text = data.text:gsub(patterns.guild.p, patterns.guild.r, 1)
   elseif chatTypeToPatterns[data.typeInfo.type] then
     local p = patterns[chatTypeToPatterns[data.typeInfo.type]]
-    data.text = data.text:gsub(p.p, p.r)
+    data.text = data.text:gsub(p.p, p.r, 1)
   end
 end
 

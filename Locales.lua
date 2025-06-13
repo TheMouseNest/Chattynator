@@ -38,6 +38,8 @@ L["UNLOCK_CHAT"] = "Unlock Chat"
 L["LOCK_CHAT"] = "Lock Chat"
 L["COPY_CHAT"] = "Copy Chat"
 
+L["DISABLE_ADDON_X"] = "%s is incompatible with Chattynator and may cause glitches."
+
 L["CANT_POPOUT_THIS_CHANNEL"] = "Can't popout this channel"
 
 L["LAYOUT"] = "Layout"

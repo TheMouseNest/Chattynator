@@ -29,6 +29,41 @@ function addonTable.Core.MigrateSettings()
   addonTable.Skins.InstallOptions()
 end
 
+
+local disableDialog = "Chattynator_DisableAddonDialog"
+StaticPopupDialogs[disableDialog] = {
+  button1 = DISABLE,
+  button2 = IGNORE,
+  OnAccept = function(_, data)
+    C_AddOns.DisableAddOn(data)
+    ReloadUI()
+  end,
+  timeout = 0,
+  hideOnEscape = 1,
+}
+
+local incompatibleAddons = {
+  "Prat-3.0",
+  "BasicChatMods",
+  "alaChat",
+  "Chatter",
+  "DejaChat",
+  "ls_Glass",
+  "XanChat",
+  "MinimalistChat",
+}
+
+function addonTable.Core.CompatibilityWarnings()
+  for _, addon in ipairs(incompatibleAddons) do
+    if C_AddOns.IsAddOnLoaded(addon) then
+      local _, title = C_AddOns.GetAddOnInfo(addon)
+      StaticPopupDialogs[disableDialog].text = addonTable.Locales.DISABLE_ADDON_X:format(title)
+      StaticPopup_Show(disableDialog, nil, nil, addon)
+      break
+    end
+  end
+end
+
 local hidden = CreateFrame("Frame")
 hidden:Hide()
 addonTable.hiddenFrame = hidden
@@ -178,9 +213,12 @@ end
 
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("ADDON_LOADED")
+frame:RegisterEvent("PLAYER_LOGIN")
 frame:SetScript("OnEvent", function(_, eventName, data)
   if eventName == "ADDON_LOADED" and data == "Chattynator" then
     addonTable.Core.Initialize()
     addonTable.API.Initialize()
+  elseif eventName == "PLAYER_LOGIN" then
+    C_Timer.After(1, addonTable.Core.CompatibilityWarnings)
   end
 end)

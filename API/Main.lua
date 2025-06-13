@@ -78,7 +78,7 @@ function Chattynator.API.AddFilter(func, windowIndex, tabIndex)
     wrapper = function(data)
       local state, value = xpcall(function() return func(data) end, CallErrorHandler)
       if not state then
-        Chattynator.API.RemoveRejectionFilter(func, windowIndex, tabIndex)
+        Chattynator.API.RemoveFilter(func, windowIndex, tabIndex)
         return true
       else
         return value

@@ -57,7 +57,9 @@ function addonTable.Core.CompatibilityWarnings()
   for _, addon in ipairs(incompatibleAddons) do
     if C_AddOns.IsAddOnLoaded(addon) then
       local _, title = C_AddOns.GetAddOnInfo(addon)
-      StaticPopupDialogs[disableDialog].text = addonTable.Locales.DISABLE_ADDON_X:format(title)
+      local text =  addonTable.Locales.DISABLE_ADDON_X:format(title)
+      addonTable.Utilities.Message(text)
+      StaticPopupDialogs[disableDialog].text = text
       StaticPopup_Show(disableDialog, nil, nil, addon)
       break
     end

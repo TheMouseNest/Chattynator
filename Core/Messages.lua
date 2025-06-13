@@ -633,9 +633,10 @@ function addonTable.MessagesMonitorMixin:UpdateChannels()
   if #channelDetails > 0 then
     for i = 1, #channelDetails, 3 do
       local name = channelDetails[i + 1]
-      local id, fullName = GetChannelName(name)
+      local _, fullName = GetChannelName(name)
+      local zoneID = C_ChatInfo.GetChannelInfoFromIdentifier(fullName).zoneChannelID
       table.insert(self.channelList, fullName)
-      table.insert(self.zoneChannelList, id)
+      table.insert(self.zoneChannelList, zoneID)
     end
   end
 
@@ -651,7 +652,7 @@ function addonTable.MessagesMonitorMixin:UpdateChannels()
         self.maxDisplayChannels = math.max(self.maxDisplayChannels, channelNumber)
       end
 
-      if category ~= "CHANNEL_CATEGORY_CUSTOM" or select(4, GetChannelName(name)) then
+      if category ~= "CHANNEL_CATEGORY_CUSTOM" then
         self.defaultChannels[name] = true
       end
     end
@@ -664,7 +665,9 @@ function addonTable.MessagesMonitorMixin:UpdateChannels()
       local clubInfo = C_Club.GetClubInfo(communityIDStr)
       local streamInfo = C_Club.GetStreamInfo(communityIDStr, channelID)
       if clubInfo and streamInfo and ChatFrame_ContainsChannel(ChatFrame1, channelName) then
-        self.channelMap[index] = clubInfo.name .. " - " .. streamInfo.name
+        local key = clubInfo.name .. " - " .. streamInfo.name
+        self.channelMap[index] = key
+        self.defaultChannels[key] = true
         self.maxDisplayChannels = math.max(self.maxDisplayChannels, index)
       end
     end

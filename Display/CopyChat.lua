@@ -50,7 +50,7 @@ function addonTable.Display.CopyChatMixin:OnLoad()
         if self.clicks[#self.clicks] - self.clicks[#self.clicks - 1] < 0.5 then
           pattern = "\n"
         end
-        if text:sub(cursorPosition, cursorPosition):match(pattern) then
+        if text:sub(cursorPosition + 1, cursorPosition + 1):match(pattern) then
           if cursorPosition > 0 then
             cursorPosition = cursorPosition - 1
           else
@@ -68,7 +68,7 @@ function addonTable.Display.CopyChatMixin:OnLoad()
         while endPos < #text and not text:sub(endPos, endPos):match(pattern) do
           endPos = endPos + 1
         end
-        if text:sub(endPos, endPos):match("%s") then
+        if text:sub(endPos, endPos):match(pattern) then
           endPos = endPos - 1
         end
         C_Timer.After(0, function()

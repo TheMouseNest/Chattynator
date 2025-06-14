@@ -39,6 +39,48 @@ function addonTable.Display.CopyChatMixin:OnLoad()
   self:SetPoint("CENTER")
   self:SetTitle(addonTable.Locales.COPY_CHAT)
 
+  self.clicks = {0, 0, 0}
+  self.textBox:GetEditBox():HookScript("OnMouseDown",
+    ---@param editBox EditBox
+    function(editBox)
+      if GetTime() - self.clicks[#self.clicks] < 0.5 then
+        local pattern = "[%s%p]"
+        local cursorPosition = editBox:GetCursorPosition()
+        local text = editBox:GetText()
+        if self.clicks[#self.clicks] - self.clicks[#self.clicks - 1] < 0.5 then
+          pattern = "\n"
+        end
+        if text:sub(cursorPosition, cursorPosition):match(pattern) then
+          if cursorPosition > 0 then
+            cursorPosition = cursorPosition - 1
+          else
+            cursorPosition = cursorPosition + 1
+          end
+        end
+        local startPos = cursorPosition
+        local endPos = cursorPosition
+        while startPos > 0 and not text:sub(startPos, startPos):match(pattern) do
+          startPos = startPos - 1
+        end
+        while startPos >= endPos and endPos < #text do
+          endPos = endPos + 1
+        end
+        while endPos < #text and not text:sub(endPos, endPos):match(pattern) do
+          endPos = endPos + 1
+        end
+        if text:sub(endPos, endPos):match("%s") then
+          endPos = endPos - 1
+        end
+        C_Timer.After(0, function()
+          editBox:HighlightText(startPos, endPos)
+        end)
+      end
+      table.insert(self.clicks, GetTime())
+      if #self.clicks > 3 then
+        table.remove(self.clicks, 1)
+      end
+  end)
+
   addonTable.Skins.AddFrame("ButtonFrame", self, {"copyChat"})
 end
 

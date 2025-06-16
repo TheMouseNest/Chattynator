@@ -100,7 +100,7 @@ function addonTable.Display.ButtonsBarMixin:AddBlizzardButtons()
   addonTable.Skins.AddFrame("ChatButton", ChatFrameMenuButton, {"menu"})
 end
 
-local searchMarkup = CreateTextureMarkup("Interface/AddOns/Chattynator/Assets/Search.png", 64, 64, 12, 12, 0, 1, 0, 1) .. " "
+local searchMarkup = CreateTextureMarkup("Interface/AddOns/Chattynator/Assets/Search.png", 64, 64, 12, 12, 0, 1, 0, 1)
 local function RunSearch(info, text, isPattern)
   local window = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[info.window]
   local tab = window.tabs[info.tab]

@@ -113,8 +113,9 @@ function addonTable.Display.TabsBarMixin:ApplyFlashing(newMessages)
 end
 
 function addonTable.Display.TabsBarMixin:GetFilter(tabData, tabTag)
+  local func
   if tabData.invert then
-    return function(data)
+    func = function(data)
       return tabData.groups[data.typeInfo.type] ~= false and (data.typeInfo.tabTag == nil or data.typeInfo.tabTag == tabTag) and
         (
         not data.typeInfo.channel or
@@ -124,13 +125,30 @@ function addonTable.Display.TabsBarMixin:GetFilter(tabData, tabTag)
       or (data.typeInfo.type == "ADDON" and tabData.groups["ADDON"] == false and tabData.addons[data.typeInfo.source] ~= false and (data.typeInfo.tabTag == nil or data.typeInfo.tabTag == tabTag))
     end
   else
-    return function(data)
+    func = function(data)
       return tabData.groups[data.typeInfo.type] and (data.typeInfo.tabTag == nil or data.typeInfo.tabTag == tabTag) or
         (data.typeInfo.type == "WHISPER" or data.typeInfo.type == "BN_WHISPER") and tabData.whispersTemp[data.typeInfo.player and data.typeInfo.player.name] or
         tabData.channels[data.typeInfo.channel and data.typeInfo.channel.name] or
         data.typeInfo.type == "ADDON" and not tabData.groups["ADDON"] and tabData.addons[data.typeInfo.source] and (data.typeInfo.tabTag == nil or data.typeInfo.tabTag == tabTag)
     end
   end
+  if #tabData.filters > 0 then
+    local core = func
+    func = function(data)
+      if not core(data) then
+        return false
+      end
+
+      for _, f in ipairs(tabData.filters) do
+        if not f(data) then
+          return false
+        end
+      end
+      return true
+    end
+  end
+
+  return func
 end
 
 function addonTable.Display.TabsBarMixin:RefreshTabs()

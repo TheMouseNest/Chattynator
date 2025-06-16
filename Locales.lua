@@ -37,6 +37,7 @@ L["GLOBAL_SETTINGS"] = "Global Settings"
 L["UNLOCK_CHAT"] = "Unlock Chat"
 L["LOCK_CHAT"] = "Lock Chat"
 L["COPY_CHAT"] = "Copy Chat"
+L["SEARCH_IN_X_MESSAGE"] = "Search in \"%s\" for:"
 
 L["DISABLE_ADDON_X"] = "%s is incompatible with Chattynator and may cause glitches."
 

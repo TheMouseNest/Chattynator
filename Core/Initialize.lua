@@ -6,12 +6,22 @@ addonTable.CallbackRegistry:OnLoad()
 addonTable.CallbackRegistry:GenerateCallbackEvents(addonTable.Constants.Events)
 
 function addonTable.Core.MigrateSettings()
-  for _, window in ipairs(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)) do
+  local windowsToRemove = {}
+  local allWindows = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)
+  for index, window in ipairs(allWindows) do
     window.tabs = tFilter(window.tabs, function(t) return not t.isTemporary end, true)
     for _, tab in ipairs(window.tabs) do
       tab.filters = tab.filters or {}
       tab.whispersTemp = {}
       tab.addons = tab.addons or {}
+    end
+    if #window.tabs == 0 then
+      table.insert(windowsToRemove, index)
+    end
+  end
+  if #windowsToRemove > 0 then
+    for i = #windowsToRemove, 1, -1 do
+      table.remove(allWindows, windowsToRemove[i])
     end
   end
   local buttonPositionMap = {

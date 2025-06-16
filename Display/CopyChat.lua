@@ -35,7 +35,7 @@ function addonTable.Display.CopyChatMixin:OnLoad()
   self.textBox:SetPoint("TOPLEFT", addonTable.Constants.ButtonFrameOffset + 10, -30)
   self.textBox:SetPoint("BOTTOMRIGHT", -10, 10)
 
-  self:SetSize(600, 600)
+  self:SetSize(800, 600)
   self:SetPoint("CENTER")
   self:SetTitle(addonTable.Locales.COPY_CHAT)
 

@@ -199,6 +199,7 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
               addonTable.Config.Set(addonTable.Config.Options.LOCKED, true)
             end)
             rootDescription:CreateButton(addonTable.Locales.RENAME_TAB, function()
+              StaticPopupDialogs[renameDialog].text = addonTable.Locales.RENAME_X_MESSAGE:format(_G[tabData.name] or tabData.name)
               StaticPopup_Show(renameDialog, nil, nil, {window = self.chatFrame:GetID(), tab = tabButton:GetID()})
             end)
             do

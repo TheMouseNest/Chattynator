@@ -136,7 +136,7 @@ local function RunSearch(info, text, isPattern)
   addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
 end
 
-local searchDialog = "Chattynator_RenameTabDialog"
+local searchDialog = "Chattynator_SearchDialog"
 StaticPopupDialogs[searchDialog] = {
   text = "",
   button1 = SEARCH,

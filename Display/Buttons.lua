@@ -47,19 +47,6 @@ function addonTable.Display.ButtonsBarMixin:AddBlizzardButtons()
     end)
     addonTable.Skins.AddFrame("ChatButton", QuickJoinToastButton, {"toasts"})
     table.insert(self.buttons, QuickJoinToastButton)
-
-    ChatFrameChannelButton:SetParent(self)
-    ChatFrameChannelButton:ClearAllPoints()
-    ChatFrameChannelButton:SetScript("OnMouseDown", nil)
-    ChatFrameChannelButton:SetScript("OnMouseUp", nil)
-    addonTable.Skins.AddFrame("ChatButton", ChatFrameChannelButton, {"channels"})
-    table.insert(self.buttons, ChatFrameChannelButton)
-
-    ChatFrameToggleVoiceDeafenButton:SetParent(self)
-    ChatFrameToggleVoiceDeafenButton:ClearAllPoints()
-    ChatFrameToggleVoiceDeafenButton:SetPoint("LEFT", ChatFrameChannelButton, "RIGHT", 2, 0)
-    addonTable.Skins.AddFrame("ChatButton", ChatFrameToggleVoiceDeafenButton, {"voiceChatNoAudio"})
-    addonTable.Skins.AddFrame("ChatButton", ChatFrameToggleVoiceMuteButton, {"voiceChatMuteMic"})
   end
 
   if FriendsMicroButton then
@@ -79,6 +66,23 @@ function addonTable.Display.ButtonsBarMixin:AddBlizzardButtons()
     end)
     addonTable.Skins.AddFrame("ChatButton", FriendsMicroButton, {"toasts"})
     table.insert(self.buttons, FriendsMicroButton)
+  end
+
+  if ChatFrameChannelButton then
+    ChatFrameChannelButton:SetParent(self)
+    ChatFrameChannelButton:ClearAllPoints()
+    ChatFrameChannelButton:SetScript("OnMouseDown", nil)
+    ChatFrameChannelButton:SetScript("OnMouseUp", nil)
+    addonTable.Skins.AddFrame("ChatButton", ChatFrameChannelButton, {"channels"})
+    table.insert(self.buttons, ChatFrameChannelButton)
+  end
+
+  if ChatFrameToggleVoiceDeafenButton then
+    ChatFrameToggleVoiceDeafenButton:SetParent(self)
+    ChatFrameToggleVoiceDeafenButton:ClearAllPoints()
+    ChatFrameToggleVoiceDeafenButton:SetPoint("LEFT", ChatFrameChannelButton, "RIGHT", 2, 0)
+    addonTable.Skins.AddFrame("ChatButton", ChatFrameToggleVoiceDeafenButton, {"voiceChatNoAudio"})
+    addonTable.Skins.AddFrame("ChatButton", ChatFrameToggleVoiceMuteButton, {"voiceChatMuteMic"})
   end
 
   ChatFrameMenuButton:SetParent(self)

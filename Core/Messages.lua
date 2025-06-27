@@ -392,6 +392,8 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
     self:SetInset()
     self.heights = {}
     addonTable.CallbackRegistry:TriggerEvent("MessageDisplayChanged")
+  elseif eventName == "PLAYER_REPORT_SUBMITTED" then
+    --TODO
   elseif eventName == "PLAYER_LOGIN" then
     self.playerLoginFired = true
     local oldFontKey = self.fontKey

@@ -407,12 +407,14 @@ local function SetupFormatting(parent)
   timestampDropdown:SetPoint("TOP")
   do
     local entries = {
+      NONE,
       "HH:MM",
       "HH:MM:SS",
       "HH:MM AM/PM",
       "HH:MM:SS AM/PM",
     }
     local values = {
+      " ",
       "%H:%M",
       "%X",
       "%I:%M %p",

@@ -90,6 +90,11 @@ function addonTable.Core.ApplyOverrides()
             end
           end)
         end
+        tab:HookScript("OnEvent", function(_, e)
+          if e == "UPDATE_CHAT_WINDOWS" then
+            tab:UnregisterEvent("UPDATE_CHAT_WINDOWS")
+          end
+        end)
         local tabButton = _G[tabName .. "Tab"]
         tabButton:SetParent(addonTable.hiddenFrame)
         local SetParent = tabButton.SetParent

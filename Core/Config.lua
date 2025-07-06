@@ -93,6 +93,8 @@ local settings = {
 
   MESSAGE_FONT = {key = "message_font", default = "default", refresh = {addonTable.Constants.RefreshReason.MessageFont}},
   MESSAGE_FONT_SIZE = {key = "message_font_size", default = 14, refresh = {addonTable.Constants.RefreshReason.MessageFont}},
+  MESSAGE_FONT_OUTLINE = {key = "message_font_outline", default = "NONE", refresh = {addonTable.Constants.RefreshReason.MessageFont}},
+  MESSAGE_FONT_SHADOW = {key = "message_font_shadow", default = false, refresh = {addonTable.Constants.RefreshReason.MessageFont}},
   MESSAGE_FADE_TIME = {key = "message_fade_time", default = 25},
   ENABLE_MESSAGE_FADE = {key = "enable_message_fade", default = true},
   ENABLE_SMOOTH_SCROLLING_COMBAT = {key = "enable_smooth_scrolling_combat", default = false},

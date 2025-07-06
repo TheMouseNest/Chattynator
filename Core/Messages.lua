@@ -285,6 +285,7 @@ function addonTable.MessagesMonitorMixin:OnLoad()
 
   addonTable.CallbackRegistry:RegisterCallback("RefreshStateChange", function(_, state)
     if state[addonTable.Constants.RefreshReason.MessageFont] then
+      addonTable.Core.ClearFontCache()
       self.font = addonTable.Core.GetFontByID(addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT))
       self.scalingFactor = addonTable.Core.GetFontScalingFactor()
       self:SetInset()

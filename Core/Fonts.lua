@@ -26,6 +26,12 @@ function addonTable.Core.GetFontScalingFactor()
   return addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT_SIZE) / 14
 end
 
+function addonTable.Core.ClearFontCache()
+  fonts = {
+    default = "ChatFontNormal",
+  }
+end
+
 function addonTable.Core.CreateFont(lsmPath)
   local key = lsmPath
   local globalName = "ChattynatorFont" .. key
@@ -35,6 +41,28 @@ function addonTable.Core.CreateFont(lsmPath)
   end
   local font = CreateFont(globalName)
   fonts[key] = globalName
-  font:SetFont(path, 14, "")
+  local outline = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT_OUTLINE)
+  local outlineFlags = ""
+  if outline == "OUTLINE" then
+    outlineFlags = "OUTLINE"
+  elseif outline == "THICKOUTLINE" then
+    outlineFlags = "THICKOUTLINE"
+  elseif outline == "MONOCHROME" then
+    outlineFlags = "MONOCHROME"
+  elseif outline == "MONOCHROMEOUTLINE" then
+    outlineFlags = "MONOCHROMEOUTLINE"
+  elseif outline == "MONOCHROMETHICKOUTLINE" then
+    outlineFlags = "MONOCHROMETHICKOUTLINE"
+  end
+  font:SetFont(path, 14, outlineFlags)
   font:SetTextColor(1, 1, 1)
+  
+  -- Apply shadow if enabled
+  local shadowEnabled = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT_SHADOW)
+  if shadowEnabled then
+    font:SetShadowColor(0, 0, 0, 0.8)
+    font:SetShadowOffset(1, -1)
+  else
+    font:SetShadowColor(0, 0, 0, 0)
+  end
 end

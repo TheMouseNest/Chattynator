@@ -498,19 +498,7 @@ function addonTable.MessagesMonitorMixin:RegisterWidth(width)
   width = math.floor(width)
   self.widths[width] = (self.widths[width] or 0) + 1
   if self.widths[width] == 1 then
-    local key = width
-    for index, height in pairs(self.heights) do
-      self.sizingFontString:SetText("")
-      self.sizingFontString:SetSpacing(0)
-      self.sizingFontString:SetText(self.messagesProcessed[index].text)
-      self.sizingFontString:SetWidth(width + 0.1)
-      local basicHeight = (self.sizingFontString:GetLineHeight() + self.sizingFontString:GetSpacing()) * math.max(self.sizingFontString:GetNumLines(), 1)
-      local stringHeight = self.sizingFontString:GetStringHeight()
-      if not self.heights[index] then
-        self.heights[index] = {}
-      end
-      height[key] = math.max(basicHeight, stringHeight, self.sizingFontString:GetLineHeight())
-    end
+    self.heights = {} -- No need to recompute, rendering will do that (other widths are low cost to reassess)
   end
 end
 

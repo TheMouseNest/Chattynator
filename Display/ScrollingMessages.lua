@@ -29,6 +29,7 @@ function addonTable.Display.ScrollingMessagesMixin:OnLoad()
   self.timestampOffset = GetTime() - time()
 
   addonTable.CallbackRegistry:RegisterCallback("MessageDisplayChanged", function()
+    self:ResetFading()
     self:UpdateWidth()
     self:UpdateAllocated()
   end)

@@ -126,7 +126,7 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
             local color = GetChatColor("CHANNEL" .. f[3])
             rootDescription:CreateCheckbox(color:WrapTextInColorCode(f[2] or _G[f[1]]),
               function()
-                return tab.channels[f[1]] ~= false
+                return tab.channels[f[1]] ~= false and (tab.channels[f[1]] ~= nil or addonTable.Messages.defaultChannels[f[1]])
               end, function()
                 if tab.channels[f[1]] == nil then
                   tab.channels[f[1]] = false

@@ -27,7 +27,7 @@ StaticPopupDialogs[renameDialog] = {
   button2 = CANCEL,
   hasEditBox = 1,
   OnAccept = function(self, data)
-    RenameTab(data.window, data.tab, self.editBox:GetText())
+    RenameTab(data.window, data.tab, (self.editBox or self.EditBox):GetText())
   end,
   EditBoxOnEnterPressed = function(self, data)
     RenameTab(data.window, data.tab, self:GetText())

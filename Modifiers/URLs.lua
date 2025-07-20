@@ -43,8 +43,8 @@ StaticPopupDialogs[urlDialog] = {
   button1 = DONE,
   hasEditBox = 1,
   OnShow = function(self, data)
-    self.editBox:SetText(data)
-    self.editBox:HighlightText()
+    (self.editBox or self.EditBox):SetText(data);
+    (self.editBox or self.EditBox):HighlightText();
   end,
   EditBoxOnEnterPressed = function(self)
     self:GetParent():Hide()

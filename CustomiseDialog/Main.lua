@@ -47,8 +47,8 @@ local function SetupGeneral(parent)
       button1 = DONE,
       hasEditBox = 1,
       OnShow = function(self)
-        self.editBox:SetText("https://discord.gg/3MpPfcP5c5")
-        self.editBox:HighlightText()
+        (self.editBox or self.EditBox):SetText("https://discord.gg/3MpPfcP5c5");
+        (self.editBox or self.EditBox):HighlightText();
       end,
       EditBoxOnEnterPressed = function(self)
         self:GetParent():Hide()
@@ -92,8 +92,8 @@ local function SetupGeneral(parent)
       button1 = DONE,
       hasEditBox = 1,
       OnShow = function(self)
-        self.editBox:SetText("https://linktr.ee/plusmouse")
-        self.editBox:HighlightText()
+        (self.editBox or self.EditBox):SetText("https://linktr.ee/plusmouse");
+        (self.editBox or self.EditBox):HighlightText();
       end,
       EditBoxOnEnterPressed = function(self)
         self:GetParent():Hide()
@@ -137,7 +137,7 @@ local function SetupGeneral(parent)
       button2 = CANCEL,
       hasEditBox = 1,
       OnAccept = function(self)
-        ValidateAndCreate(self.editBox:GetText())
+        ValidateAndCreate((self.editBox or self.EditBox):GetText())
       end,
       EditBoxOnEnterPressed = function(self)
         ValidateAndCreate(self:GetText())

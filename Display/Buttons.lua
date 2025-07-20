@@ -147,7 +147,7 @@ StaticPopupDialogs[searchDialog] = {
   button3 = CANCEL,
   hasEditBox = 1,
   OnAccept = function(self, data)
-    RunSearch(data, self.editBox:GetText(), IsShiftKeyDown())
+    RunSearch(data, (self.editBox or self.EditBox):GetText(), IsShiftKeyDown())
   end,
   EditBoxOnEnterPressed = function(self, data)
     RunSearch(data, self:GetText(), IsShiftKeyDown())

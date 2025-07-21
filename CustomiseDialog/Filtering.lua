@@ -288,7 +288,7 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
   container:SetSize(500, 500)
 
   local function UpdateHeader()
-    filtersHeader.text:SetText(addonTable.Locales.MESSAGE_TYPES .. " (" .. addonTable.Locales.WINDOW_X:format(windowIndex) .. ", " .. addonTable.Locales.TAB_X:format(_G[tab.name] or tab.name) .. ")")
+    filtersHeader.text:SetText(addonTable.Locales.MESSAGE_TYPES .. " (" .. addonTable.Locales.WINDOW_X:format(windowIndex) .. ", " .. addonTable.Locales.TAB_X:format(addonTable.Display.GetTabNameFromName(tab.name)))
   end
 
   function container:ShowSettings(newWindowIndex, newTabIndex)

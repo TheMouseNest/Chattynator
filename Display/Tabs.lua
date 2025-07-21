@@ -151,7 +151,7 @@ function addonTable.Display.TabsBarMixin:GetFilter(tabData, tabTag)
   return func
 end
 
-local function GetName(name)
+function addonTable.Display.GetTabNameFromName(name)
   if type(_G[name]) == "string" then
     return _G[name]
   else
@@ -174,7 +174,7 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
     tabButton.minWidth = false
     tabButton:SetID(index)
     tabButton:Show()
-    tabButton:SetText(GetName(tabData.name))
+    tabButton:SetText(addonTable.Display.GetTabNameFromName(tabData.name))
     local tabColor = CreateColorFromRGBHexString(tabData.tabColor)
     local bgColor = CreateColorFromRGBHexString(tabData.backgroundColor)
     local tabTag = self.chatFrame:GetID() .. "_" .. index
@@ -207,7 +207,7 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
               addonTable.Config.Set(addonTable.Config.Options.LOCKED, true)
             end)
             rootDescription:CreateButton(addonTable.Locales.RENAME_TAB, function()
-              StaticPopupDialogs[renameDialog].text = addonTable.Locales.RENAME_X_MESSAGE:format(GetName(tabData.name))
+              StaticPopupDialogs[renameDialog].text = addonTable.Locales.RENAME_X_MESSAGE:format(addonTable.Display.GetTabNameFromName(tabData.name))
               StaticPopup_Show(renameDialog, nil, nil, {window = self.chatFrame:GetID(), tab = tabButton:GetID()})
             end)
             do

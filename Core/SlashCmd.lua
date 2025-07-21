@@ -4,7 +4,7 @@ addonTable.SlashCmd = {}
 
 function addonTable.SlashCmd.Initialize()
   SlashCmdList["Chattynator"] = addonTable.SlashCmd.Handler
-  SLASH_Chattynator1 = "/chatanator"
+  SLASH_Chattynator1 = "/chattynator"
   SLASH_Chattynator2 = "/ctnr"
 end
 

@@ -6,6 +6,7 @@ local channelMapping = {
   [channel.General] = addonTable.Locales.ABBREV_GENERAL_WORLD,
   [channel.Trade] = addonTable.Locales.ABBREV_TRADE,
   [channel.LocalDefense] = addonTable.Locales.ABBREV_LOCAL_DEFENSE,
+  [channel.WorldDefense] = addonTable.Locales.ABBREV_LOCAL_DEFENSE,
   [channel.LookingForGroup] = addonTable.Locales.ABBREV_LOOKING_FOR_GROUP,
   [channel.NewcomerChat] = addonTable.Locales.ABBREV_NEWCOMER_CHAT,
   [channel.Services] = addonTable.Locales.ABBREV_SERVICES,

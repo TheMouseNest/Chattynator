@@ -18,6 +18,7 @@ addonTable.Constants = {
     General = 1,
     Trade = 2,
     LocalDefense = 22,
+    WorldDefense = 23, -- Classic only
     LookingForGroup = 26,
     NewcomerChat = 32,
     Services = 42,

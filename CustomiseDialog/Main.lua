@@ -534,11 +534,96 @@ local function SetupThemes(parent)
   return container
 end
 
+local function SetupChatColors(parent)
+  local container = CreateFrame("Frame", nil, parent)
+
+  local allFrames = {}
+
+  for _, entry in ipairs(addonTable.CustomiseDialog.TYPE_LAYOUT_ORDER) do
+    local dropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, entry[1])
+    if #allFrames > 0 then
+      dropdown:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
+    else
+      dropdown:SetPoint("TOP")
+    end
+    dropdown.DropDown:SetDefaultText(addonTable.Locales.SELECT_TYPE_TO_CHANGE)
+    table.insert(allFrames, dropdown)
+    local fields = addonTable.CustomiseDialog.TYPE_LAYOUT[entry[2]]
+    if not fields then
+      dropdown.DropDown:SetupMenu(function(_, rootDescription)
+        local colors = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS)
+        local channelMap, count = addonTable.Messages:GetChannels()
+        for i = 1, count do
+          if channelMap[i] then
+            local color = colors["CHANNEL_" .. channelMap[i]]
+            local oldColor = CopyTable(color)
+            local colorInfo = {
+              r = oldColor.r, g = oldColor.g, b = oldColor.b,
+              swatchFunc = function()
+                color.r, color.g, color.b =  ColorPickerFrame:GetColorRGB()
+                addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.MessageColor] = true})
+              end,
+              cancelFunc = function()
+                color.r, color.g, color.b =  oldColor.r, oldColor.g, oldColor.b
+                addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.MessageColor] = true})
+              end,
+            }
+            rootDescription:CreateColorSwatch(addonTable.CustomiseDialog.GetChatColor("CHANNEL_" .. channelMap[i]):WrapTextInColorCode(channelMap[i]),
+              function()
+                ColorPickerFrame:SetupColorPickerAndShow(colorInfo)
+              end,
+              colorInfo
+            )
+          end
+        end
+      end)
+    else
+      dropdown.DropDown:SetupMenu(function(_, rootDescription)
+        local colors = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS)
+        local fields = addonTable.CustomiseDialog.TYPE_LAYOUT[entry[2]]
+        for _, f in ipairs(fields) do
+          if ChatTypeGroup[f[1]] then
+            local color = {}
+            for _, a in ipairs(ChatTypeGroup[f[1]]) do
+              table.insert(color, colors[(a:gsub("CHAT_MSG_", ""))])
+            end
+            local oldColor = CopyTable(color[1] or {1, 1, 1})
+            local colorInfo = {
+              r = oldColor.r, g = oldColor.g, b = oldColor.b,
+              swatchFunc = function()
+                for _, c in ipairs(color) do
+                  c.r, c.g, c.b = ColorPickerFrame:GetColorRGB()
+                end
+                addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.MessageColor] = true})
+              end,
+              cancelFunc = function()
+                for _, c in ipairs(color) do
+                  c.r, c.g, c.b = oldColor.r, oldColor.g, oldColor.b
+                end
+                addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.MessageColor] = true})
+              end,
+            }
+            rootDescription:CreateColorSwatch(addonTable.CustomiseDialog.GetChatColor(f[1]):WrapTextInColorCode(f[2] or _G[f[1]]),
+              function()
+                ColorPickerFrame:SetupColorPickerAndShow(colorInfo)
+              end,
+              colorInfo
+            )
+          end
+        end
+      end)
+    end
+  end
+
+  return container
+end
+
 local TabSetups = {
   {name = GENERAL, callback = SetupGeneral},
   {name = addonTable.Locales.THEME, callback = SetupThemes},
   {name = addonTable.Locales.LAYOUT, callback = SetupLayout},
   {name = addonTable.Locales.DISPLAY, callback = SetupDisplay},
+  {name = addonTable.Locales.MESSAGE_COLORS, callback = SetupChatColors},
   {name = addonTable.Locales.FORMATTING, callback = SetupFormatting},
 }
 

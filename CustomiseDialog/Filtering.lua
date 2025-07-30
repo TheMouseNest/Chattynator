@@ -1,7 +1,7 @@
 ---@class addonTableChattynator
 local addonTable = select(2, ...)
 
-local LAYOUT = {
+addonTable.CustomiseDialog.TYPE_LAYOUT = {
   MESSAGES = {
     {"SAY"},
     {"EMOTE"},
@@ -32,7 +32,7 @@ local LAYOUT = {
     {"MONSTER_BOSS_WHISPER"},
 	},
   OTHER_COMBAT = {
---    {"COMBAT_XP_GAIN"},
+    {"COMBAT_XP_GAIN"},
     {"COMBAT_HONOR_GAIN"},
     {"COMBAT_FACTION_CHANGE"},
     {"SKILL", SKILLUPS},
@@ -69,9 +69,7 @@ local LAYOUT = {
   }
 }
 
-table.insert(LAYOUT.OTHER_COMBAT, 1, {"COMBAT_XP_GAIN"})
-
-local order = {
+addonTable.CustomiseDialog.TYPE_LAYOUT_ORDER = {
   {CHAT, "MESSAGES"},
   {CHANNELS, nil},
   {CREATURE, "OTHER_CREATURE"},
@@ -80,11 +78,12 @@ local order = {
   {SYSTEM, "OTHER_SYSTEM"},
 }
 
-local function GetChatColor(group)
-  local info = ChatTypeInfo[group]
+function addonTable.CustomiseDialog.GetChatColor(group)
+  local colors = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS) 
+  local info = colors[group]
   if not info then
     for _, event in ipairs(ChatTypeGroup[group]) do
-      info = ChatTypeInfo[(event:gsub("CHAT_MSG_", ""))]
+      info = colors[(event:gsub("CHAT_MSG_", ""))]
       if info then
         break
       end
@@ -95,6 +94,7 @@ local function GetChatColor(group)
   end
   return CreateColor(info.r, info.g, info.b)
 end
+local GetChatColor = addonTable.CustomiseDialog.GetChatColor
 
 function addonTable.CustomiseDialog.SetupTabFilters(parent)
   local container = CreateFrame("Frame", nil, parent)
@@ -106,24 +106,24 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
   filtersHeader:SetPoint("TOP")
   table.insert(allFrames, filtersHeader)
 
-  for _, entry in ipairs(order) do
+  for _, entry in ipairs(addonTable.CustomiseDialog.TYPE_LAYOUT_ORDER) do
     local dropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, entry[1])
     dropdown:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
     dropdown.DropDown:SetDefaultText(addonTable.Locales.NONE_SELECTED)
     table.insert(allFrames, dropdown)
-    local fields = LAYOUT[entry[2]]
+    local fields = addonTable.CustomiseDialog.TYPE_LAYOUT[entry[2]]
     if not fields then
       dropdown.DropDown:SetupMenu(function(_, rootDescription)
         fields = {}
         local map, count = addonTable.Messages:GetChannels()
         for index = 1, count do
           if map[index] then
-            table.insert(fields, {map[index], map[index], index})
+            table.insert(fields, {map[index], map[index]})
           end
         end
         if tab.invert then
           for _, f in ipairs(fields) do
-            local color = GetChatColor("CHANNEL" .. f[3])
+            local color = GetChatColor("CHANNEL_" .. f[2])
             rootDescription:CreateCheckbox(color:WrapTextInColorCode(f[2] or _G[f[1]]),
               function()
                 return tab.channels[f[1]] ~= false and (tab.channels[f[1]] ~= nil or addonTable.Messages.defaultChannels[f[1]])
@@ -195,7 +195,7 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
     dropdown.DropDown:SetDefaultText(addonTable.Locales.NONE_SELECTED)
     table.insert(allFrames, dropdown)
     dropdown.DropDown:SetupMenu(function(menu, rootDescription)
-      local fields = LAYOUT.ADDONS
+      local fields = addonTable.CustomiseDialog.TYPE_LAYOUT.ADDONS
       if tab.invert then
         for _, f in ipairs(fields) do
           local checkbox = rootDescription:CreateCheckbox(f[2],

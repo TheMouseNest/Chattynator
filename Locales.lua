@@ -47,6 +47,7 @@ L["CANT_POPOUT_THIS_CHANNEL"] = "Can't popout this channel"
 L["LAYOUT"] = "Layout"
 L["DISPLAY"] = "Display"
 L["FORMATTING"] = "Formatting"
+L["MESSAGE_COLORS"] = "Message Colors"
 
 L["CUSTOMISE_CHATTYNATOR"] = "Customise Chattynator"
 L["CUSTOMISE_CHATTYNATOR_TAB"] = "Customise Chattynator Tab"
@@ -106,6 +107,7 @@ L["LEAVE_UNTICKED_ADDONS"] = "Leave unticked to control which addons show"
 L["ADDONS"] = "Addons"
 L["DATA_DUMPS"] = "Data Dumps"
 
+L["SELECT_TYPE_TO_CHANGE"] = "Select type to change?"
 
 L["BLIZZARD"] = "Blizzard"
 L["DARK"] = "Dark"

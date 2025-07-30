@@ -47,5 +47,6 @@ addonTable.Constants.RefreshReason = {
   MessageFont = 2,
   MessageWidget = 3,
   MessageModifier = 4,
+  MessageColor = 5,
   Locked = 1000,
 }

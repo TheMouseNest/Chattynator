@@ -127,6 +127,8 @@ function addonTable.MessagesMonitorMixin:OnLoad()
 
   self.heights = {}
 
+  self.defaultColors = {}
+
   self.editBox = ChatFrame1EditBox
   local events = {
     "PLAYER_LOGIN",
@@ -256,11 +258,12 @@ function addonTable.MessagesMonitorMixin:OnLoad()
     ChatFrame_CheckAddChannel = function(_, _, channelID)
       return true or ChatFrame_AddChannel(self, C_ChatInfo.GetChannelShortcutForChannelID(channelID)) ~= nil
     end,
-    ChatFrame_UpdateDefaultChatTarget = function() end,
+    ChatTypeInfo = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS),
   }
 
   setmetatable(env, {__index = _G, __newindex = _G})
   setfenv(ChatFrame_MessageEventHandler, env)
+  setfenv(ChatFrame_SystemEventHandler, env)
   self:SetScript("OnEvent", self.OnEvent)
 
   addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
@@ -271,6 +274,16 @@ function addonTable.MessagesMonitorMixin:OnLoad()
     elseif settingName == addonTable.Config.Options.TIMESTAMP_FORMAT then
       self.timestampFormat = addonTable.Config.Get(addonTable.Config.Options.TIMESTAMP_FORMAT)
       self:SetInset()
+      renderNeeded = true
+    elseif settingName == addonTable.Config.Options.CHAT_COLORS then
+      local colors = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS)
+      for group, c in pairs(self.defaultColors) do
+        if colors[group] == nil then
+          colors[group] = CopyTable(c)
+        end
+      end
+      env.ChatTypeInfo = colors
+      self:ReplaceColors()
       renderNeeded = true
     end
     if renderNeeded then
@@ -290,6 +303,13 @@ function addonTable.MessagesMonitorMixin:OnLoad()
       self:SetInset()
       self.heights = {}
       addonTable.CallbackRegistry:TriggerEvent("MessageDisplayChanged")
+      if self:GetScript("OnUpdate") == nil then
+        self:SetScript("OnUpdate", function()
+          addonTable.CallbackRegistry:TriggerEvent("Render")
+        end)
+      end
+    elseif state[addonTable.Constants.RefreshReason.MessageColor] then
+      self:ReplaceColors()
       if self:GetScript("OnUpdate") == nil then
         self:SetScript("OnUpdate", function()
           addonTable.CallbackRegistry:TriggerEvent("Render")
@@ -375,8 +395,13 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
     self:UpdateStores()
   elseif eventName == "UPDATE_CHAT_COLOR" then
     local group, r, g, b = ...
+    local colors = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS)
+    group = group and string.upper(group)
     if group then
-      group = string.upper(group)
+      self.defaultColors[group] = {r = r, g = g, b = b}
+    end
+    if group and not colors[group] then
+      colors[group] = {r = r, g = g, b = b}
       if self.messageCount >= self.newMessageStartPoint then
         for i = self.newMessageStartPoint, self.messageCount do
           local data = self.messages[i]
@@ -440,6 +465,32 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
     self.lockType = false
     self.incomingType = nil
     self.lineID = nil
+  end
+end
+
+function addonTable.MessagesMonitorMixin:ReplaceColors()
+  self:ImportChannelColors()
+  local colors = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS)
+  if self.messageCount >= self.newMessageStartPoint then
+    for i = self.newMessageStartPoint, self.messageCount do
+      local data = self.messages[i]
+      local c = colors[data.typeInfo.type] or (data.typeInfo.channel and colors["CHANNEL" .. data.typeInfo.channel.index])
+      if c then
+        data.color = {r = c.r, g = c.g, b = c.b}
+      end
+    end
+  end
+  self.messagesProcessed = {}
+end
+
+function addonTable.MessagesMonitorMixin:ImportChannelColors()
+  local colors = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS)
+  for index, key in pairs(self.channelMap) do
+    if colors["CHANNEL_" .. key] then
+      colors["CHANNEL" .. index] = colors["CHANNEL_" .. key]
+    else
+      colors["CHANNEL_" .. key] = colors["CHANNEL" .. index]
+    end
   end
 end
 
@@ -672,6 +723,8 @@ function addonTable.MessagesMonitorMixin:UpdateChannels()
       end
     end
   end
+
+  self:ImportChannelColors()
 end
 
 function addonTable.MessagesMonitorMixin:GetChannels()

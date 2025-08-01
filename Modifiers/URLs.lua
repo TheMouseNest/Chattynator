@@ -37,28 +37,9 @@ function addonTable.Modifiers.InitializeURLs()
   end)
 end
 
-local urlDialog = "Chattynator_URL_Dialog"
-StaticPopupDialogs[urlDialog] = {
-  text = addonTable.Locales.CTRL_C_TO_COPY,
-  button1 = DONE,
-  hasEditBox = 1,
-  OnShow = function(self, data)
-    (self.editBox or self.EditBox):SetText(data);
-    (self.editBox or self.EditBox):HighlightText();
-  end,
-  EditBoxOnEnterPressed = function(self)
-    self:GetParent():Hide()
-  end,
-  EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
-  editBoxWidth = 230,
-  maxLetters = 0,
-  timeout = 0,
-  hideOnEscape = 1,
-}
-
 EventRegistry:RegisterCallback("SetItemRef", function(_, link)
   local url = link:match("^addon:chattynatorurllink:(.*)")
   if url then
-    StaticPopup_Show(urlDialog, nil, nil, url)
+    addonTable.Dialogs.ShowCopy(url)
   end
 end)

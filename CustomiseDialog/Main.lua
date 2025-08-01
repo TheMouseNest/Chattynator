@@ -3,18 +3,6 @@ local addonTable = select(2, ...)
 
 local customisers = {}
 
-local reloadDialog = "Chattynator_ReloadDialog"
-StaticPopupDialogs[reloadDialog] = {
-  text = addonTable.Locales.RELOAD_REQUIRED,
-  button1 = YES,
-  button2 = NO,
-  OnAccept = function()
-    ReloadUI()
-  end,
-  timeout = 0,
-  hideOnEscape = 1,
-}
-
 local function SetupGeneral(parent)
   local container = CreateFrame("Frame", nil, parent)
 
@@ -41,29 +29,12 @@ local function SetupGeneral(parent)
     credit:SetText(addonTable.Locales.BY_PLUSMOUSE)
     credit:SetPoint("BOTTOMLEFT", name, "BOTTOMRIGHT", 5, 0)
 
-    local discordLinkDialog = "Chattynator_General_Settings_Discord_Dialog"
-    StaticPopupDialogs[discordLinkDialog] = {
-      text = addonTable.Locales.CTRL_C_TO_COPY,
-      button1 = DONE,
-      hasEditBox = 1,
-      OnShow = function(self)
-        (self.editBox or self.EditBox):SetText("https://discord.gg/3MpPfcP5c5");
-        (self.editBox or self.EditBox):HighlightText();
-      end,
-      EditBoxOnEnterPressed = function(self)
-        self:GetParent():Hide()
-      end,
-      EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
-      editBoxWidth = 230,
-      timeout = 0,
-      hideOnEscape = 1,
-    }
     local discordButton = CreateFrame("Button", nil, infoInset, "UIPanelDynamicResizeButtonTemplate")
     discordButton:SetText(addonTable.Locales.JOIN_THE_DISCORD)
     DynamicResizeButton_Resize(discordButton)
     discordButton:SetPoint("BOTTOMLEFT", logo, "BOTTOMRIGHT", 8, 0)
     discordButton:SetScript("OnClick", function()
-      StaticPopup_Show(discordLinkDialog)
+      addonTable.Dialogs.ShowCopy("https://discord.gg/3MpPfcP5c5")
     end)
     addonTable.Skins.AddFrame("Button", discordButton)
     local discordText = infoInset:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
@@ -86,30 +57,12 @@ local function SetupGeneral(parent)
     text:SetText(addonTable.Locales.DONATE)
     text:SetJustifyH("RIGHT")
 
-    local donateLinkDialog = "Chattynator_General_Settings_Donate_Dialog"
-    StaticPopupDialogs[donateLinkDialog] = {
-      text = addonTable.Locales.CTRL_C_TO_COPY,
-      button1 = DONE,
-      hasEditBox = 1,
-      OnShow = function(self)
-        (self.editBox or self.EditBox):SetText("https://linktr.ee/plusmouse");
-        (self.editBox or self.EditBox):HighlightText();
-      end,
-      EditBoxOnEnterPressed = function(self)
-        self:GetParent():Hide()
-      end,
-      EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
-      editBoxWidth = 230,
-      timeout = 0,
-      hideOnEscape = 1,
-    }
-
     local button = CreateFrame("Button", nil, donateFrame, "UIPanelDynamicResizeButtonTemplate")
     button:SetText(addonTable.Locales.LINK)
     DynamicResizeButton_Resize(button)
     button:SetPoint("LEFT", donateFrame, "CENTER", -35, 0)
     button:SetScript("OnClick", function()
-      StaticPopup_Show(donateLinkDialog)
+      addonTable.Dialogs.ShowCopy("https://linktr.ee/plusmouse")
     end)
     addonTable.Skins.AddFrame("Button", button)
     table.insert(allFrames, donateFrame)
@@ -126,37 +79,10 @@ local function SetupGeneral(parent)
         addonTable.Config.MakeProfile(profileName, clone)
         profileDropdown.DropDown:GenerateMenu()
         if addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN) ~= oldSkin then
-          StaticPopup_Show(reloadDialog)
+          addonTable.Dialogs.ShowConfirm(addonTable.Locales.RELOAD_REQUIRED, YES, NO, function() ReloadUI() end)
         end
       end
     end
-    local makeProfileDialog = "Chattynator_MakeProfileDialog"
-    StaticPopupDialogs[makeProfileDialog] = {
-      text = addonTable.Locales.ENTER_PROFILE_NAME,
-      button1 = ACCEPT,
-      button2 = CANCEL,
-      hasEditBox = 1,
-      OnAccept = function(self)
-        ValidateAndCreate((self.editBox or self.EditBox):GetText())
-      end,
-      EditBoxOnEnterPressed = function(self)
-        ValidateAndCreate(self:GetText())
-        self:GetParent():Hide()
-      end,
-      EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
-      timeout = 0,
-      hideOnEscape = 1,
-    }
-    local deleteProfileDialog = "Chattynator_DeleteProfileDialog"
-    StaticPopupDialogs[deleteProfileDialog] = {
-      button1 = YES,
-      button2 = NO,
-      OnAccept = function(_, data)
-        addonTable.Config.DeleteProfile(data)
-      end,
-      timeout = 0,
-      hideOnEscape = 1,
-    }
     profileDropdown:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
     profileDropdown.DropDown:SetupMenu(function(menu, rootDescription)
       local profiles = addonTable.Config.GetProfileNames()
@@ -168,7 +94,7 @@ local function SetupGeneral(parent)
           local oldSkin = addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)
           addonTable.Config.ChangeProfile(name)
           if addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN) ~= oldSkin then
-            StaticPopup_Show(reloadDialog)
+            addonTable.Dialogs.ShowConfirm(addonTable.Locales.RELOAD_REQUIRED, YES, NO, function() ReloadUI() end)
           end
         end)
         if name ~= "DEFAULT" and name ~= CHATTYNATOR_CURRENT_PROFILE then
@@ -179,8 +105,9 @@ local function SetupGeneral(parent)
             delete.Texture:SetAtlas("transmog-icon-remove")
             delete:SetScript("OnClick", function()
               menu:Close()
-              StaticPopupDialogs[deleteProfileDialog].text = addonTable.Locales.CONFIRM_DELETE_PROFILE_X:format(name)
-              StaticPopup_Show(deleteProfileDialog, nil, nil, name)
+              addonTable.Dialogs.ShowConfirm(addonTable.Locales.CONFIRM_DELETE_PROFILE_X:format(name), YES, NO, function()
+                addonTable.Config.DeleteProfile(name)
+              end)
             end)
             MenuUtil.HookTooltipScripts(delete, function(tooltip)
               GameTooltip_SetTitle(tooltip, DELETE);
@@ -190,11 +117,11 @@ local function SetupGeneral(parent)
       end
       rootDescription:CreateButton(NORMAL_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.NEW_PROFILE_CLONE), function()
         clone = true
-        StaticPopup_Show(makeProfileDialog)
+        addonTable.Dialogs.ShowEditBox(addonTable.Locales.ENTER_PROFILE_NAME, ACCEPT, CANCEL, ValidateAndCreate)
       end)
       rootDescription:CreateButton(NORMAL_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.NEW_PROFILE_BLANK), function()
         clone = false
-        StaticPopup_Show(makeProfileDialog)
+        addonTable.Dialogs.ShowEditBox(addonTable.Locales.ENTER_PROFILE_NAME, ACCEPT, CANCEL, ValidateAndCreate)
       end)
     end)
   end
@@ -476,7 +403,7 @@ local function SetupThemes(parent)
     return addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN) == value
   end, function(value)
     addonTable.Config.Set(addonTable.Config.Options.CURRENT_SKIN, value)
-    StaticPopup_Show(reloadDialog)
+    addonTable.Dialogs.ShowConfirm(addonTable.Locales.RELOAD_REQUIRED, YES, NO, function() ReloadUI() end)
   end)
   themeDropdown:SetPoint("TOP")
   do

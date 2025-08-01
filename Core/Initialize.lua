@@ -39,19 +39,6 @@ function addonTable.Core.MigrateSettings()
   addonTable.Skins.InstallOptions()
 end
 
-
-local disableDialog = "Chattynator_DisableAddonDialog"
-StaticPopupDialogs[disableDialog] = {
-  button1 = DISABLE,
-  button2 = IGNORE,
-  OnAccept = function(_, data)
-    C_AddOns.DisableAddOn(data)
-    ReloadUI()
-  end,
-  timeout = 0,
-  hideOnEscape = 1,
-}
-
 local incompatibleAddons = {
   "Prat-3.0",
   "BasicChatMods",
@@ -69,8 +56,10 @@ function addonTable.Core.CompatibilityWarnings()
       local _, title = C_AddOns.GetAddOnInfo(addon)
       local text =  addonTable.Locales.DISABLE_ADDON_X:format(title)
       addonTable.Utilities.Message(text)
-      StaticPopupDialogs[disableDialog].text = text
-      StaticPopup_Show(disableDialog, nil, nil, addon)
+      addonTable.Dialogs.ShowConfirm(text, DISABLE, IGNORE, function()
+        C_AddOns.DisableAddOn(data)
+        ReloadUI()
+      end)
       break
     end
   end

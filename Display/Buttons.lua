@@ -140,23 +140,6 @@ local function RunSearch(info, text, isPattern)
   addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
 end
 
-local searchDialog = "Chattynator_SearchDialog"
-StaticPopupDialogs[searchDialog] = {
-  text = "",
-  button1 = SEARCH,
-  button3 = CANCEL,
-  hasEditBox = 1,
-  OnAccept = function(self, data)
-    RunSearch(data, (self.editBox or self.EditBox):GetText(), IsShiftKeyDown())
-  end,
-  EditBoxOnEnterPressed = function(self, data)
-    RunSearch(data, self:GetText(), IsShiftKeyDown())
-    self:GetParent():Hide()
-  end,
-  EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
-  hideOnEscape = 1,
-}
-
 function addonTable.Display.ButtonsBarMixin:AddButtons()
   if self.madeButtons then
     return
@@ -181,8 +164,10 @@ function addonTable.Display.ButtonsBarMixin:AddButtons()
   self.SearchButton = MakeButton(SEARCH)
   self.SearchButton:SetScript("OnClick", function()
     local tab = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self:GetParent():GetID()].tabs[self:GetParent().tabIndex]
-    StaticPopupDialogs[searchDialog].text = addonTable.Locales.SEARCH_IN_X_MESSAGE:format(_G[tab.name] or tab.name)
-    StaticPopup_Show(searchDialog, nil, nil, {window = self:GetParent():GetID(), tab = self:GetParent().tabIndex})
+    addonTable.Dialogs.ShowEditBox(addonTable.Locales.SEARCH_IN_X_MESSAGE:format(_G[tab.name] or tab.name), SEARCH, CANCEL, function()
+      RunSearch(data, self:GetText(), IsShiftKeyDown())
+      self:GetParent():Hide()
+    end)
   end)
   table.insert(self.buttons, self.SearchButton)
   addonTable.Skins.AddFrame("ChatButton", self.SearchButton, {"search"})

@@ -8,3 +8,4 @@ addonTable.Data = {}
 addonTable.Skins = {}
 addonTable.Modifiers = {}
 addonTable.API = {}
+addonTable.Dialogs = {}

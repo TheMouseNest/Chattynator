@@ -155,6 +155,7 @@ function addonTable.Display.ScrollingMessagesMixin:UpdateAlphas(elapsed)
           any = true
           f.animationTime = math.min(f.animationFinalTime, f.animationTime + elapsed)
           f:SetAlpha(f.animationStart + (1 - (1 - f.animationTime/f.animationFinalTime) ^ 2) * f.animationDestination)
+          f:SetShown(f:GetAlpha() > 0)
         end
       end
 
@@ -181,6 +182,7 @@ function addonTable.Display.ScrollingMessagesMixin:UpdateAlphas(elapsed)
   local faded = false
   for _, f in ipairs(self.activeFrames) do
     local alpha = f:GetAlpha()
+    f:SetShown(alpha > 0)
 
     if fadeEnabled and self.destination == 0 and math.max(f.data.timestamp + self.timestampOffset, self.currentFadeOffsetTime) + fadeTime - currentTime < 0 then
       if not faded and self.accumulatedTime == 0 and alpha ~= 0 and (f.animationFinalAlpha ~= 0 or f.animationFinalTime == 0) then

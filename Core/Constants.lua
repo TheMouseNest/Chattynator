@@ -32,8 +32,6 @@ end
 addonTable.Constants.Events = {
   "Render",
 
-  "TabSelected",
-
   "SettingChanged",
   "RefreshStateChange",
   "MessageDisplayChanged",

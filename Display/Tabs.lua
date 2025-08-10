@@ -175,7 +175,6 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
           otherTab:SetSelected(false)
         end
         tabButton:SetSelected(true)
-        addonTable.CallbackRegistry:TriggerEvent("TabSelected", self.chatFrame:GetID(), tabButton:GetID())
       elseif mouseButton == "RightButton" then
         MenuUtil.CreateContextMenu(tabButton, function(_, rootDescription)
           rootDescription:CreateButton(addonTable.Locales.TAB_SETTINGS, function()
@@ -388,9 +387,6 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
   if currentTab ~= self.chatFrame.tabIndex then
     self.chatFrame:SetTabSelectedAndFilter(currentTab, allTabs[currentTab].filter)
     self.chatFrame.ScrollingMessages:Render()
-    addonTable.CallbackRegistry:TriggerEvent("TabSelected", self.chatFrame:GetID(), currentTab)
-  elseif forceSelected then
-    addonTable.CallbackRegistry:TriggerEvent("TabSelected", self.chatFrame:GetID(), currentTab)
   end
 end
 

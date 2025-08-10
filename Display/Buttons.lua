@@ -189,6 +189,7 @@ function addonTable.Display.ButtonsBarMixin:AddButtons()
 
   self.ScrollToBottomButton = MakeButton(addonTable.Locales.SCROLL_TO_END)
   self.ScrollToBottomButton:SetScript("OnClick", function()
+    self:GetParent().ScrollingMessages:ResetFading()
     self:GetParent().ScrollingMessages:ScrollToEnd()
   end)
   self.ScrollToBottomButton:Hide()

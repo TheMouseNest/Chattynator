@@ -324,6 +324,7 @@ function addonTable.CustomiseDialog.ToggleTabFilters(windowIndex, tabIndex)
   if customisers[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)] then
     local frame = customisers[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)]
     frame:Show()
+    frame:Raise()
     frame.filters:ShowSettings(windowIndex, tabIndex)
     return
   end

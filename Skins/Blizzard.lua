@@ -106,12 +106,6 @@ local skinners = {
       tab.background.Left:AdjustPointsOffset(-3, 0)
       tab.background.Right:AdjustPointsOffset(3, 0)
     end
-    tab.background.flash = tab.background:CreateTexture(nil, "BACKGROUND")
-    tab.background.flash:SetTexture("Interface\\AddOns\\Chattynator\\Assets\\BlizzardTabFlash")
-    tab.background.flash:SetBlendMode("ADD")
-    tab.background.flash:SetAllPoints()
-    tab.background.flash:Hide()
-    tab.background.flash:SetIgnoreParentAlpha(true)
     tab.background.glow:Show()
     tab.background.glow:SetAlpha(0)
     tab.background:SetFrameStrata("BACKGROUND")
@@ -122,7 +116,6 @@ local skinners = {
       if not enableHooks then
         return
       end
-      tab.background.flash:SetVertexColor(r, g, b)
       tab.background.glow:SetVertexColor(r, g, b)
       tab.background.ActiveLeft:SetVertexColor(r, g, b)
       tab.background.ActiveRight:SetVertexColor(r, g, b)
@@ -178,12 +171,10 @@ local skinners = {
       tab.background.ActiveLeft:Show()
       tab.background.ActiveRight:Show()
       tab.background.ActiveMiddle:Show()
-      tab.background.flash:Show()
       if not tab.selected then
-        tab:SetAlpha(1)
-        tab.background:SetAlpha(0.8)
+        tab:SetAlpha(0.6)
       else
-        tab.background:SetAlpha(1)
+        tab:SetAlpha(1)
       end
     end)
     local function SetSelected(_, state)
@@ -198,12 +189,16 @@ local skinners = {
         tab.background.ActiveLeft:Show()
         tab.background.ActiveRight:Show()
         tab.background.ActiveMiddle:Show()
-        tab:SetAlpha(1)
+        tab:SetAlpha(0.8)
       else
         tab.background.ActiveLeft:Hide()
         tab.background.ActiveRight:Hide()
         tab.background.ActiveMiddle:Hide()
-        tab:SetAlpha(0.5)
+        tab:SetAlpha(0.3)
+      end
+
+      if tab:IsMouseMotionFocus() then
+        tab:GetScript("OnEnter")(tab)
       end
     end
     tab:HookScript("OnLeave", function()
@@ -216,7 +211,6 @@ local skinners = {
       tab.background.ActiveLeft:Hide()
       tab.background.ActiveRight:Hide()
       tab.background.ActiveMiddle:Hide()
-      tab.background.flash:Hide()
       SetSelected(tab, tab.selected)
     end)
     hooksecurefunc(tab, "SetSelected", SetSelected)

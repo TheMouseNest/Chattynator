@@ -114,7 +114,6 @@ local skinners = {
     tab.background.flash:SetIgnoreParentAlpha(true)
     tab.background.glow:Show()
     tab.background.glow:SetAlpha(0)
-    tab.background.glow:SetIgnoreParentAlpha(true)
     tab.background:SetFrameStrata("BACKGROUND")
     tab.background:SetAlpha(alpha)
     tab.background:SetFrameLevel(tab:GetFrameLevel() - 1)
@@ -176,6 +175,9 @@ local skinners = {
       tab.background.HighlightLeft:Show()
       tab.background.HighlightRight:Show()
       tab.background.HighlightMiddle:Show()
+      tab.background.ActiveLeft:Show()
+      tab.background.ActiveRight:Show()
+      tab.background.ActiveMiddle:Show()
       tab.background.flash:Show()
       if not tab.selected then
         tab:SetAlpha(1)
@@ -211,18 +213,13 @@ local skinners = {
       tab.background.HighlightLeft:Hide()
       tab.background.HighlightRight:Hide()
       tab.background.HighlightMiddle:Hide()
+      tab.background.ActiveLeft:Hide()
+      tab.background.ActiveRight:Hide()
+      tab.background.ActiveMiddle:Hide()
       tab.background.flash:Hide()
       SetSelected(tab, tab.selected)
     end)
     hooksecurefunc(tab, "SetSelected", SetSelected)
-    hooksecurefunc(tab, "SetColor", function(_, r, g, b)
-      if not enableHooks then
-        return
-      end
-      tab.background.Left:SetVertexColor(r, g, b)
-      tab.background.Right:SetVertexColor(r, g, b)
-      tab.background.Middle:SetVertexColor(r, g, b)
-    end)
     if tab.color then
       tab:SetColor(tab.color.r, tab.color.g, tab.color.b)
     end

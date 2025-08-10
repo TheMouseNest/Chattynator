@@ -71,6 +71,7 @@ L["TABS_BELOW"] = "Below tabs"
 L["TABS_ABOVE"] = "Above tabs"
 L["SHOW_BUTTONS_ON_HOVER"] = "Show buttons on hover"
 L["NEW_WHISPERS_TO_NEW_TAB"] = "New whispers to new tab"
+L["STORE_MESSAGES"] = "Store messages"
 
 L["MESSAGE_SPACING"] = "Message spacing"
 L["MESSAGE_FADE_TIME"] = "Message fade time"

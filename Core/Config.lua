@@ -84,6 +84,8 @@ local settings = {
   DISABLED_SKINS = {key = "disabled_skins", default = {}},
   CURRENT_SKIN = {key = "current_skin", default = "dark"},
 
+  STORE_MESSAGES = {key = "store_messages", default = true},
+
   SHOW_COMBAT_LOG = {key = "show_combat_log", default = true, refresh = {addonTable.Constants.RefreshReason.Tabs}},
   LOCKED = {key = "locked", default = false, refresh = {addonTable.Constants.RefreshReason.Tabs, addonTable.Constants.RefreshReason.Locked}},
 

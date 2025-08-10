@@ -127,6 +127,13 @@ local function SetupGeneral(parent)
   end
   table.insert(allFrames, profileDropdown)
 
+  local storeMessages = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.STORE_MESSAGES, 28, function(state)
+    addonTable.Config.Set(addonTable.Config.Options.STORE_MESSAGES, state)
+  end)
+  storeMessages.option = addonTable.Config.Options.STORE_MESSAGES
+  storeMessages:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
+  table.insert(allFrames, storeMessages)
+
   local showCombatLog = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_COMBAT_LOG, 28, function(state)
     addonTable.Config.Set(addonTable.Config.Options.SHOW_COMBAT_LOG, state)
   end)

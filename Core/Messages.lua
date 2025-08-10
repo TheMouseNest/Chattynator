@@ -101,11 +101,7 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   CHATTYNATOR_MESSAGE_LOG.cleanIndex = CHATTYNATOR_MESSAGE_LOG.cleanIndex or 0
   CHATTYNATOR_MESSAGE_LOG.cleanIndex = self:CleanStore(CHATTYNATOR_MESSAGE_LOG.current, CHATTYNATOR_MESSAGE_LOG.cleanIndex)
 
-  self.store = CHATTYNATOR_MESSAGE_LOG.current
-  self.storeCount = #self.store
-  self.storeIDRoot = #CHATTYNATOR_MESSAGE_LOG.historical
-
-  self:UpdateStores()
+  self:ConfigureStore()
 
   self.messages = CopyTable(CHATTYNATOR_MESSAGE_LOG.current)
   self.newMessageStartPoint = #self.messages + 1
@@ -286,6 +282,8 @@ function addonTable.MessagesMonitorMixin:OnLoad()
       env.ChatTypeInfo = colors
       self:ReplaceColors()
       renderNeeded = true
+    elseif settingName == addonTable.Config.Options.STORE_MESSAGES then
+      self:ConfigureStore()
     end
     if renderNeeded then
       addonTable.CallbackRegistry:TriggerEvent("MessageDisplayChanged")
@@ -344,6 +342,19 @@ function addonTable.MessagesMonitorMixin:InvalidateProcessedMessage(id)
       end
     end
   end
+end
+
+function addonTable.MessagesMonitorMixin:ConfigureStore()
+  if addonTable.Config.Get(addonTable.Config.Options.STORE_MESSAGES) then
+    self.store = CHATTYNATOR_MESSAGE_LOG.current
+  else
+    CHATTYNATOR_MESSAGE_LOG = GetNewLog()
+    self.store = {} -- fake store to hide that messages aren't being saved
+  end
+  self.storeCount = #self.store
+  self.storeIDRoot = #CHATTYNATOR_MESSAGE_LOG.historical
+
+  self:UpdateStores()
 end
 
 function addonTable.MessagesMonitorMixin:SetInset()
@@ -611,7 +622,7 @@ function addonTable.MessagesMonitorMixin:GetMessageHeight(reverseIndex)
 end
 
 function addonTable.MessagesMonitorMixin:UpdateStores()
-  if self.storeCount < conversionThreshold then
+  if self.storeCount < conversionThreshold or not addonTable.Config.Get(addonTable.Config.Options.STORE_MESSAGES) then
     return
   end
   if InCombatLockdown() then

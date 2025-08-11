@@ -178,6 +178,11 @@ local skinners = {
     if tab:GetFontString() == nil then
       tab:SetText(" ")
     end
+    tab.glow = tab:CreateTexture("BORDER")
+    tab.glow:SetTexture("Interface\\ChatFrame\\ChatFrameTab-NewMessage")
+    tab.glow:SetPoint("BOTTOMLEFT", 8, -2)
+    tab.glow:SetPoint("BOTTOMRIGHT", -8, -2)
+    tab.glow:SetAlpha(0)
     tab:GetFontString():SetWordWrap(false)
     tab:GetFontString():SetNonSpaceWrap(false)
     tab:GetFontString():FontTemplate(LSM:Fetch('font', CH.db.tabFont), CH.db.tabFontSize, CH.db.tabFontOutline)
@@ -220,6 +225,32 @@ local skinners = {
         tab:SetText(text)
         tab:GetFontString():SetTextColor(unpack(E.media.rgbvaluecolor))
       end
+    end)
+    if tab.selected ~= nil then
+      tab:SetSelected(tab.selected)
+    end
+
+    hooksecurefunc(tab, "SetColor", function(_, r, g, b)
+      tab.glow:SetVertexColor(r, g, b)
+      tab:SetSelected(tab.selected)
+    end)
+    if tab.color then
+      tab:SetColor(tab.color.r, tab.color.g, tab.color.b)
+    end
+
+    tab.FlashAnimation = tab:CreateAnimationGroup()
+    tab.FlashAnimation:SetLooping("BOUNCE")
+    local alpha2 = tab.FlashAnimation:CreateAnimation("Alpha")
+    alpha2:SetChildKey("glow")
+    alpha2:SetFromAlpha(0)
+    alpha2:SetToAlpha(1)
+    alpha2:SetDuration(0.8)
+    alpha2:SetOrder(1)
+    hooksecurefunc(tab, "SetFlashing", function(_, state)
+      if not enableHooks then
+        return
+      end
+      tab.FlashAnimation:SetPlaying(state)
     end)
     table.insert(toUpdate, function()
       tab:SetText(text)

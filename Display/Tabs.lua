@@ -25,23 +25,116 @@ addonTable.Display.TabsBarMixin = {}
 function addonTable.Display.TabsBarMixin:OnLoad()
   self.chatFrame = self:GetParent()
   self:SetupPool()
+
+  self:SetScript("OnEvent", self.OnEvent)
+
+  addonTable.CallbackRegistry:RegisterCallback("SkinLoaded", function()
+    self:PositionTabs()
+  end)
 end
 
 function addonTable.Display.TabsBarMixin:Reset()
   self.Tabs = {}
 end
 
+function addonTable.Display.TabsBarMixin:PositionTabs()
+  local xOffset = 0
+  for _, tab in ipairs(self.Tabs or {}) do
+    tab:SetPoint("BOTTOMLEFT", self, "TOPLEFT", xOffset, -22)
+    xOffset = xOffset + tab:GetWidth() + addonTable.Constants.TabSpacing
+  end
+end
+
+function addonTable.Display.TabsBarMixin:StartDragging(index)
+  local origin = GetCursorPosition() / UIParent:GetEffectiveScale()
+  local prevLeft = self.Tabs[index]:GetLeft()
+  self.dragIndex = index
+  self:RegisterEvent("GLOBAL_MOUSE_UP")
+  local rightLimit = self.Tabs[#self.Tabs]:GetRight()
+  local leftLimit = self.Tabs[1]:GetLeft()
+
+  self:SetScript("OnUpdate", function()
+    local dragButton = self.Tabs[index]
+    dragButton:SetFrameStrata("HIGH") -- Ensure dragged tab renders above all other tabs, avoids weird overlap artifacts
+
+    local newOrigin = GetCursorPosition() / UIParent:GetEffectiveScale()
+    local goingLeft = newOrigin < origin
+    local goingRight = newOrigin > origin
+    dragButton:AdjustPointsOffset(newOrigin - origin, 0)
+    if dragButton:GetLeft() < leftLimit then
+      dragButton:AdjustPointsOffset(leftLimit - dragButton:GetLeft(), 0)
+    elseif dragButton:GetRight() > rightLimit then
+      dragButton:AdjustPointsOffset(rightLimit - dragButton:GetRight(), 0)
+    else
+      origin = newOrigin
+    end
+
+    prevLeft = dragButton:GetLeft()
+
+    local allTabsData = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self.chatFrame:GetID()].tabs
+    -- Check if the tab overlaps the tab to the left, and is at least 40% overlapping, and has been recently dragged left
+    if index > 1 and dragButton:GetLeft() < self.Tabs[index - 1]:GetLeft() + self.Tabs[index - 1]:GetWidth() - dragButton:GetWidth() * 0.4 and goingLeft then
+      dragButton:SetFrameStrata("MEDIUM") -- Revert strata change
+      local old = allTabsData[index]
+      allTabsData[index] = allTabsData[index - 1]
+      allTabsData[index - 1] = old
+      if self.chatFrame.tabIndex == index then
+        self.chatFrame.tabIndex = index - 1
+      elseif self.chatFrame.tabIndex == index - 1 then
+        self.chatFrame.tabIndex = index
+      end
+      index = index - 1
+      addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+    -- Check if the tab overlaps the tab to the right, and is at least 40% overlapping, and has been recently dragged right
+    elseif index < #self.Tabs and self.Tabs[index + 1].isDraggable and self.Tabs[index + 1]:GetLeft() + dragButton:GetWidth() * 0.4 < dragButton:GetLeft() + dragButton:GetWidth() and goingRight then
+      dragButton:SetFrameStrata("MEDIUM") -- Revert strata change
+      local old = allTabsData[index]
+      allTabsData[index] = allTabsData[index + 1]
+      allTabsData[index + 1] = old
+      if self.chatFrame.tabIndex == index then
+        self.chatFrame.tabIndex = index + 1
+      elseif self.chatFrame.tabIndex == index + 1 then
+        self.chatFrame.tabIndex = index
+      end
+      index = index + 1
+      addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+    end
+
+    self.dragIndex = index
+
+    local dragButton = self.Tabs[index]
+    if math.abs(dragButton:GetLeft() - prevLeft) > 0.05 then
+      dragButton:AdjustPointsOffset(prevLeft - dragButton:GetLeft(), 0)
+    end
+
+    dragButton:SetFrameStrata("HIGH")
+  end)
+end
+
+function addonTable.Display.TabsBarMixin:EndDragging(index)
+  self.Tabs[self.dragIndex]:SetFrameStrata("MEDIUM")
+  self:UnregisterEvent("GLOBAL_MOUSE_UP")
+  self:SetScript("OnUpdate", nil)
+  self:PositionTabs()
+end
+
+function addonTable.Display.TabsBarMixin:OnEvent()
+  self:EndDragging()
+end
+
 function addonTable.Display.TabsBarMixin:SetupPool()
   self.tabsPool = CreateFramePool("Button", self, nil, nil, false,
     function(tabButton)
       tabButton:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-      tabButton:RegisterForDrag("LeftButton")
-      tabButton:SetScript("OnDragStart", function()
+      tabButton:RegisterForDrag("LeftButton", "RightButton")
+      tabButton:SetScript("OnDragStart", function(_, button)
         if addonTable.Config.Get(addonTable.Config.Options.LOCKED) then
           return
         end
-        if tabButton:GetID() == 1 then
+        if tabButton:GetID() == 1 and button == "LeftButton" then
           self.chatFrame:StartMoving()
+        elseif tabButton.isDraggable then
+          self:StartDragging(tabButton:GetID())
         end
       end)
       tabButton:SetScript("OnDragStop", function()
@@ -58,16 +151,9 @@ function addonTable.Display.TabsBarMixin:SetupPool()
       function tabButton:SetFlashing(state)
         self.flashing = state
       end
-      tabButton:SetScript("OnSizeChanged", function()
-        self:SetScript("OnUpdate", self.UpdateScrolling)
-      end)
       addonTable.Skins.AddFrame("ChatTab", tabButton)
     end
   )
-
-  self:SetScript("OnSizeChanged", function()
-    self:SetScript("OnUpdate", self.UpdateScrolling)
-  end)
 end
 
 function addonTable.Display.TabsBarMixin:ApplyFlashing(newMessages)
@@ -151,7 +237,6 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
   end
   self.tabsPool:ReleaseAll()
   local allTabs = {}
-  local lastButton
   for index, tabData in ipairs(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self.chatFrame:GetID()].tabs) do
     local tabButton = self.tabsPool:Acquire()
     tabButton.minWidth = false
@@ -163,6 +248,7 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
     local tabTag = self.chatFrame:GetID() .. "_" .. index
     tabButton.filter = self:GetFilter(tabData, tabTag)
     tabButton.bgColor = bgColor
+    tabButton.isDraggable = true
     tabButton:SetScript("OnClick", function(_, mouseButton)
       if mouseButton == "LeftButton" then
         if self.chatFrame:GetID() == 1 then
@@ -267,14 +353,8 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
       end
     end)
 
-    if lastButton == nil then
-      tabButton:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, -22)
-    else
-      tabButton:SetPoint("LEFT", lastButton, "RIGHT", addonTable.Constants.TabSpacing, 0)
-    end
     tabButton:SetColor(tabColor.r, tabColor.g, tabColor.b)
     table.insert(allTabs, tabButton)
-    lastButton = tabButton
   end
 
   if self.chatFrame:GetID() == 1 and addonTable.Config.Get(addonTable.Config.Options.SHOW_COMBAT_LOG) then
@@ -284,6 +364,7 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
     combatLogButton:SetID(#allTabs + 1)
     combatLogButton:Show()
     combatLogButton:SetText(COMBAT_LOG)
+    combatLogButton.isDraggable = false
     combatLogButton:SetScript("OnClick", function(_, mouseButton)
       if mouseButton == "LeftButton" then
         for _, otherTab in ipairs(allTabs) do
@@ -346,19 +427,13 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
     local combatLogColor = CreateColor(201/255, 124/255, 72/255)
     combatLogButton:SetColor(combatLogColor.r, combatLogColor.g, combatLogColor.b)
 
-    if lastButton == nil then
-      combatLogButton:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, -22)
-    else
-      combatLogButton:SetPoint("LEFT", lastButton, "RIGHT", addonTable.Constants.TabSpacing, 0)
-    end
-
     table.insert(allTabs, combatLogButton)
-    lastButton = combatLogButton
   end
 
   if not addonTable.Config.Get(addonTable.Config.Options.LOCKED) then
     local newTab = self.tabsPool:Acquire()
     newTab.minWidth = true
+    newTab.isDraggable = false
     newTab:SetText(addonTable.Constants.NewTabMarkup)
     newTab:SetScript("OnClick", function()
       table.insert(addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self.chatFrame:GetID()].tabs, addonTable.Config.GetEmptyTabConfig(addonTable.Locales.NEW_TAB))
@@ -367,19 +442,13 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
     newTab:Show()
     newTab:SetColor(0.3, 0.3, 0.3)
     table.insert(allTabs, newTab)
-
-    if lastButton == nil then
-      newTab:SetPoint("BOTTOMLEFT", self.chatFrame, "TOPLEFT", 32, -22)
-    else
-      newTab:SetPoint("LEFT", lastButton, "RIGHT", addonTable.Constants.TabSpacing, 0)
-    end
-    lastButton = newTab
   end
 
   for _, tab in ipairs(allTabs) do
     tab:SetSelected(false)
   end
   self.Tabs = allTabs
+  self:PositionTabs()
   local currentTab = self.chatFrame.tabIndex and math.min(self.chatFrame.tabIndex, #addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self.chatFrame:GetID()].tabs) or 1
   allTabs[currentTab]:SetSelected(true)
   self.chatFrame:SetFilter(allTabs[currentTab].filter)

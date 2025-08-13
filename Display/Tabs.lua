@@ -160,10 +160,26 @@ function addonTable.Display.TabsBarMixin:ApplyFlashing(newMessages)
   if not newMessages then
     return
   end
+  local state = addonTable.Config.Get(addonTable.Config.Options.TAB_FLASH_ON)
   local messages = {}
-  while newMessages > 0 do
-    newMessages = newMessages - 1
-    table.insert(messages,  addonTable.Messages:GetMessageRaw(1 + #messages))
+  if state == "whispers" then
+    while newMessages > 0 do
+      newMessages = newMessages - 1
+      local data = addonTable.Messages:GetMessageRaw(1 + #messages)
+      if data.typeInfo.type == "WHISPER" or data.typeInfo.type == "BN_WHISPER" then
+        table.insert(messages, data)
+      end
+    end
+    if #messages == 0 then
+      return
+    end
+  elseif state == "all" then
+    while newMessages > 0 do
+      newMessages = newMessages - 1
+      table.insert(messages, addonTable.Messages:GetMessageRaw(1 + #messages))
+    end
+  else
+    return
   end
   local tabsMatching = {}
   for index, tab in ipairs(self.Tabs) do

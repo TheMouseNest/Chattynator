@@ -293,6 +293,27 @@ local function SetupDisplay(parent)
   messageFadeTimer:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
   table.insert(allFrames, messageFadeTimer)
 
+  local flashOnDropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.FLASH_TABS_ON, function(value)
+    return addonTable.Config.Get(addonTable.Config.Options.TAB_FLASH_ON) == value
+  end, function(value)
+    addonTable.Config.Set(addonTable.Config.Options.TAB_FLASH_ON, value)
+  end)
+  flashOnDropdown:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
+  do
+    local entries = {
+      addonTable.Locales.NEVER,
+      addonTable.Locales.ALL_MESSAGES,
+      addonTable.Locales.WHISPERS_ONLY,
+    }
+    local values = {
+      "never",
+      "all",
+      "whispers"
+    }
+    flashOnDropdown:Init(entries, values)
+  end
+  table.insert(allFrames, flashOnDropdown)
+
   container:SetScript("OnShow", function()
     local fontValues = CopyTable(LibSharedMedia:List("font"))
     local fontLabels = CopyTable(LibSharedMedia:List("font"))

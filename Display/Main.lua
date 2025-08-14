@@ -207,9 +207,10 @@ function addonTable.Display.ChatFrameMixin:UpdateEditBox()
   local font = addonTable.Core.GetFontByID(addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT))
   ChatFrame1EditBox:SetFontObject(font)
   ChatFrame1EditBox:SetScale(addonTable.Core.GetFontScalingFactor())
-  for _, region in pairs({ChatFrame1EditBox:GetRegions()}) do
-    if region:IsObjectType("FontString") then
-      region:SetFontObject(font)
+  local regions = {"header", "headerSuffix", "languageHeader", "NewcomerHint", "prompt"}
+  for _, r in pairs(regions) do
+    if ChatFrame1EditBox[r] then
+      ChatFrame1EditBox[r]:SetFontObject(font)
     end
   end
 end

@@ -195,7 +195,7 @@ function addonTable.Display.ChatFrameMixin:UpdateEditBox()
   local position = addonTable.Config.Get(addonTable.Config.Options.EDIT_BOX_POSITION)
   ChatFrame1EditBox:ClearAllPoints()
   if position == "bottom" then
-    self.ScrollingMessages:SetPoint("BOTTOMRIGHT", 0, 5 + 33 * addonTable.Core.GetFontScalingFactor())
+    self.ScrollingMessages:SetPoint("BOTTOMRIGHT", 0, 6 + 32 * addonTable.Core.GetFontScalingFactor())
     ChatFrame1EditBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, 32)
     ChatFrame1EditBox:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, 32)
   elseif position == "top" then

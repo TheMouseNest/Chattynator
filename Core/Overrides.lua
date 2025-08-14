@@ -71,12 +71,15 @@ function addonTable.Core.ApplyOverrides()
     addonTable.allChatFrames[1].ScrollingMessages:ScrollToEnd()
   end
 
+  FloatingChatFrameManager:UnregisterAllEvents()
+
+  -- We delay unregistering so that the chat frame colours get applied properly,
+  -- and then ensure that chat colour events get processed, both to avoid errors
   local frame = CreateFrame("Frame")
   frame:RegisterEvent("PLAYER_ENTERING_WORLD")
   frame:SetScript("OnEvent", function()
     frame:UnregisterEvent("PLAYER_ENTERING_WORLD")
     C_Timer.After(0, function()
-      FloatingChatFrameManager:UnregisterAllEvents()
       for _, tabName in pairs(CHAT_FRAMES) do
         local tab = _G[tabName]
         tab:SetParent(addonTable.hiddenFrame)

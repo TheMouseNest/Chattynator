@@ -283,7 +283,7 @@ local function SetupDisplay(parent)
   end, function(value)
     addonTable.Config.Set(addonTable.Config.Options.MESSAGE_FONT_OUTLINE, value)
   end)
-  messageOutline:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, 0)
+  messageOutline:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
   do
     local entries = {
       NONE,
@@ -298,6 +298,13 @@ local function SetupDisplay(parent)
     messageOutline:Init(entries, values)
   end
   table.insert(allFrames, messageOutline)
+
+  local showTextShadow = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.MESSAGE_FONT_SHADOW, 28, function(state)
+    addonTable.Config.Set(addonTable.Config.Options.SHOW_FONT_SHADOW, state)
+  end)
+  showTextShadow.option = addonTable.Config.Options.SHOW_FONT_SHADOW
+  showTextShadow:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, 0)
+  table.insert(allFrames, showTextShadow)
 
   local enableMessageFade = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.ENABLE_MESSAGE_FADE, 28, function(state)
     addonTable.Config.Set(addonTable.Config.Options.ENABLE_MESSAGE_FADE, state)

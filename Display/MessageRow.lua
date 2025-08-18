@@ -58,11 +58,17 @@ function addonTable.Display.MessageRowMixin:UpdateWidgets(width)
   self.Timestamp:SetWidth(addonTable.Messages.inset)
   self.DisplayString:SetWidth(width)
 
-  self.DisplayString:SetFontObject(addonTable.Messages.font)
-  self.DisplayString:SetTextScale(addonTable.Messages.scalingFactor)
-
-  self.Timestamp:SetFontObject(addonTable.Messages.font)
-  self.Timestamp:SetTextScale(addonTable.Messages.scalingFactor)
+  for _, fontString in ipairs({self.DisplayString, self.Timestamp}) do
+    fontString:SetFontObject(addonTable.Messages.font)
+    fontString:SetTextScale(addonTable.Messages.scalingFactor)
+    if addonTable.Config.Get(addonTable.Config.Options.SHOW_FONT_SHADOW) then
+      fontString:SetShadowOffset(1, -1)
+      fontString:SetShadowColor(0, 0, 0, 0.8)
+    else
+      fontString:SetShadowOffset(0, 0)
+      fontString:SetShadowColor(0, 0, 0, 0)
+    end
+  end
 
   self.Bar:SetShown(addonTable.Config.Get(addonTable.Config.Options.SHOW_TIMESTAMP_SEPARATOR))
 end

@@ -181,7 +181,7 @@ local skinners = {
       if not enableHooks then
         return
       end
-      alpha = 1 - addonTable.Config.Get("skins.dark.tab_transparency")
+      alpha = 1 - addonTable.Config.Get("skins.blizzard.tab_transparency")
       if not tab:IsMouseMotionFocus() then
         tab.background:SetAlpha(alpha)
       end

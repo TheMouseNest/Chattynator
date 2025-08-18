@@ -278,11 +278,32 @@ local function SetupDisplay(parent)
   fontSize:SetPoint("TOP", fontDropdown, "BOTTOM")
   table.insert(allFrames, fontSize)
 
+  local messageOutline = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.MESSAGE_FONT_OUTLINE, function(value)
+    return addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT_OUTLINE) == value
+  end, function(value)
+    addonTable.Config.Set(addonTable.Config.Options.MESSAGE_FONT_OUTLINE, value)
+  end)
+  messageOutline:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, 0)
+  do
+    local entries = {
+      NONE,
+      addonTable.Locales.THIN,
+      addonTable.Locales.THICK,
+    }
+    local values = {
+      "none",
+      "thin",
+      "thick"
+    }
+    messageOutline:Init(entries, values)
+  end
+  table.insert(allFrames, messageOutline)
+
   local enableMessageFade = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.ENABLE_MESSAGE_FADE, 28, function(state)
     addonTable.Config.Set(addonTable.Config.Options.ENABLE_MESSAGE_FADE, state)
   end)
   enableMessageFade.option = addonTable.Config.Options.ENABLE_MESSAGE_FADE
-  enableMessageFade:SetPoint("TOP", fontSize, "BOTTOM", 0, -30)
+  enableMessageFade:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
   table.insert(allFrames, enableMessageFade)
 
   local messageFadeTimer

@@ -289,6 +289,7 @@ function addonTable.MessagesMonitorMixin:OnLoad()
       addonTable.CallbackRegistry:TriggerEvent("MessageDisplayChanged")
       if self:GetScript("OnUpdate") == nil then
         self:SetScript("OnUpdate", function()
+          self:SetScript("OnUpdate", nil)
           addonTable.CallbackRegistry:TriggerEvent("Render")
         end)
       end
@@ -304,6 +305,7 @@ function addonTable.MessagesMonitorMixin:OnLoad()
       addonTable.CallbackRegistry:TriggerEvent("MessageDisplayChanged")
       if self:GetScript("OnUpdate") == nil then
         self:SetScript("OnUpdate", function()
+          self:SetScript("OnUpdate", nil)
           addonTable.CallbackRegistry:TriggerEvent("Render")
         end)
       end
@@ -311,6 +313,7 @@ function addonTable.MessagesMonitorMixin:OnLoad()
       self:ReplaceColors()
       if self:GetScript("OnUpdate") == nil then
         self:SetScript("OnUpdate", function()
+          self:SetScript("OnUpdate", nil)
           addonTable.CallbackRegistry:TriggerEvent("Render")
         end)
       end
@@ -423,6 +426,7 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
         end
         if self:GetScript("OnUpdate") == nil then
           self:SetScript("OnUpdate", function()
+            self:SetScript("OnUpdate", nil)
             addonTable.CallbackRegistry:TriggerEvent("Render")
           end)
         end
@@ -514,6 +518,7 @@ function addonTable.MessagesMonitorMixin:AddLiveModifier(func)
     table.insert(self.liveModifiers, func)
     if self:GetScript("OnUpdate") == nil and self.playerLoginFired then
       self:SetScript("OnUpdate", function()
+        self:SetScript("OnUpdate", nil)
         addonTable.CallbackRegistry:TriggerEvent("Render")
       end)
     end
@@ -528,6 +533,7 @@ function addonTable.MessagesMonitorMixin:RemoveLiveModifier(func)
     table.remove(self.liveModifiers, index)
     if self:GetScript("OnUpdate") == nil and self.playerLoginFired then
       self:SetScript("OnUpdate", function()
+        self:SetScript("OnUpdate", nil)
         addonTable.CallbackRegistry:TriggerEvent("Render")
       end)
     end

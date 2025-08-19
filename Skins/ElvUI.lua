@@ -179,7 +179,7 @@ local skinners = {
       tab:SetText(" ")
     end
     tab.glow = tab:CreateTexture("BORDER")
-    tab.glow:SetTexture("Interface\\ChatFrame\\ChatFrameTab-NewMessage")
+    tab.glow:SetTexture("Interface\\AddOns\\Chattynator\\Assets\\ElvUIChatTabNewMessageFlash")
     tab.glow:SetPoint("BOTTOMLEFT", 8, -2)
     tab.glow:SetPoint("BOTTOMRIGHT", -8, -2)
     tab.glow:SetAlpha(0)

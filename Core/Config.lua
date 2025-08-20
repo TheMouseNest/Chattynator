@@ -8,7 +8,7 @@ function addonTable.Config.GetEmptyTabConfig(name)
     groups = {},
     channels = {},
     addons = {},
-    backgroundColor = "1a1a1a", tabColor = "111111",
+    backgroundColor = "1a1a1a", tabColor = "b5926c",
     whispersTemp = {}, filters = {},
     isTemporary = false,
   }
@@ -41,7 +41,7 @@ local settings = {
             ["VOICE_TEXT"] = false,
           },
           invert = true,
-          channels = {}, backgroundColor = "1a1a1a", tabColor = "1a1a1a",
+          channels = {}, backgroundColor = "1a1a1a", tabColor = "06a1ff",
           whispersTemp = {}, filters = {},
           isTemporary = false,
         },

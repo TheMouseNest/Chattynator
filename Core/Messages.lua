@@ -390,7 +390,7 @@ function addonTable.MessagesMonitorMixin:ShowGMOTD()
   local motd = C_Club.GetClubInfo(guildID).broadcast
   if motd and motd ~= "" and motd ~= self.seenMOTD then
     self.seenMOTD = motd
-    local info = ChatTypeInfo["GUILD"]
+    local info = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS)["GUILD"] or ChatTypeInfo["GUILD"]
 		local formatted = format(GUILD_MOTD_TEMPLATE, motd)
     self:SetIncomingType({type = "GUILD", event = "GUILD_MOTD"})
 		self:AddMessage(formatted, info.r, info.g, info.b, info.id)
@@ -490,6 +490,15 @@ function addonTable.MessagesMonitorMixin:ReplaceColors()
   if self.messageCount >= self.newMessageStartPoint then
     for i = self.newMessageStartPoint, self.messageCount do
       local data = self.messages[i]
+      local c = colors[data.typeInfo.type] or (data.typeInfo.channel and colors["CHANNEL" .. data.typeInfo.channel.index])
+      if c then
+        data.color = {r = c.r, g = c.g, b = c.b}
+      end
+    end
+  end
+  if self.storeCount >= self.newMessageStartPoint then
+    for i = self.newMessageStartPoint, self.storeCount do
+      local data = self.store[i]
       local c = colors[data.typeInfo.type] or (data.typeInfo.channel and colors["CHANNEL" .. data.typeInfo.channel.index])
       if c then
         data.color = {r = c.r, g = c.g, b = c.b}

@@ -23,7 +23,6 @@ function addonTable.Config.GetEmptyWindowConfig()
 end
 
 local settings = {
-  ROWS_LIMIT = {key = "rows_limit", default = 200},
   WINDOWS = {key = "windows", default = {
     {
       position = {"BOTTOMLEFT", "UIParent", "BOTTOMLEFT", 0, 40},

@@ -88,7 +88,7 @@ L["USE_CLASS_COLORS"] = "Use class colors"
 L["THIN"] = "Thin"
 L["THICK"] = "Thick"
 L["ALWAYS"] = "Always"
-L["ON_HOVER"] = "On hover"
+L["HOVER"] = "Hover"
 L["NEVER"] = "Never"
 
 L["NONE"] = "None"

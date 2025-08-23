@@ -182,7 +182,7 @@ local function SetupLayout(parent)
     local entries = {
       addonTable.Locales.NEVER,
       addonTable.Locales.ALWAYS,
-      addonTable.Locales.ON_HOVER,
+      addonTable.Locales.HOVER,
     }
     local values = {
       "never",

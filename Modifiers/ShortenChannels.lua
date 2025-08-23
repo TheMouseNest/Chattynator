@@ -116,8 +116,8 @@ local chatTypeToPatterns = {
   OFFICER = "officer",
   PARTY = "party",
   PARTY_LEADER = "partyLeader",
-  INSTANCE = "instance",
-  INSTANCE_LEADER = "instanceLeader",
+  INSTANCE_CHAT = "instance",
+  INSTANCE_CHAT_LEADER = "instanceLeader",
   RAID = "raid",
   RAID_LEADER = "raidLeader",
 }

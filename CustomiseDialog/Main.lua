@@ -181,19 +181,19 @@ local function SetupLayout(parent)
   do
     local entries = {
       addonTable.Locales.NEVER,
+      addonTable.Locales.MOUSEOVER,
       addonTable.Locales.ALWAYS,
-      addonTable.Locales.HOVER,
     }
     local values = {
       "never",
-      "always",
       "hover",
+      "always",
     }
     showTabs:Init(entries, values)
   end
   table.insert(allFrames, showTabs)
 
-  local showButtonsOnHover = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_BUTTONS_ON_HOVER, 28, function(state)
+  local showButtonsOnHover = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_BUTTONS_ON_MOUSEOVER, 28, function(state)
     addonTable.Config.Set(addonTable.Config.Options.SHOW_BUTTONS_ON_HOVER, state)
   end)
   showButtonsOnHover.option = addonTable.Config.Options.SHOW_BUTTONS_ON_HOVER

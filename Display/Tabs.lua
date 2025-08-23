@@ -31,6 +31,10 @@ function addonTable.Display.TabsBarMixin:OnLoad()
   addonTable.CallbackRegistry:RegisterCallback("SkinLoaded", function()
     self:PositionTabs()
   end)
+
+  self.active = false
+
+  self.fadeInterpolator = CreateInterpolator(InterpolatorUtil.InterpolateEaseIn)
 end
 
 function addonTable.Display.TabsBarMixin:Reset()
@@ -473,6 +477,70 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
     self.chatFrame:SetTabSelectedAndFilter(currentTab, allTabs[currentTab].filter)
     self.chatFrame.ScrollingMessages:Render()
   end
+
+  local show = addonTable.Config.Get(addonTable.Config.Options.SHOW_TABS)
+  self:SetShown(show ~= "never")
+  if show == "hover" then
+    self.lockActive = false
+    self:SetScript("OnEnter", self.OnEnter)
+    self:SetScript("OnLeave", self.OnLeave)
+    for _, b in ipairs(self.Tabs) do
+      if not b.hooked then
+        b.hooked = true
+        b:HookScript("OnEnter", function()
+          if not self.lockActive then
+            self:OnEnter()
+          end
+        end)
+        b:HookScript("OnLeave", function()
+          if not self.lockActive then
+            self:OnLeave()
+          end
+        end)
+
+        self.active = false
+        self:SetAlpha(0)
+      end
+    end
+    if self.active then
+      self:OnLeave() -- Hide if necessary
+    end
+  else
+    self.active = true
+    self.lockActive = true -- Prevent hooked stuff hiding the buttons
+    self:SetScript("OnEnter", nil)
+    self:SetScript("OnLeave", nil)
+    if self.hideTimer then
+      self.hideTimer:Cancel()
+      self.hideTimer = nil
+    end
+    self:SetAlpha(1)
+  end
+end
+
+function addonTable.Display.TabsBarMixin:OnEnter()
+  if self.hideTimer then
+    self.hideTimer:Cancel()
+  end
+  self.active = true
+  self.fadeInterpolator:Interpolate(self:GetAlpha(), 1, 0.15, function(value)
+    self:SetAlpha(value)
+  end)
+end
+
+function addonTable.Display.TabsBarMixin:OnLeave()
+  if self:IsMouseOver() then
+    return
+  end
+  if self.hideTimer then
+    self.hideTimer:Cancel()
+  end
+  self.hideTimer = C_Timer.NewTimer(2, function()
+    self.fadeInterpolator:Interpolate(self:GetAlpha(), 0, 0.15, function(value)
+      self:SetAlpha(value)
+    end)
+    self.active = false
+  end)
 end
 
 addonTable.CallbackRegistry:RegisterCallback("Render", function(_, newMessages)

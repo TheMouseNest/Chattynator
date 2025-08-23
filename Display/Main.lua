@@ -178,12 +178,10 @@ end
 
 function addonTable.Display.ChatFrameMixin:ApplyTabsShowing()
   local position = addonTable.Config.Get(addonTable.Config.Options.BUTTON_POSITION)
-  if addonTable.Config.Get(addonTable.Config.Options.SHOW_TABS) then
-    self.TabsBar:Show()
+  if addonTable.Config.Get(addonTable.Config.Options.SHOW_TABS) ~= "never" then
     self.ScrollingMessages:SetPoint("TOPLEFT", position == "outside_left" and 34 or 2, -27)
   else
     self.ScrollingMessages:SetPoint("TOPLEFT", position == "outside_left" and 34 or 2, -5)
-    self.TabsBar:Hide()
   end
 end
 
@@ -212,6 +210,12 @@ function addonTable.Display.ChatFrameMixin:UpdateEditBox()
     if ChatFrame1EditBox[r] then
       ChatFrame1EditBox[r]:SetFontObject(font)
     end
+  end
+
+  if not self.editBoxHooked then
+    self.editBoxHooked = true
+    ChatFrame1EditBox:HookScript("OnShow", function()
+    end)
   end
 end
 

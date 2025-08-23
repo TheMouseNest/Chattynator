@@ -172,11 +172,25 @@ local function SetupLayout(parent)
   showSeparator:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
   table.insert(allFrames, showSeparator)
 
-  local showTabs = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_TABS, 28, function(state)
-    addonTable.Config.Set(addonTable.Config.Options.SHOW_TABS, state)
+  local showTabs = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.SHOW_TABS, function(value)
+    return addonTable.Config.Get(addonTable.Config.Options.SHOW_TABS) == value
+  end, function(value)
+    addonTable.Config.Set(addonTable.Config.Options.SHOW_TABS, value)
   end)
-  showTabs.option = addonTable.Config.Options.SHOW_TABS
   showTabs:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
+  do
+    local entries = {
+      addonTable.Locales.NEVER,
+      addonTable.Locales.ALWAYS,
+      addonTable.Locales.ON_HOVER,
+    }
+    local values = {
+      "never",
+      "always",
+      "hover",
+    }
+    showTabs:Init(entries, values)
+  end
   table.insert(allFrames, showTabs)
 
   local showButtonsOnHover = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_BUTTONS_ON_HOVER, 28, function(state)

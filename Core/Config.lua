@@ -109,7 +109,7 @@ local settings = {
   NEW_WHISPER_NEW_TAB = {key = "new_whisper_new_tab", default = 0},
   BUTTON_POSITION = {key = "button_position", default = "outside_left"},
   SHOW_BUTTONS_ON_HOVER = {key = "show_buttons_on_hover", default = false},
-  SHOW_TABS = {key = "show_tabs", default = true},
+  SHOW_TABS = {key = "show_tabs_1", default = "always", refresh = {addonTable.Constants.RefreshReason.Tabs}},
 
   COPY_TIMESTAMPS = {key = "copy_timestamps", default = true},
   ENABLE_COMBAT_MESSAGES = {key = "enable_combat_messages", default = false},

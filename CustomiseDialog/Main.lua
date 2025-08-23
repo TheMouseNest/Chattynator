@@ -180,25 +180,37 @@ local function SetupLayout(parent)
   showTabs:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
   do
     local entries = {
-      addonTable.Locales.NEVER,
-      addonTable.Locales.MOUSEOVER,
       addonTable.Locales.ALWAYS,
+      addonTable.Locales.MOUSEOVER,
+      addonTable.Locales.NEVER,
     }
     local values = {
-      "never",
-      "hover",
       "always",
+      "hover",
+      "never",
     }
     showTabs:Init(entries, values)
   end
   table.insert(allFrames, showTabs)
 
-  local showButtonsOnHover = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_BUTTONS_ON_MOUSEOVER, 28, function(state)
-    addonTable.Config.Set(addonTable.Config.Options.SHOW_BUTTONS_ON_HOVER, state)
+  local showButtons = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.SHOW_BUTTONS, function(value)
+    return addonTable.Config.Get(addonTable.Config.Options.SHOW_BUTTONS_ON_HOVER) == value
+  end, function(value)
+    addonTable.Config.Set(addonTable.Config.Options.SHOW_BUTTONS_ON_HOVER, value)
   end)
-  showButtonsOnHover.option = addonTable.Config.Options.SHOW_BUTTONS_ON_HOVER
-  showButtonsOnHover:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
-  table.insert(allFrames, showButtonsOnHover)
+  showButtons:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, 0)
+  do
+    local entries = {
+      addonTable.Locales.ALWAYS,
+      addonTable.Locales.MOUSEOVER,
+    }
+    local values = {
+      false,
+      true,
+    }
+    showButtons:Init(entries, values)
+  end
+  table.insert(allFrames, showButtons)
 
   local buttonPositionDropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.BUTTONS_POSITION, function(value)
     return addonTable.Config.Get(addonTable.Config.Options.BUTTON_POSITION) == value

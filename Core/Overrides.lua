@@ -96,6 +96,7 @@ function addonTable.Core.ApplyOverrides()
         tab:HookScript("OnEvent", function(_, e)
           if e == "UPDATE_CHAT_WINDOWS" then
             tab:UnregisterEvent("UPDATE_CHAT_WINDOWS")
+            tab:UnregisterEvent("UPDATE_FLOATING_CHAT_WINDOWS")
           end
         end)
         local tabButton = _G[tabName .. "Tab"]

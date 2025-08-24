@@ -22,7 +22,7 @@ function addonTable.Display.ScrollingMessagesMixin:OnLoad()
 
   self.currentFadeOffsetTime = 0
   self.scrollOffset = 0
-  self.panExtent = 100
+  self.panExtent = 50
   self.scrollInterpolator = CreateInterpolator(InterpolatorUtil.InterpolateEaseOut)
   self.destination = 0
 

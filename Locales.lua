@@ -120,6 +120,7 @@ L["SHORT_XP"] = "XP: %1"
 L["SHORT_XP_BONUS"] = "XP: %1%2 (%3)"
 L["SHORT_XP_FROM_MOB"] = "XP: %2, from %1"
 L["SHORT_XP_FROM_MOB_BONUS"] = "XP: %2%3 (%4), from %1"
+L["SHORT_ACHIEVEMENT_OTHER"] = "%1 earned %2"
 
 L["MESSAGE_FONT"] = "Message font"
 L["MESSAGE_FONT_SIZE"] = "Message font size"

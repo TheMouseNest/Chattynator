@@ -40,6 +40,8 @@ local patternsByEvent = {
   ["MONEY"] = {"^" .. YOU_LOOT_MONEY:gsub("%%s", "(.-)"), addonTable.Locales.SHORT_LOOT},
   ["COMBAT_XP_GAIN"] = xpPatterns,
   ["SYSTEM"] = questPatterns,
+  ["GUILD_ACHIEVEMENT"] = {ACHIEVEMENT_BROADCAST:gsub("%%s", "(.-)"), addonTable.Locales.SHORT_ACHIEVEMENT_OTHER},
+  ["ACHIEVEMENT"] = {ACHIEVEMENT_BROADCAST:gsub("%%s", "(.-)"), addonTable.Locales.SHORT_ACHIEVEMENT_OTHER},
 }
 
 local function Cleanup(data)

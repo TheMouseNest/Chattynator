@@ -18,8 +18,11 @@ local xpPatterns = {
   {"^" .. COMBATLOG_XPGAIN_EXHAUSTION1:gsub("([()])", "%%%1"):gsub("%%d", "(.-)"):gsub("%%s", "(.-)"), addonTable.Locales.SHORT_XP_FROM_MOB_BONUS},
   {"^" .. COMBATLOG_XPGAIN_QUEST:gsub("([()])", "%%%1"):gsub("%%d", "(.-)"):gsub("%%s", "(.-)"), addonTable.Locales.SHORT_XP_BONUS},
   {"^" .. COMBATLOG_XPGAIN_FIRSTPERSON:gsub("%%d", "(.-)"):gsub("%%s", "(.-)"), addonTable.Locales.SHORT_XP_FROM_MOB},
-  {"^" .. ERR_QUEST_REWARD_EXP_I:gsub("%%d", "(.-)"), addonTable.Locales.SHORT_XP},
   {"^" .. COMBATLOG_XPGAIN_FIRSTPERSON_UNNAMED:gsub("%%d", "(.-)"), addonTable.Locales.SHORT_XP},
+}
+local questPatterns = {
+  {"^" .. ERR_QUEST_REWARD_EXP_I:gsub("%%d", "(.-)"), addonTable.Locales.SHORT_XP},
+  {"^" .. ERR_QUEST_REWARD_MONEY_S:gsub("%%s", "(.-)"), addonTable.Locales.SHORT_LOOT},
 }
 
 local patternsByEvent = {
@@ -36,6 +39,7 @@ local patternsByEvent = {
   ["CURRENCY"] = currencyPatterns,
   ["MONEY"] = {"^" .. YOU_LOOT_MONEY:gsub("%%s", "(.-)"), addonTable.Locales.SHORT_LOOT},
   ["COMBAT_XP_GAIN"] = xpPatterns,
+  ["SYSTEM"] = questPatterns,
 }
 
 local function Cleanup(data)

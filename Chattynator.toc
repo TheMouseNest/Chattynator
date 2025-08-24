@@ -50,6 +50,7 @@ Display/CopyChat.lua
 Modifiers/ShortenChannels.lua
 Modifiers/ClassColors.lua
 Modifiers/URLs.lua
+Modifiers/RedundantText.lua
 
 Skins/Main.lua
 Skins/Blizzard.lua

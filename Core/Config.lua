@@ -104,6 +104,7 @@ local settings = {
   SHORTEN_FORMAT = {key = "shorten_format", default = "none", refresh = {addonTable.Constants.RefreshReason.MessageModifier}},
   CLASS_COLORS = {key = "class_colors", default = true, refresh = {addonTable.Constants.RefreshReason.MessageModifier}},
   LINK_URLS = {key = "link_urls", default = true, refresh = {addonTable.Constants.RefreshReason.MessageModifier}},
+  REDUCE_REDUNDANT_TEXT = {key = "reduce_redundant_text", default = false, refresh = {addonTable.Constants.RefreshReason.MessageModifier}},
 
   NEW_WHISPER_NEW_TAB = {key = "new_whisper_new_tab", default = 0},
   BUTTON_POSITION = {key = "button_position", default = "outside_left"},

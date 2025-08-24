@@ -182,6 +182,7 @@ function addonTable.Core.Initialize()
   addonTable.Modifiers.InitializeShortenChannels()
   addonTable.Modifiers.InitializeClassColors()
   addonTable.Modifiers.InitializeURLs()
+  addonTable.Modifiers.InitializeRedundantText()
   addonTable.CustomiseDialog.Initialize()
 end
 

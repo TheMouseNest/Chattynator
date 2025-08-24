@@ -461,6 +461,13 @@ local function SetupFormatting(parent)
   end
   table.insert(allFrames, shorteningDropdown)
 
+  local reduceRedundantText = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.REDUCE_REDUNDANT_TEXT, 28, function(state)
+    addonTable.Config.Set(addonTable.Config.Options.REDUCE_REDUNDANT_TEXT, state)
+  end)
+  reduceRedundantText.option = addonTable.Config.Options.REDUCE_REDUNDANT_TEXT
+  reduceRedundantText:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
+  table.insert(allFrames, reduceRedundantText)
+
   container:SetScript("OnShow", function()
     for _, f in ipairs(allFrames) do
       if f.SetValue then

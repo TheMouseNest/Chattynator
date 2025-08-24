@@ -15,7 +15,7 @@ local guildAbbrev = addonTable.Locales.ABBREV_GUILD
 
 local letterStyle = {
   player = {
-    p = "(|Hplayer%w+:[^|]-|h)%[([^%[%]]-)%](|h)",
+    p = "(|Hplayer%w*:[^|]-|h)%[([^%[%]]-)%](|h)",
     r = "%1%2%3",
   },
   channel = {

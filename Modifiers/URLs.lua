@@ -23,8 +23,6 @@ end
 function addonTable.Modifiers.InitializeURLs()
   if addonTable.Config.Get(addonTable.Config.Options.LINK_URLS) then
     addonTable.Messages:AddLiveModifier(URLs)
-  else
-    addonTable.Messages:RemoveLiveModifier(URLs)
   end
   addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
     if settingName == addonTable.Config.Options.LINK_URLS then

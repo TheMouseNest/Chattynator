@@ -330,6 +330,11 @@ function addonTable.MessagesMonitorMixin:OnLoad()
     end)
   end
 
+  -- Handle channel indexes swapping
+  hooksecurefunc(C_ChatInfo, "SwapChatChannelsByChannelIndex", function()
+    self:UpdateChannels()
+  end)
+
   self:SetInset()
 end
 

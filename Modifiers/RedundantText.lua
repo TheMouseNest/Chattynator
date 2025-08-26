@@ -1,47 +1,51 @@
 ---@class addonTableChattynator
 local addonTable = select(2, ...)
 
+local function Clean(text)
+  return "^" .. text:gsub("([%^$().%[%]*+-?)])", "%%%1"):gsub("%%s", "(.-)"):gsub("%%d", "(.-)")
+end
+
 local lootPatterns = {
-  {"^" .. LOOT_ITEM_PUSHED_SELF:gsub("%%s", "(.-)"), addonTable.Locales.SHORT_LOOT},
-  {"^" .. LOOT_ITEM_SELF:gsub("%%s", "(.-)"), addonTable.Locales.SHORT_LOOT},
-  {"^" .. LOOT_ITEM_PUSHED_SELF_MULTIPLE:gsub("%%s", "(.-)"):gsub("%%d", "(.-)"), addonTable.Locales.SHORT_LOOT_MULTIPLE},
-  {"^" .. LOOT_ITEM_SELF_MULTIPLE:gsub("%%s", "(.-)"):gsub("%%d", "(.-)"), addonTable.Locales.SHORT_LOOT_MULTIPLE},
-  {"^" .. CHANGED_OWN_ITEM:gsub("%.", "%%."):gsub("%%s", "(.-)"), addonTable.Locales.SHORT_LOOT_CHANGED},
-  {"^" .. LOOT_ITEM:gsub("%.", "%%."):gsub("%%s", "(.-)"), addonTable.Locales.SHORT_LOOT_OTHER},
-  {"^" .. LOOT_ITEM_MULTIPLE:gsub("%.", "%%."):gsub("%%s", "(.-)"):gsub("%%d", "(.-)"), addonTable.Locales.SHORT_LOOT_OTHER_MULTIPLE},
+  {Clean(LOOT_ITEM_PUSHED_SELF), addonTable.Locales.SHORT_LOOT},
+  {Clean(LOOT_ITEM_SELF), addonTable.Locales.SHORT_LOOT},
+  {Clean(LOOT_ITEM_PUSHED_SELF_MULTIPLE), addonTable.Locales.SHORT_LOOT_MULTIPLE},
+  {Clean(LOOT_ITEM_SELF_MULTIPLE), addonTable.Locales.SHORT_LOOT_MULTIPLE},
+  {Clean(CHANGED_OWN_ITEM), addonTable.Locales.SHORT_LOOT_CHANGED},
+  {Clean(LOOT_ITEM), addonTable.Locales.SHORT_LOOT_OTHER},
+  {Clean(LOOT_ITEM_MULTIPLE), addonTable.Locales.SHORT_LOOT_OTHER_MULTIPLE},
 }
 local currencyPatterns = {
-  {"^" .. CURRENCY_GAINED:gsub("%%s", "(.-)"), addonTable.Locales.SHORT_LOOT},
-  {"^" .. CURRENCY_GAINED_MULTIPLE:gsub("%%s", "(.-)"):gsub("%%d", "(.-)"), addonTable.Locales.SHORT_LOOT_MULTIPLE},
+  {Clean(CURRENCY_GAINED), addonTable.Locales.SHORT_LOOT},
+  {Clean(CURRENCY_GAINED_MULTIPLE), addonTable.Locales.SHORT_LOOT_MULTIPLE},
 }
 local xpPatterns = {
-  {"^" .. COMBATLOG_XPGAIN_EXHAUSTION1:gsub("([()])", "%%%1"):gsub("%%d", "(.-)"):gsub("%%s", "(.-)"), addonTable.Locales.SHORT_XP_FROM_MOB_BONUS},
-  {"^" .. COMBATLOG_XPGAIN_QUEST:gsub("([()])", "%%%1"):gsub("%%d", "(.-)"):gsub("%%s", "(.-)"), addonTable.Locales.SHORT_XP_BONUS},
-  {"^" .. COMBATLOG_XPGAIN_FIRSTPERSON:gsub("%%d", "(.-)"):gsub("%%s", "(.-)"), addonTable.Locales.SHORT_XP_FROM_MOB},
-  {"^" .. COMBATLOG_XPGAIN_FIRSTPERSON_UNNAMED:gsub("%%d", "(.-)"), addonTable.Locales.SHORT_XP},
+  {Clean(COMBATLOG_XPGAIN_EXHAUSTION1), addonTable.Locales.SHORT_XP_FROM_MOB_BONUS},
+  {Clean(COMBATLOG_XPGAIN_QUEST), addonTable.Locales.SHORT_XP_BONUS},
+  {Clean(COMBATLOG_XPGAIN_FIRSTPERSON), addonTable.Locales.SHORT_XP_FROM_MOB},
+  {Clean(COMBATLOG_XPGAIN_FIRSTPERSON_UNNAMED), addonTable.Locales.SHORT_XP},
 }
 local questPatterns = {
-  {"^" .. ERR_QUEST_REWARD_EXP_I:gsub("%%d", "(.-)"), addonTable.Locales.SHORT_XP},
-  {"^" .. ERR_QUEST_REWARD_MONEY_S:gsub("%%s", "(.-)"), addonTable.Locales.SHORT_LOOT},
+  {Clean(ERR_QUEST_REWARD_EXP_I), addonTable.Locales.SHORT_XP},
+  {Clean(ERR_QUEST_REWARD_MONEY_S), addonTable.Locales.SHORT_LOOT},
 }
 
 local patternsByEvent = {
-  ["MONSTER_SAY"] = {"^" .. CHAT_MONSTER_SAY_GET:gsub("%%s", "(.-)"), "%1:\32"},
-  ["MONSTER_YELL"] = {"^" .. CHAT_MONSTER_YELL_GET:gsub("%%s", "(.-)"), "%1:\32"},
-  ["MONSTER_WHISPER"] = {"^" .. CHAT_MONSTER_WHISPER_GET:gsub("%%s", "(.-)"), "%1:\32"},
-  ["MONSTER_WHISPER"] = {"^" .. CHAT_MONSTER_WHISPER_GET:gsub("%%s", "(.-)"), "%1:\32"},
-  ["SAY"] = {"^" .. CHAT_SAY_GET:gsub("%%s", "(.-)"), "%1:\32"},
-  ["WHISPER"] = {"^" .. CHAT_WHISPER_GET:gsub("%%s", "(.-)"), "%1:\32"},
-  ["WHISPER_INFORM"] = {"^" .. CHAT_WHISPER_INFORM_GET:gsub("%%s", "(.-)"), addonTable.Locales.SHORT_WHISPER_SEND},
-  ["BN_WHISPER"] = {"^" .. CHAT_BN_WHISPER_GET:gsub("%%s", "(.-)"), "%1:\32"},
-  ["BN_WHISPER_INFORM"] = {"^" .. CHAT_BN_WHISPER_INFORM_GET:gsub("%%s", "(.-)"), addonTable.Locales.SHORT_WHISPER_SEND},
+  ["MONSTER_SAY"] = {Clean(CHAT_MONSTER_SAY_GET), "%1:\32"},
+  ["MONSTER_YELL"] = {Clean(CHAT_MONSTER_YELL_GET), "%1:\32"},
+  ["MONSTER_WHISPER"] = {Clean(CHAT_MONSTER_WHISPER_GET), "%1:\32"},
+  ["MONSTER_WHISPER"] = {Clean(CHAT_MONSTER_WHISPER_GET), "%1:\32"},
+  ["SAY"] = {Clean(CHAT_SAY_GET), "%1:\32"},
+  ["WHISPER"] = {Clean(CHAT_WHISPER_GET), "%1:\32"},
+  ["WHISPER_INFORM"] = {Clean(CHAT_WHISPER_INFORM_GET), addonTable.Locales.SHORT_WHISPER_SEND},
+  ["BN_WHISPER"] = {Clean(CHAT_BN_WHISPER_GET), "%1:\32"},
+  ["BN_WHISPER_INFORM"] = {Clean(CHAT_BN_WHISPER_INFORM_GET), addonTable.Locales.SHORT_WHISPER_SEND},
   ["LOOT"] = lootPatterns,
   ["CURRENCY"] = currencyPatterns,
-  ["MONEY"] = {"^" .. YOU_LOOT_MONEY:gsub("%%s", "(.-)"), addonTable.Locales.SHORT_LOOT},
+  ["MONEY"] = {Clean(YOU_LOOT_MONEY), addonTable.Locales.SHORT_LOOT},
   ["COMBAT_XP_GAIN"] = xpPatterns,
   ["SYSTEM"] = questPatterns,
-  ["GUILD_ACHIEVEMENT"] = {ACHIEVEMENT_BROADCAST:gsub("%%s", "(.-)"), addonTable.Locales.SHORT_ACHIEVEMENT_OTHER},
-  ["ACHIEVEMENT"] = {ACHIEVEMENT_BROADCAST:gsub("%%s", "(.-)"), addonTable.Locales.SHORT_ACHIEVEMENT_OTHER},
+  ["GUILD_ACHIEVEMENT"] = {Clean(ACHIEVEMENT_BROADCAST), addonTable.Locales.SHORT_ACHIEVEMENT_OTHER},
+  ["ACHIEVEMENT"] = {Clean(ACHIEVEMENT_BROADCAST), addonTable.Locales.SHORT_ACHIEVEMENT_OTHER},
 }
 
 local function Cleanup(data)

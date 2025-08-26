@@ -436,12 +436,14 @@ local function LoadSkin()
     end
   end)
 
-  local offset = 3
   hooksecurefunc("ChatEdit_UpdateHeader", function(editBox)
     if tIndexOf(editBoxes, editBox) ~= nil then
       local promptWidth = editBox:GetTextInsets() - 15
       local wantedOffset = addonTable.Messages.inset
-      local realPosition = math.max(0, offset + addonTable.Messages.inset - promptWidth)
+      local realPosition = math.max(0, 3 + addonTable.Messages.inset - promptWidth)
+      if addonTable.Messages.timestampFormat == " " then
+        realPosition = addonTable.Messages.inset + 2
+      end
       editBox.prompt:SetPoint("LEFT", realPosition, 0)
       editBox.header:SetPoint("LEFT", realPosition, 0)
       editBox:SetTextInsets(promptWidth + realPosition, 13, 0, 0)

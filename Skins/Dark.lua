@@ -20,6 +20,7 @@ end)
 
 local chatTabs = {}
 local chatFrames = {}
+local editBoxes = {}
 local chatButtons = {}
 
 local skinners = {
@@ -173,17 +174,23 @@ local skinners = {
     end)
   end,
   ChatEditBox = function(editBox, tags)
+    table.insert(editBoxes, editBox)
     for _, texName in ipairs({"Left", "Right", "Mid", "FocusLeft", "FocusRight", "FocusMid"}) do
       local tex = _G[editBox:GetName() .. texName]
       if tex then
         tex:SetParent(addonTable.hiddenFrame)
       end
     end
-    local background = editBox:CreateTexture(nil, "BACKGROUND")
-    background:SetColorTexture(0.1, 0.1, 0.1, 0.8)
-    background:SetPoint("TOPLEFT", editBox)
-    background:SetPoint("BOTTOM", editBox)
-    background:SetPoint("RIGHT", editBox)
+    local alpha = 1 - addonTable.Config.Get("skins.dark.chat_transparency")
+    editBox.background = editBox:CreateTexture(nil, "BACKGROUND")
+    local value = 0.1
+    if addonTable.Config.Get("skins.dark.solid_chat_background") then
+      value = 0
+    end
+    editBox.background:SetColorTexture(value, value, value, alpha)
+    editBox.background:SetPoint("TOPLEFT", editBox)
+    editBox.background:SetPoint("BOTTOM", editBox)
+    editBox.background:SetPoint("RIGHT", editBox)
   end,
   ChatTab = function(tab, tags)
     local alpha = 1 - addonTable.Config.Get("skins.dark.tab_transparency")
@@ -399,8 +406,19 @@ local function LoadSkin()
       for _, frame in ipairs(chatFrames) do
         frame.background:SetAlpha(alpha)
       end
+      local value = 0.1
+      if addonTable.Config.Get("skins.dark.solid_chat_background") then
+        value = 0
+      end
+      for _, frame in ipairs(editBoxes) do
+        frame.background:SetAlpha(alpha)
+      end
     elseif settingName == "skins.dark.solid_chat_background" then
       local isSolid = addonTable.Config.Get(settingName)
+      local value = 0.1
+      if isSolid then
+        value = 0
+      end
       if isSolid then
         for _, frame in ipairs(chatFrames) do
           frame.background:SetColorTexture(0, 0, 0)
@@ -410,6 +428,10 @@ local function LoadSkin()
           frame.background:SetTexture("Interface/AddOns/Chattynator/Assets/ChatBackground")
           frame.background:SetTexCoord(0, 1, 1, 0)
         end
+      end
+      local alpha = 1 - addonTable.Config.Get("skins.dark.chat_transparency")
+      for _, frame in ipairs(editBoxes) do
+        frame.background:SetColorTexture(value, value, value, alpha)
       end
     end
   end)

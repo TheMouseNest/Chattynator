@@ -101,6 +101,7 @@ function addonTable.Display.ChatFrameMixin:OnLoad()
       self.ButtonsBar:Update()
     elseif settingName == addonTable.Config.Options.EDIT_BOX_POSITION and self:GetID() == 1 then
       self:UpdateEditBox()
+      self.ButtonsBar:Update()
     elseif settingName == addonTable.Config.Options.SHOW_TABS then
       self:ApplyTabsShowing()
       self.ButtonsBar:Update()

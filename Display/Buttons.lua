@@ -233,6 +233,10 @@ function addonTable.Display.ButtonsBarMixin:OnLeave()
 end
 
 function addonTable.Display.ButtonsBarMixin:Update()
+  if not self.ScrollToBottomButton then
+    return
+  end
+
   local position = addonTable.Config.Get(addonTable.Config.Options.BUTTON_POSITION)
 
   if addonTable.Config.Get(addonTable.Config.Options.SHOW_BUTTONS_ON_HOVER) then

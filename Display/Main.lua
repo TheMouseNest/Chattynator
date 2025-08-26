@@ -11,6 +11,8 @@ function addonTable.Display.ChatFrameMixin:OnLoad()
   self:SetResizeBounds(240, 140)
   self:SetClampedToScreen(true)
 
+  self.editBoxBaseOffset = 6
+
   self:SetScript("OnSizeChanged", function()
     self.ButtonsBar:Update()
     self:SavePosition()
@@ -193,9 +195,10 @@ function addonTable.Display.ChatFrameMixin:UpdateEditBox()
   local position = addonTable.Config.Get(addonTable.Config.Options.EDIT_BOX_POSITION)
   ChatFrame1EditBox:ClearAllPoints()
   if position == "bottom" then
-    self.ScrollingMessages:SetPoint("BOTTOMRIGHT", 0, 6 + 32 * addonTable.Core.GetFontScalingFactor())
-    ChatFrame1EditBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, 32)
-    ChatFrame1EditBox:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, 32)
+    local _, _, _, clampBottom = self:GetClampRectInsets()
+    self.ScrollingMessages:SetPoint("BOTTOMRIGHT", 0, 6 + ChatFrame1EditBox:GetHeight() - clampBottom)
+    ChatFrame1EditBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, ChatFrame1EditBox:GetHeight() / ChatFrame1EditBox:GetScale() - clampBottom)
+    ChatFrame1EditBox:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, ChatFrame1EditBox:GetHeight() / ChatFrame1EditBox:GetScale() - clampBottom)
   elseif position == "top" then
     self.ScrollingMessages:SetPoint("BOTTOMRIGHT", 0, 5)
     ChatFrame1EditBox:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0)

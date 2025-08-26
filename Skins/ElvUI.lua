@@ -52,9 +52,13 @@ local skinners = {
         tex:SetParent(addonTable.hiddenFrame)
       end
     end
+    editBox:SetHeight(22)
     S:HandleEditBox(editBox)
+    editBox.backdrop:SetPoint("TOPLEFT", 1, 0)
+    editBox.backdrop:SetPoint("RIGHT", -1, 0)
     local _, size = editBox:GetFont()
     editBox:FontTemplate(LSM:Fetch('font', CH.db.font), size, CH.db.fontOutline)
+    editBox:GetParent():UpdateEditBox()
   end,
   TabButton = function(frame)
     S:HandleTab(frame)
@@ -270,12 +274,13 @@ local skinners = {
         LeftChatPanel:SetParent(addonTable.hiddenFrame)
         LeftChatDataPanel:ClearAllPoints()
         LeftChatDataPanel:SetParent(frame)
-        LeftChatDataPanel:SetPoint(isAbove and "BOTTOMLEFT" or "TOPLEFT", frame, isAbove and "TOPLEFT" or "BOTTOMLEFT", E.db.chat.hideChatToggles and 0 or 19, position == "bottom" and not isAbove and 24 or 0)
-        LeftChatDataPanel:SetPoint(isAbove and "BOTTOMRIGHT" or "TOPRIGHT", frame, isAbove and "TOPRIGHT" or "BOTTOMRIGHT", -(E.PixelMode and 1 or -1), position == "bottom" and not isAbove and 24 or 0)
+        LeftChatDataPanel:SetPoint(isAbove and "BOTTOMLEFT" or "TOPLEFT", frame, isAbove and "TOPLEFT" or "BOTTOMLEFT", E.db.chat.hideChatToggles and 0 or 19, position == "bottom" and not isAbove and 22 or 0)
+        LeftChatDataPanel:SetPoint(isAbove and "BOTTOMRIGHT" or "TOPRIGHT", frame, isAbove and "TOPRIGHT" or "BOTTOMRIGHT", -(E.PixelMode and 1 or -1), position == "bottom" and not isAbove and 22 or 0)
         LeftChatDataPanel:SetHeight(23)
         LeftChatToggleButton:SetParent(frame)
         local panelEnabled = E.db.datatexts.panels.LeftChatDataPanel.enable
         frame:SetClampRectInsets(0, 0, panelEnabled and isAbove and 25 or 0, panelEnabled and position == "top" and not isAbove and -25 or 0)
+        frame:UpdateEditBox()
       end
       local function PositionPanel()
         AnchorDataPanel()

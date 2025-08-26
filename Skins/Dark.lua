@@ -435,6 +435,16 @@ local function LoadSkin()
       end
     end
   end)
+
+  local offset = 4
+  hooksecurefunc("ChatEdit_UpdateHeader", function(editBox)
+    if tIndexOf(editBoxes, editBox) ~= nil then
+      local shift = editBox:GetParent().ScrollingMessages:GetLeft() - editBox:GetLeft() - 2
+      editBox.prompt:SetPoint("LEFT", shift + offset, 0)
+      editBox.header:SetPoint("LEFT", shift + offset, 0)
+      editBox:SetTextInsets(editBox:GetTextInsets() - 15 + offset + shift, 13, 0, 0)
+    end
+  end)
 end
 
 addonTable.Skins.RegisterSkin(addonTable.Locales.DARK, "dark", LoadSkin, SkinFrame, SetConstants, {

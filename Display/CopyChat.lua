@@ -90,7 +90,7 @@ function addonTable.Display.CopyChatMixin:LoadMessages(filterFunc, indexOffset)
   local showTimestamp = addonTable.Config.Get(addonTable.Config.Options.COPY_TIMESTAMPS)
   local timestampFormat = addonTable.Messages.timestampFormat
   if timestampFormat == " " then
-    timestampFormat = "%X"
+    showTimestamp = false
   end
   while #messages < 200 do
     local m = addonTable.Messages:GetMessageRaw(index)

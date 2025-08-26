@@ -57,6 +57,7 @@ function addonTable.Display.MessageRowMixin:UpdateWidgets(width)
 
   self.Timestamp:SetWidth(addonTable.Messages.inset)
   self.DisplayString:SetWidth(width)
+  self.DisplayString:SetIndentedWordWrap(not addonTable.Config.Get(addonTable.Config.Options.SHOW_TIMESTAMP_SEPARATOR) and addonTable.Config.Get(addonTable.Config.Options.TIMESTAMP_FORMAT) == " ")
 
   for _, fontString in ipairs({self.DisplayString, self.Timestamp}) do
     fontString:SetFontObject(addonTable.Messages.font)

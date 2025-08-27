@@ -57,7 +57,7 @@ function addonTable.Core.CompatibilityWarnings()
       local text =  addonTable.Locales.DISABLE_ADDON_X:format(title)
       addonTable.Utilities.Message(text)
       addonTable.Dialogs.ShowConfirm(text, DISABLE, IGNORE, function()
-        C_AddOns.DisableAddOn(data)
+        C_AddOns.DisableAddOn(addon, UnitGUID("player"))
         ReloadUI()
       end)
       break

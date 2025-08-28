@@ -261,7 +261,6 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   setmetatable(env, {__index = _G, __newindex = _G})
   setfenv(ChatFrame_MessageEventHandler, env)
   setfenv(ChatFrame_SystemEventHandler, env)
-  setfenv(ChatEdit_UpdateHeader, env) -- Apply chat colors to edit box
   self:SetScript("OnEvent", self.OnEvent)
 
   addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)

@@ -114,4 +114,16 @@ function addonTable.Core.ApplyOverrides()
   hooksecurefunc("ChatEdit_ActivateChat", function(editBox)
     editBox:Show()
   end)
+
+  hooksecurefunc("ChatEdit_UpdateHeader", function(editBox)
+    local color = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS)[editBox:GetAttribute("chatType")]
+    if color then
+      editBox:SetTextColor(color.r, color.g, color.b)
+      editBox.header:SetTextColor(color.r, color.g, color.b)
+      editBox.headerSuffix:SetTextColor(color.r, color.g, color.b)
+      editBox.focusLeft:SetVertexColor(color.r, color.g, color.b)
+      editBox.focusRight:SetVertexColor(color.r, color.g, color.b)
+      editBox.focusMid:SetVertexColor(color.r, color.g, color.b)
+    end
+  end)
 end

@@ -440,7 +440,7 @@ local function LoadSkin()
     if tIndexOf(editBoxes, editBox) ~= nil then
       local promptWidth = editBox:GetTextInsets() - 15
       local wantedOffset = addonTable.Messages.inset
-      local realPosition = math.max(0, 3 + addonTable.Messages.inset - promptWidth)
+      local realPosition = math.max(5, 3 + addonTable.Messages.inset - promptWidth)
       if addonTable.Messages.timestampFormat == " " then
         realPosition = addonTable.Messages.inset + 2
       end

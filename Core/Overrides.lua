@@ -119,7 +119,15 @@ function addonTable.Core.ApplyOverrides()
     if editBox ~= ChatFrame1EditBox then
       return
     end
-    local color = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS)[editBox:GetAttribute("chatType")]
+    local allColors = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS)
+    local chatType = editBox:GetAttribute("chatType")
+    local color
+    if chatType == "CHANNEL" then
+      local channel = editBox:GetAttribute("channelTarget") and GetChannelName(editBox:GetAttribute("channelTarget")) or 0
+      color = allColors[chatType .. channel] or allColors[chatType]
+    else
+      color = allColors[chatType]
+    end
     if color then
       editBox:SetTextColor(color.r, color.g, color.b)
       editBox.header:SetTextColor(color.r, color.g, color.b)

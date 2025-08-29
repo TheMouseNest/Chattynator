@@ -365,22 +365,16 @@ local function LoadSkin()
   LSM = E.Libs.LSM
   CH = E:GetModule('Chat')
   hoverColor = {r = E.media.rgbvaluecolor[1], g = E.media.rgbvaluecolor[2], b = E.media.rgbvaluecolor[3]}
+  local options = {CH.db.font, E.db.general.font, "Friz Quadrata TT"}
+  for _, font in ipairs(options) do
+    if LSM:Fetch("font", font, true) then
+      addonTable.Core.OverwriteDefaultFont(font)
+      break
+    end
+  end
 end
 
 if addonTable.Skins.IsAddOnLoading("ElvUI") then
-  local frame = CreateFrame("Frame")
-  frame:SetScript("OnEvent", function(_, eventName, data)
-    if eventName == "PLAYER_LOGIN" then
-      addonTable.Core.OverwriteDefaultFont("default")
-    elseif eventName == "ADDON_LOADED" and data == "ElvUI" then
-      table.insert(ElvUI[1].INCOMPATIBLE_ADDONS.Chat, "Chattynator")
-    end
-  end)
-  if ElvUI then
-    table.insert(ElvUI[1].INCOMPATIBLE_ADDONS.Chat, "Chattynator")
-  end
-  frame:RegisterEvent("PLAYER_LOGIN")
-  frame:RegisterEvent("ADDON_LOADED")
   addonTable.Skins.RegisterSkin(addonTable.Locales.ELVUI, "elvui", LoadSkin, SkinFrame, SetConstants, {
   }, true)
 end

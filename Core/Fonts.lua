@@ -47,7 +47,7 @@ function addonTable.Core.GetFontScalingFactor()
 end
 
 function addonTable.Core.CreateFont(lsmPath, outline)
-  if lsmPath == "default" and outline ~= "" then
+  if lsmPath == "default" then
     local alphabet = {"roman", "korean", "simplifiedchinese", "traditionalchinese", "russian"}
     local members = {}
     local coreFont = _G[fonts["default"]]
@@ -79,3 +79,5 @@ function addonTable.Core.CreateFont(lsmPath, outline)
     font:SetTextColor(1, 1, 1)
   end
 end
+
+addonTable.Core.CreateFont("default", "") -- Clone the ChatFontNormal to avoid sizing issues

@@ -116,7 +116,7 @@ function addonTable.Core.ApplyOverrides()
   end)
 
   hooksecurefunc("ChatEdit_UpdateHeader", function(editBox)
-    if editBox == ChatFrame1EditBox then
+    if editBox ~= ChatFrame1EditBox then
       return
     end
     local color = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS)[editBox:GetAttribute("chatType")]

@@ -208,11 +208,25 @@ function addonTable.Display.ChatFrameMixin:UpdateEditBox()
 
   local font = addonTable.Core.GetFontByID(addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT))
   ChatFrame1EditBox:SetFontObject(font)
+  if addonTable.Config.Get(addonTable.Config.Options.SHOW_FONT_SHADOW) then
+    ChatFrame1EditBox:SetShadowOffset(1, -1)
+    ChatFrame1EditBox:SetShadowColor(0, 0, 0, 0.8)
+  else
+    ChatFrame1EditBox:SetShadowOffset(0, 0)
+    ChatFrame1EditBox:SetShadowColor(0, 0, 0, 0)
+  end
   ChatFrame1EditBox:SetScale(addonTable.Core.GetFontScalingFactor())
   local regions = {"header", "headerSuffix", "languageHeader", "NewcomerHint", "prompt"}
   for _, r in pairs(regions) do
     if ChatFrame1EditBox[r] then
       ChatFrame1EditBox[r]:SetFontObject(font)
+      if addonTable.Config.Get(addonTable.Config.Options.SHOW_FONT_SHADOW) then
+        ChatFrame1EditBox[r]:SetShadowOffset(1, -1)
+        ChatFrame1EditBox[r]:SetShadowColor(0, 0, 0, 0.8)
+      else
+        ChatFrame1EditBox[r]:SetShadowOffset(0, 0)
+        ChatFrame1EditBox[r]:SetShadowColor(0, 0, 0, 0)
+      end
     end
   end
 

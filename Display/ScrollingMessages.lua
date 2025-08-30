@@ -93,6 +93,7 @@ function addonTable.Display.ScrollingMessagesMixin:ScrollTo(target, easyMode)
     self:UpdateAlphas()
     return
   end
+  self.isScrolling = true
   if easyMode then
     self.scrollInterpolator:Interpolate(self.scrollOffset, target, 0.11, function(value)
       local diff = self.scrollOffset - value
@@ -101,11 +102,15 @@ function addonTable.Display.ScrollingMessagesMixin:ScrollTo(target, easyMode)
       end
       self.scrollOffset = value
       self:UpdateAlphas()
+    end, function()
+      self.isScrolling = false
     end)
   else
     self.scrollInterpolator:Interpolate(self.scrollOffset, target, 0.11, function(value)
       self.scrollOffset = value
       self:Render()
+    end, function()
+      self.isScrolling = false
     end)
   end
 end
@@ -336,7 +341,7 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
   end
   self:UpdateAlphas()
 
-  if self.destination == 0 and self.scrollOffset ~= 0 and newMessages then
+  if self.destination == 0 and self.scrollOffset ~= 0 and (newMessages or not self.isScrolling) then
     self:ScrollToEnd(shift > 0)
   end
 end

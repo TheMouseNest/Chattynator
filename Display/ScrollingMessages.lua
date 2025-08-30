@@ -125,7 +125,13 @@ function addonTable.Display.ScrollingMessagesMixin:OnMouseWheel(delta)
     delta = -1
   end
   self.currentFadeOffsetTime = GetTime()
-  self:ScrollBy(self.panExtent * delta)
+  local multiplier = 1
+  if IsShiftKeyDown() then
+    multiplier = 1000
+  elseif IsControlKeyDown() then
+    multiplier = 0.5
+  end
+  self:ScrollBy(self.panExtent * delta * multiplier)
 end
 
 function addonTable.Display.ScrollingMessagesMixin:UpdateAllocated()

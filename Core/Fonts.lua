@@ -18,11 +18,20 @@ local function GetOutlineKey()
   end
 end
 
-function addonTable.Core.GetFontByID(id)
-  if not fonts[id .. GetOutlineKey()] then
-    addonTable.Core.CreateFont(id, GetOutlineKey())
+local function GetShadowKey()
+  local shadow = addonTable.Config.Get(addonTable.Config.Options.SHOW_FONT_SHADOW)
+  if shadow then
+    return "SHADOW"
+  else
+    return ""
   end
-  return fonts[id .. GetOutlineKey()] or fonts["default" .. GetOutlineKey()] or fonts["default"]
+end
+
+function addonTable.Core.GetFontByID(id)
+  if not fonts[id .. GetOutlineKey() .. GetShadowKey()] then
+    addonTable.Core.CreateFont(id, GetOutlineKey(), GetShadowKey())
+  end
+  return fonts[id .. GetOutlineKey() .. GetShadowKey()] or fonts["default" .. GetOutlineKey() .. GetShadowKey()] or fonts["default"]
 end
 
 function addonTable.Core.OverwriteDefaultFont(id)
@@ -32,11 +41,20 @@ function addonTable.Core.OverwriteDefaultFont(id)
 
   fonts["default"] = fonts[id] or fonts["default"]
   -- Import outlines
+  if fonts[id .. "SHADOW"] then
+    fonts["default" .. "SHADOW"] = fonts[id .. "SHADOW"]
+  end
   if fonts[id .. "OUTLINE"] then
     fonts["default" .. "OUTLINE"] = fonts[id .. "OUTLINE"]
   end
+  if fonts[id .. "OUTLINE" .. "SHADOW"] then
+    fonts["default" .. "OUTLINE" .. "SHADOW"] = fonts[id .. "OUTLINE" .. "SHADOW"]
+  end
   if fonts[id .. "THICKOUTLINE"] then
     fonts["default" .. "THICKOUTLINE"] = fonts[id .. "THICKOUTLINE"]
+  end
+  if fonts[id .. "THICKOUTLINE" .. "SHADOW"] then
+    fonts["default" .. "THICKOUTLINE" .. "SHADOW"] = fonts[id .. "THICKOUTLINE" .. "SHADOW"]
   end
 
   addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.MessageFont] = true})
@@ -46,7 +64,7 @@ function addonTable.Core.GetFontScalingFactor()
   return addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT_SIZE) / 14
 end
 
-function addonTable.Core.CreateFont(lsmPath, outline)
+function addonTable.Core.CreateFont(lsmPath, outline, shadow)
   if lsmPath == "default" then
     local alphabet = {"roman", "korean", "simplifiedchinese", "traditionalchinese", "russian"}
     local members = {}
@@ -63,11 +81,15 @@ function addonTable.Core.CreateFont(lsmPath, outline)
         })
       end
     end
-    local globalName = "ChattynatorFontdefault" .. outline
-    CreateFontFamily(globalName, members)
-    fonts["default" .. outline] = globalName
+    local globalName = "ChattynatorFontdefault" .. outline .. shadow
+    local font = CreateFontFamily(globalName, members)
+    if shadow == "SHADOW" then
+      font:SetShadowOffset(1, -1)
+      font:SetShadowColor(0, 0, 0, 0.8)
+    end
+    fonts["default" .. outline .. shadow] = globalName
   else
-    local key = lsmPath .. outline
+    local key = lsmPath .. outline .. shadow
     local globalName = "ChattynatorFont" .. key
     local path = LibSharedMedia:Fetch("font", lsmPath, true)
     if not path then
@@ -77,7 +99,11 @@ function addonTable.Core.CreateFont(lsmPath, outline)
     fonts[key] = globalName
     font:SetFont(path, 14, outline)
     font:SetTextColor(1, 1, 1)
+    if shadow == "SHADOW" then
+      font:SetShadowOffset(1, -1)
+      font:SetShadowColor(0, 0, 0, 0.8)
+    end
   end
 end
 
-addonTable.Core.CreateFont("default", "") -- Clone the ChatFontNormal to avoid sizing issues
+addonTable.Core.CreateFont("default", "", "") -- Clone the ChatFontNormal to avoid sizing issues

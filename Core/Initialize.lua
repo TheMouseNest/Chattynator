@@ -177,6 +177,17 @@ function addonTable.Core.Initialize()
   Mixin(addonTable.CopyFrame, addonTable.Display.CopyChatMixin)
   addonTable.CopyFrame:OnLoad()
 
+  SlashCmdList["ChattynatorCopy"] = function()
+    if not addonTable.allChatFrames[1] then
+      return
+    end
+    if addonTable.CopyFrame:IsShown() then
+      addonTable.CopyFrame:Hide()
+    end
+    addonTable.CopyFrame:LoadMessages(addonTable.allChatFrames[1].filterFunc, addonTable.allChatFrames[1].startingIndex)
+  end
+  SLASH_ChattynatorCopy1 = "/copy"
+
   addonTable.Core.ApplyOverrides()
   addonTable.Core.InitializeChatCommandLogging()
   addonTable.Modifiers.InitializeShortenChannels()

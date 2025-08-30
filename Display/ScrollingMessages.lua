@@ -82,6 +82,13 @@ end
 function addonTable.Display.ScrollingMessagesMixin:Reset()
   self:ResetFading()
   self.currentFadeOffsetTime = 0
+
+  self.scrollInterpolator:Cancel()
+  self.destination = 0
+  self.scrollOffset = 0
+  if self.scrollCallback then
+    self.scrollCallback(self.destination)
+  end
 end
 
 function addonTable.Display.ScrollingMessagesMixin:ScrollTo(target, easyMode)

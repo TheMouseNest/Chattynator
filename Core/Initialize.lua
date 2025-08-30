@@ -36,6 +36,9 @@ function addonTable.Core.MigrateSettings()
       addonTable.Config.Set(addonTable.Config.Options.SHOW_BUTTONS_ON_HOVER, true)
     end
   end
+  if addonTable.Config.Get(addonTable.Config.Options.SHOW_BUTTONS) == "unset" then
+    addonTable.Config.Set(addonTable.Config.Options.SHOW_BUTTONS, addonTable.Config.Get("show_buttons_on_hover") and "hover" or "always")
+  end
   addonTable.Skins.InstallOptions()
 end
 

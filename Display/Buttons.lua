@@ -239,7 +239,7 @@ function addonTable.Display.ButtonsBarMixin:Update()
 
   local position = addonTable.Config.Get(addonTable.Config.Options.BUTTON_POSITION)
 
-  if addonTable.Config.Get(addonTable.Config.Options.SHOW_BUTTONS_ON_HOVER) then
+  if addonTable.Config.Get(addonTable.Config.Options.SHOW_BUTTONS) == "hover" then
     self.lockActive = false
     self:SetScript("OnEnter", self.OnEnter)
     self:SetScript("OnLeave", self.OnLeave)

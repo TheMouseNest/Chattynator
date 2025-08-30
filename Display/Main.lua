@@ -97,7 +97,8 @@ function addonTable.Display.ChatFrameMixin:OnLoad()
       self:ApplyButtonPositionAnchors()
       self:ApplyTabsShowing()
       self.ScrollingMessages:Render()
-    elseif settingName == addonTable.Config.Options.SHOW_BUTTONS_ON_HOVER then
+    elseif settingName == addonTable.Config.Options.SHOW_BUTTONS then
+      self.ButtonsBar:SetShown(addonTable.Config.Get(addonTable.Config.Options.SHOW_BUTTONS) ~= "never")
       self.ButtonsBar:Update()
     elseif settingName == addonTable.Config.Options.EDIT_BOX_POSITION and self:GetID() == 1 then
       self:UpdateEditBox()

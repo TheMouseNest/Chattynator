@@ -10,6 +10,16 @@ local function GetNewLog()
   return { current = {}, historical = {}, version = 1, cleanIndex = 0}
 end
 
+local ChatTypeGroupInverted = {}
+
+for group, values in pairs(ChatTypeGroup) do
+  for _, value in pairs(values) do
+    if ChatTypeGroupInverted[value] == nil then
+      ChatTypeGroupInverted[value] = group
+    end
+  end
+end
+
 local function ConvertFormat()
   if not addonTable.Config.Get(addonTable.Config.Options.APPLIED_MESSAGE_IDS) then
     local idRoot = #CHATTYNATOR_MESSAGE_LOG.historical + 1
@@ -771,8 +781,6 @@ local ignoreTypes = {
   ["ADDON"] = true,
   ["SYSTEM"] = true,
   ["ERRORS"] = true,
-  ["AFK"] = true,
-  ["DND"] = true,
   ["IGNORED"] = true,
   ["CHANNEL"] = true,
   ["DUMP"] = true,
@@ -797,6 +805,8 @@ local ignoreEvents = {
   ["BN_DISCONNECTED"] = true,
   ["CHARACTER_POINTS_CHANGED"] = true,
   ["UPDATE_INSTANCE_INFO"] = true,
+  ["CHAT_MSG_AFK"] = true,
+  ["CHAT_MSG_DND"] = true,
 }
 
 function addonTable.MessagesMonitorMixin:ShouldLog(data)

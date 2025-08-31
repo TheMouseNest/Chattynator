@@ -236,5 +236,6 @@ frame:SetScript("OnEvent", function(_, eventName, data)
     addonTable.API.Initialize()
   elseif eventName == "PLAYER_LOGIN" then
     C_Timer.After(1, addonTable.Core.CompatibilityWarnings)
+    addonTable.allChatFrames[1]:UpdateEditBox()
   end
 end)

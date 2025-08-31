@@ -61,27 +61,32 @@ end
 
 local alphabet = {"roman", "korean", "simplifiedchinese", "traditionalchinese", "russian"}
 
+local function GetDefaultMembers(outline)
+  local members = {}
+  local coreFont = _G[fonts["default"]]
+  for _, a in ipairs(alphabet) do
+    local forAlphabet = coreFont:GetFontObjectForAlphabet(a)
+    if forAlphabet then
+      local file, height, flags = forAlphabet:GetFont()
+      table.insert(members, {
+        alphabet = a,
+        file = file,
+        height = 14,
+        flags = outline,
+      })
+    end
+  end
+
+  return members
+end
+
 function addonTable.Core.CreateFont(lsmPath, outline, shadow, force)
   if fonts[lsmPath .. outline .. shadow] and not force then
     error("duplicate font creation " .. lsmPath .. outline .. shadow)
   end
   if lsmPath == "default" then
-    local members = {}
-    local coreFont = _G[fonts["default"]]
-    for _, a in ipairs(alphabet) do
-      local forAlphabet = coreFont:GetFontObjectForAlphabet(a)
-      if forAlphabet then
-        local file, height, flags = forAlphabet:GetFont()
-        table.insert(members, {
-          alphabet = a,
-          file = file,
-          height = height,
-          flags = outline,
-        })
-      end
-    end
     local globalName = "ChattynatorFontdefault" .. outline .. shadow
-    local font = CreateFontFamily(globalName, members)
+    local font = CreateFontFamily(globalName, GetDefaultMembers(outline))
     if shadow == "SHADOW" then
       font:SetShadowOffset(1, -1)
       font:SetShadowColor(0, 0, 0, 0.8)
@@ -95,16 +100,9 @@ function addonTable.Core.CreateFont(lsmPath, outline, shadow, force)
     if not path then
       return
     end
-    local members = {}
-    for _, a in ipairs(alphabet) do
-      table.insert(members, {
-        alphabet = a,
-        file = path,
-        height = 14,
-        flags = outline,
-      })
-    end
-    local font = CreateFontFamily(globalName, members)
+
+    local font = CreateFontFamily(globalName, GetDefaultMembers(outline))
+    font:SetFont(path, 14, outline)
     font:SetTextColor(1, 1, 1)
     if shadow == "SHADOW" then
       font:SetShadowOffset(1, -1)

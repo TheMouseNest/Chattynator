@@ -129,6 +129,9 @@ function addonTable.Dialogs.ShowConfirm(text, yesText, noText, confirmCallback)
       dialog:Hide()
     end)
 
+    addonTable.Skins.AddFrame("Button", dialog.acceptButton)
+    addonTable.Skins.AddFrame("Button", dialog.cancelButton)
+
     confirmDialogsBySkin[currentSkinKey] = dialog
   end
 
@@ -159,6 +162,8 @@ function addonTable.Dialogs.ShowAcknowledge(text)
     okButton:SetScript("OnClick", function()
       dialog:Hide()
     end)
+
+    addonTable.Skins.AddFrame("Button", dialog.okButton)
 
     acknowledgeDialogsBySkin[currentSkinKey] = dialog
   end

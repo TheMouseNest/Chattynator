@@ -59,12 +59,13 @@ function addonTable.Core.GetFontScalingFactor()
   return addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT_SIZE) / 14
 end
 
+local alphabet = {"roman", "korean", "simplifiedchinese", "traditionalchinese", "russian"}
+
 function addonTable.Core.CreateFont(lsmPath, outline, shadow, force)
   if fonts[lsmPath .. outline .. shadow] and not force then
     error("duplicate font creation " .. lsmPath .. outline .. shadow)
   end
   if lsmPath == "default" then
-    local alphabet = {"roman", "korean", "simplifiedchinese", "traditionalchinese", "russian"}
     local members = {}
     local coreFont = _G[fonts["default"]]
     for _, a in ipairs(alphabet) do
@@ -85,6 +86,7 @@ function addonTable.Core.CreateFont(lsmPath, outline, shadow, force)
       font:SetShadowOffset(1, -1)
       font:SetShadowColor(0, 0, 0, 0.8)
     end
+
     fonts["default" .. outline .. shadow] = globalName
   else
     local key = lsmPath .. outline .. shadow
@@ -93,14 +95,23 @@ function addonTable.Core.CreateFont(lsmPath, outline, shadow, force)
     if not path then
       return
     end
-    local font = CreateFont(globalName)
-    fonts[key] = globalName
-    font:SetFont(path, 14, outline)
+    local members = {}
+    for _, a in ipairs(alphabet) do
+      table.insert(members, {
+        alphabet = a,
+        file = path,
+        height = 14,
+        flags = outline,
+      })
+    end
+    local font = CreateFontFamily(globalName, members)
     font:SetTextColor(1, 1, 1)
     if shadow == "SHADOW" then
       font:SetShadowOffset(1, -1)
       font:SetShadowColor(0, 0, 0, 0.8)
     end
+
+    fonts[key] = globalName
   end
 end
 

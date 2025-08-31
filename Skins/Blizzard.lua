@@ -71,8 +71,13 @@ local skinners = {
     frame.background:SetPoint("TOPLEFT", frame.ScrollingMessages, 0, 2)
     frame.background:SetPoint("BOTTOMRIGHT", frame.ScrollingMessages)
 
-    for _, region in ipairs({frame.background:GetRegions()}) do
-      region:SetVertexColor(DEFAULT_CHATFRAME_COLOR.r, DEFAULT_CHATFRAME_COLOR.g, DEFAULT_CHATFRAME_COLOR.b)
+    hooksecurefunc(frame, "SetBackgroundColor", function(_, r, g, b)
+      for _, region in ipairs({frame.background:GetRegions()}) do
+        region:SetVertexColor(r, g, b)
+      end
+    end)
+    if frame.backgroundColor then
+      frame:SetBackgroundColor(frame.backgroundColor.r, frame.backgroundColor.g, frame.backgroundColor.b)
     end
     frame.background:SetAlpha(alpha)
   end,

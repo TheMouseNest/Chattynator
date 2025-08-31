@@ -129,7 +129,7 @@ end
 function addonTable.Display.TabsBarMixin:SetupPool()
   self.tabsPool = CreateFramePool("Button", self, nil, nil, false,
     function(tabButton)
-      tabButton:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+      tabButton:RegisterForClicks("LeftButtonUp", "RightButtonUp", "MiddleButtonUp")
       tabButton:RegisterForDrag("LeftButton", "RightButton")
       tabButton:SetScript("OnDragStart", function(_, button)
         if addonTable.Config.Get(addonTable.Config.Options.LOCKED) then
@@ -370,6 +370,12 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
             end)
           end
         end)
+      elseif mouseButton == "MiddleButton" and tabButton:GetID() ~= 1 then
+        if tabData.isTemporary or not addonTable.Config.Get(addonTable.Config.Options.LOCKED) then
+          local allTabData = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self.chatFrame:GetID()].tabs
+          table.remove(allTabData, tabButton:GetID())
+          addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+        end
       end
     end)
 

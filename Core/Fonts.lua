@@ -71,7 +71,7 @@ local function GetDefaultMembers(outline)
       table.insert(members, {
         alphabet = a,
         file = file,
-        height = 14,
+        height = height,
         flags = outline,
       })
     end

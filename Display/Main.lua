@@ -197,11 +197,13 @@ function addonTable.Display.ChatFrameMixin:UpdateEditBox()
 
   local position = addonTable.Config.Get(addonTable.Config.Options.EDIT_BOX_POSITION)
   ChatFrame1EditBox:ClearAllPoints()
+  ChatFrame1EditBox:SetScale(addonTable.Core.GetFontScalingFactor())
+
   if position == "bottom" then
     local _, _, _, clampBottom = self:GetClampRectInsets()
-    self.ScrollingMessages:SetPoint("BOTTOMRIGHT", 0, 6 + ChatFrame1EditBox:GetHeight() - clampBottom)
-    ChatFrame1EditBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, ChatFrame1EditBox:GetHeight() / ChatFrame1EditBox:GetScale() - clampBottom)
-    ChatFrame1EditBox:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, ChatFrame1EditBox:GetHeight() / ChatFrame1EditBox:GetScale() - clampBottom)
+    self.ScrollingMessages:SetPoint("BOTTOMRIGHT", 0, 6 + ChatFrame1EditBox:GetHeight() * ChatFrame1EditBox:GetScale() - clampBottom)
+    ChatFrame1EditBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, ChatFrame1EditBox:GetHeight() - clampBottom * ChatFrame1EditBox:GetScale())
+    ChatFrame1EditBox:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, ChatFrame1EditBox:GetHeight() - clampBottom * ChatFrame1EditBox:GetScale())
   elseif position == "top" then
     self.ScrollingMessages:SetPoint("BOTTOMRIGHT", 0, 5)
     ChatFrame1EditBox:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0)
@@ -209,7 +211,6 @@ function addonTable.Display.ChatFrameMixin:UpdateEditBox()
   end
 
   local font = addonTable.Core.GetFontByID(addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT))
-  ChatFrame1EditBox:SetScale(addonTable.Core.GetFontScalingFactor())
   for _, r in pairs({ChatFrame1EditBox:GetRegions()}) do
     if r:IsObjectType("FontString") then
       r:SetFontObject(font)

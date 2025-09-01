@@ -130,6 +130,11 @@ function addonTable.Core.ApplyOverrides()
     end
     if color then
       editBox:SetTextColor(color.r, color.g, color.b)
+      for _, r in pairs({ChatFrame1EditBox:GetRegions()}) do
+        if r:IsObjectType("FontString") and r:GetParentKey() == nil then
+          r:SetTextColor(color.r, color.g, color.b)
+        end
+      end
       editBox.header:SetTextColor(color.r, color.g, color.b)
       editBox.headerSuffix:SetTextColor(color.r, color.g, color.b)
       if editBox.focusLeft then

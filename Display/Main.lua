@@ -51,6 +51,7 @@ function addonTable.Display.ChatFrameMixin:OnLoad()
   self.ButtonsBar = CreateFrame("Frame", nil, self)
   Mixin(self.ButtonsBar, addonTable.Display.ButtonsBarMixin)
   self.ButtonsBar:OnLoad()
+  self.ButtonsBar:SetShown(addonTable.Config.Get(addonTable.Config.Options.SHOW_BUTTONS) ~= "never")
 
   addonTable.CallbackRegistry:RegisterCallback("Render", function(_, newMessages)
     if self:GetID() == 0 then

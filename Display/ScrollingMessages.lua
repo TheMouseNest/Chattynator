@@ -1,7 +1,7 @@
 ---@class addonTableChattynator
 local addonTable = select(2, ...)
 
-local rightInset = 10
+local rightInset = 3
 
 ---@class DisplayScrollingMessages: Frame
 addonTable.Display.ScrollingMessagesMixin = {}
@@ -63,6 +63,7 @@ function addonTable.Display.ScrollingMessagesMixin:OnLoad()
       self:Render()
     end
   end)
+  self:UpdateWidth()
 
   self:SetPropagateMouseMotion(true)
   self:SetPropagateMouseClicks(true)
@@ -155,6 +156,9 @@ end
 
 function addonTable.Display.ScrollingMessagesMixin:UpdateWidth()
   local width = math.floor(self:GetWidth() - addonTable.Messages.inset - rightInset)
+  if width <= 0 then
+    return
+  end
   addonTable.Messages:RegisterWidth(width)
   if self.currentStringWidth then
     addonTable.Messages:UnregisterWidth(self.currentStringWidth)

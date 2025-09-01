@@ -450,9 +450,17 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
   elseif eventName == "GUILD_MOTD" then
     self:ShowGMOTD()
   elseif eventName == "UI_SCALE_CHANGED" then
-    self:SetInset()
-    self.heights = {}
-    addonTable.CallbackRegistry:TriggerEvent("MessageDisplayChanged")
+    C_Timer.After(0, function()
+      self:SetInset()
+      self.heights = {}
+      addonTable.CallbackRegistry:TriggerEvent("MessageDisplayChanged")
+      if self:GetScript("OnUpdate") == nil and self.playerLoginFired then
+        self:SetScript("OnUpdate", function()
+          self:SetScript("OnUpdate", nil)
+          addonTable.CallbackRegistry:TriggerEvent("Render")
+        end)
+      end
+    end)
   elseif eventName == "PLAYER_REPORT_SUBMITTED" then
     --TODO
   elseif eventName == "PLAYER_LOGIN" then

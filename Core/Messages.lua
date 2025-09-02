@@ -464,7 +464,7 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
   elseif eventName == "PLAYER_REPORT_SUBMITTED" then -- Remove messages from chat log
     local reportedGUID = ...
     local removedIDs = {}
-    for index = #self.messageCount, self.newMessageStartPoint, -1 do
+    for index = self.messageCount, self.newMessageStartPoint, -1 do
       for index, m in ipairs(self.messages) do
         local guid = self.formatters[index] and self.formatters[index].playerGUID
         if guid == reportedGUID then

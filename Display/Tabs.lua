@@ -192,7 +192,7 @@ function addonTable.Display.TabsBarMixin:ApplyFlashing(newMessages)
     end
   end
 
-  if tabsMatching[self.chatFrame.tabIndex] then
+  if state ~= "whispers" and tabsMatching[self.chatFrame.tabIndex] then
     return
   end
 

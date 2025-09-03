@@ -571,6 +571,7 @@ addonTable.CallbackRegistry:RegisterCallback("Render", function(_, newMessages)
           tabConfig.isTemporary = true
           table.insert(window.tabs, tabConfig)
           addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+          addonTable.allChatFrames[targetWindow].TabsBar.Tabs[#window.tabs]:SetFlashing(true)
         end
       end
     end

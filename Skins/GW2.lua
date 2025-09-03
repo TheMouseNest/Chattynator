@@ -145,6 +145,11 @@ local skinners = {
     tab.Middle:SetPoint("BOTTOMRIGHT", tab.Right, "BOTTOMLEFT")
     tab.Middle:SetBlendMode("BLEND")
     tab.Middle:SetVertexColor(1, 1, 1, 1)
+    tab.glow = tab:CreateTexture("BORDER")
+    tab.glow:SetTexture("Interface\\AddOns\\Chattynator\\Assets\\ElvUIChatTabNewMessageFlash")
+    tab.glow:SetPoint("BOTTOMLEFT", 8, 0)
+    tab.glow:SetPoint("BOTTOMRIGHT", -8, 0)
+    tab.glow:SetAlpha(0)
 
     hooksecurefunc(tab, "SetSelected", function(_, state)
       if not enableHooks then
@@ -157,6 +162,28 @@ local skinners = {
     if tab.selected ~= nil then
       tab:SetSelected(tab.selected)
     end
+
+    hooksecurefunc(tab, "SetColor", function(_, r, g, b)
+      tab.glow:SetVertexColor(r, g, b)
+    end)
+    if tab.color then
+      tab:SetColor(tab.color.r, tab.color.g, tab.color.b)
+    end
+
+    tab.FlashAnimation = tab:CreateAnimationGroup()
+    tab.FlashAnimation:SetLooping("BOUNCE")
+    local alpha2 = tab.FlashAnimation:CreateAnimation("Alpha")
+    alpha2:SetChildKey("glow")
+    alpha2:SetFromAlpha(0)
+    alpha2:SetToAlpha(1)
+    alpha2:SetDuration(0.8)
+    alpha2:SetOrder(1)
+    hooksecurefunc(tab, "SetFlashing", function(_, state)
+      if not enableHooks then
+        return
+      end
+      tab.FlashAnimation:SetPlaying(state)
+    end)
   end,
   ChatEditBox = function(frame)
     _G[frame:GetName() .. "Left"]:GwKill()

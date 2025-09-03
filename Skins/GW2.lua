@@ -245,6 +245,53 @@ local skinners = {
         frame.fakeEditBoxTex:SetShown(position == "bottom")
       end
     end)
+
+    frame.ScrollingMessages:SetIgnoreParentAlpha(true)
+    frame:SetAlpha(0)
+
+    frame.fadeOutAnimation = frame:CreateAnimationGroup()
+    frame.fadeOutAnimation:SetToFinalAlpha(true)
+    local alpha1 = frame.fadeOutAnimation:CreateAnimation("Alpha")
+    alpha1:SetFromAlpha(1)
+    alpha1:SetToAlpha(0)
+    alpha1:SetDuration(0.5)
+    alpha1:SetOrder(1)
+    frame.fadeInAnimation = frame:CreateAnimationGroup()
+    frame.fadeInAnimation:SetToFinalAlpha(true)
+    local alpha2 = frame.fadeInAnimation:CreateAnimation("Alpha")
+    alpha2:SetFromAlpha(0)
+    alpha2:SetToAlpha(1)
+    alpha2:SetDuration(0.5)
+    alpha2:SetOrder(1)
+    frame.GW2HoverTracker = CreateFrame("Frame", nil, frame)
+    frame.GW2HoverTracker:SetAllPoints()
+    frame.GW2HoverTracker:SetFrameStrata("DIALOG")
+    local function Show()
+      frame.fadeOutAnimation:Stop()
+      if frame:GetAlpha() < 1 then
+        frame.fadeInAnimation:Play()
+      end
+      frame.GW2HoverTracker:SetScript("OnUpdate", function()
+        if not frame:IsMouseOver() and not ChatFrame1EditBox:IsVisible() then
+          frame.fadeInAnimation:Stop()
+          if frame:GetAlpha() > 0 then
+            frame.fadeOutAnimation:Play()
+          end
+          frame.GW2HoverTracker:SetScript("OnUpdate", nil)
+        end
+      end)
+    end
+    frame.GW2HoverTracker:SetScript("OnEnter", function()
+      Show()
+    end)
+    if frame:GetID() == 1 then
+      ChatFrame1EditBox:SetIgnoreParentAlpha(true)
+      ChatFrame1EditBox:HookScript("OnShow", function()
+        Show()
+      end)
+    end
+    frame.GW2HoverTracker:SetPropagateMouseMotion(true)
+    frame.GW2HoverTracker:SetPropagateMouseClicks(true)
   end,
   ChatButton = function(button, tags)
     button:SetSize(26, 28);

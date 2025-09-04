@@ -182,6 +182,7 @@ local skinners = {
       if not enableHooks then
         return
       end
+      tab.glow:SetShown(state)
       tab.FlashAnimation:SetPlaying(state)
     end)
   end,

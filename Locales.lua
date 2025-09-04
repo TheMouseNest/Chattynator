@@ -140,6 +140,7 @@ L["ELVUI"] = "ElvUI"
 L["THEME"] = "Theme"
 L["RELOAD_REQUIRED"] = "Reload required. Reload now?"
 L["RELOAD"] = "Reload"
+L["FADE_CHAT_WHEN_NOT_IN_USE"] = "Fade chat when not in use"
 
 L["TAB_TRANSPARENCY"] = "Tab transparency"
 L["CHAT_TRANSPARENCY"] = "Chat transparency"

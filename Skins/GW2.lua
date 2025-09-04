@@ -236,19 +236,8 @@ local skinners = {
 
     local position = addonTable.Config.Get(addonTable.Config.Options.EDIT_BOX_POSITION)
     frame.fakeEditBoxTex:SetShown(position == "bottom")
-    addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
-      if not enableHooks then
-        return
-      end
-      if settingName == addonTable.Config.Options.EDIT_BOX_POSITION then
-        position = addonTable.Config.Get(addonTable.Config.Options.EDIT_BOX_POSITION)
-        frame.fakeEditBoxTex:SetShown(position == "bottom")
-      end
-    end)
 
     frame.ScrollingMessages:SetIgnoreParentAlpha(true)
-    frame:SetAlpha(0)
-
     frame.fadeOutAnimation = frame:CreateAnimationGroup()
     frame.fadeOutAnimation:SetToFinalAlpha(true)
     local alpha1 = frame.fadeOutAnimation:CreateAnimation("Alpha")
@@ -292,6 +281,30 @@ local skinners = {
     end
     frame.GW2HoverTracker:SetPropagateMouseMotion(true)
     frame.GW2HoverTracker:SetPropagateMouseClicks(true)
+    frame.GW2HoverTracker:SetShown(addonTable.Config.Get("skins.gw2_ui.fade_chat"))
+    if addonTable.Config.Get("skins.gw2_ui.fade_chat") then
+      frame:SetAlpha(0)
+    end
+
+    addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
+      if not enableHooks then
+        return
+      end
+      if settingName == addonTable.Config.Options.EDIT_BOX_POSITION then
+        position = addonTable.Config.Get(addonTable.Config.Options.EDIT_BOX_POSITION)
+        frame.fakeEditBoxTex:SetShown(position == "bottom")
+      elseif settingName == "skins.gw2_ui.fade_chat" then
+        local fadeStatus = addonTable.Config.Get("skins.gw2_ui.fade_chat")
+        frame.GW2HoverTracker:SetShown(fadeStatus)
+        if fadeStatus then
+          Show()
+        else
+          frame.fadeOutAnimation:Stop()
+          frame.fadeInAnimation:Stop()
+          frame:SetAlpha(1)
+        end
+      end
+    end)
   end,
   ChatButton = function(button, tags)
     button:SetSize(26, 28);
@@ -584,5 +597,12 @@ local function LoadSkin()
 end
 
 if addonTable.Skins.IsAddOnLoading("GW2_UI") then
-  addonTable.Skins.RegisterSkin(addonTable.Locales.GW2_UI, "gw2_ui", LoadSkin, SkinFrame, SetConstants, {}, true)
+  addonTable.Skins.RegisterSkin(addonTable.Locales.GW2_UI, "gw2_ui", LoadSkin, SkinFrame, SetConstants, {
+    {
+      type = "checkbox",
+      text = addonTable.Locales.FADE_CHAT_WHEN_NOT_IN_USE,
+      option = "fade_chat",
+      default = true,
+    },
+  }, true)
 end

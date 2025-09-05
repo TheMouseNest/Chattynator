@@ -414,20 +414,13 @@ local function LoadSkin()
       local alpha = 1 - addonTable.Config.Get(settingName)
       for _, frame in ipairs(chatFrames) do
         frame.background:SetAlpha(alpha)
-      end
-      local value = 0.1
-      if addonTable.Config.Get("skins.dark.solid_chat_background") then
-        value = 0
+        frame:SetBackgroundColor(frame.backgroundColor.r, frame.backgroundColor.g, frame.backgroundColor.b)
       end
       for _, frame in ipairs(editBoxes) do
         frame.background:SetAlpha(alpha)
       end
     elseif settingName == "skins.dark.solid_chat_background" then
       local isSolid = addonTable.Config.Get(settingName)
-      local value = 0.1
-      if isSolid then
-        value = 0
-      end
       if isSolid then
         for _, frame in ipairs(chatFrames) do
           frame.background:SetColorTexture(0, 0, 0)

@@ -170,7 +170,7 @@ function addonTable.Display.TabsBarMixin:ApplyFlashing(newMessages)
     while newMessages > 0 do
       newMessages = newMessages - 1
       local data = addonTable.Messages:GetMessageRaw(1 + #messages)
-      if data.typeInfo.type == "WHISPER" or data.typeInfo.type == "BN_WHISPER" then
+      if (data.typeInfo.type == "WHISPER" or data.typeInfo.type == "BN_WHISPER") and (not data.typeInfo.event or not data.typeInfo.event:match("_INFORM$")) then
         table.insert(messages, data)
       end
     end

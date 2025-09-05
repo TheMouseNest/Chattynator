@@ -421,6 +421,10 @@ local function LoadSkin()
       end
     elseif settingName == "skins.dark.solid_chat_background" then
       local isSolid = addonTable.Config.Get(settingName)
+      local value = 0.1
+      if isSolid then
+        value = 0
+      end
       if isSolid then
         for _, frame in ipairs(chatFrames) do
           frame.background:SetColorTexture(0, 0, 0)

@@ -187,7 +187,7 @@ function addonTable.Core.Initialize()
     if addonTable.CopyFrame:IsShown() then
       addonTable.CopyFrame:Hide()
     end
-    addonTable.CopyFrame:LoadMessages(addonTable.allChatFrames[1].filterFunc, addonTable.allChatFrames[1].startingIndex)
+    addonTable.CopyFrame:LoadMessages(addonTable.allChatFrames[1].ScrollingMessages.filterFunc, addonTable.allChatFrames[1].ScrollingMessages.startingIndex)
   end
   SLASH_ChattynatorCopy1 = "/copy"
 

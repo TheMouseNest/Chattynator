@@ -142,7 +142,7 @@ function addonTable.Display.ScrollingMessagesMixin:OnMouseWheel(delta)
   if IsShiftKeyDown() then
     multiplier = 1000
   elseif IsControlKeyDown() then
-    multiplier = 0.5
+    multiplier = 5
   end
   self:ScrollBy(self.panExtent * delta * multiplier)
 end

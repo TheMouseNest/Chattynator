@@ -95,7 +95,7 @@ function addonTable.Core.Initialize()
     conduit = true,
     currency = true,
     death = false,
-    dungeonScore = false,
+    dungeonScore = true,
     enchant = false,
     garrfollower = false,
     garrfollowerability = false,

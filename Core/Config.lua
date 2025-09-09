@@ -86,6 +86,8 @@ local settings = {
   STORE_MESSAGES = {key = "store_messages", default = true},
 
   SHOW_COMBAT_LOG = {key = "show_combat_log", default = true, refresh = {addonTable.Constants.RefreshReason.Tabs}},
+  COMBAT_LOG_MIGRATION = {key = "combat_log_migration", default = 0},
+
   LOCKED = {key = "locked", default = false, refresh = {addonTable.Constants.RefreshReason.Tabs, addonTable.Constants.RefreshReason.Locked}},
 
   MESSAGE_SPACING = {key = "message_spacing", default = 5},

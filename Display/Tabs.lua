@@ -25,6 +25,7 @@ addonTable.Display.TabsBarMixin = {}
 function addonTable.Display.TabsBarMixin:OnLoad()
   self.chatFrame = self:GetParent()
   self:SetupPool()
+  self.customHolders = {}
 
   self:SetScript("OnEvent", self.OnEvent)
 
@@ -255,8 +256,6 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
   local forceSelected = false
   if not self.chatFrame.tabsPool then
     forceSelected = true
-  else -- Might have shown combat log at some point
-    DisableCombatLog(self.chatFrame)
   end
   self.tabsPool:ReleaseAll()
   local allTabs = {}
@@ -274,21 +273,45 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
     tabButton.isDraggable = true
     tabButton:SetScript("OnClick", function(_, mouseButton)
       if mouseButton == "LeftButton" then
-        if self.chatFrame:GetID() == 1 then
-          DisableCombatLog(self.chatFrame)
+        for _, frame in pairs(self.customHolders) do
+          frame:Hide()
         end
-        self.chatFrame:SetBackgroundColor(tabButton.bgColor.r, tabButton.bgColor.g, tabButton.bgColor.b)
-        self.chatFrame:SetTabSelectedAndFilter(tabButton:GetID(), tabButton.filter)
-        self.chatFrame.ScrollingMessages:Render()
         for _, otherTab in ipairs(self.Tabs) do
           otherTab:SetSelected(false)
         end
         tabButton:SetSelected(true)
+
+        self.chatFrame:SetBackgroundColor(tabButton.bgColor.r, tabButton.bgColor.g, tabButton.bgColor.b)
+
+        if tabData.custom and addonTable.API.CustomTabs[tabData.custom] then
+          self.chatFrame.ScrollingMessages:Hide()
+          self.chatFrame:SetTabSelectedOnly(tabButton:GetID())
+          if not self.customHolders[tabData.custom] then
+            self.customHolders[tabData.custom] = CreateFrame("Frame", nil, self.chatFrame)
+            self.customHolders[tabData.custom]:SetAllPoints(self.chatFrame.ScrollingMessages)
+          end
+          self.customHolders[tabData.custom]:Show()
+          addonTable.API.CustomTabs[tabData.custom].install(self.customHolders[tabData.custom])
+        else
+          self.chatFrame.ScrollingMessages:Show()
+          if self.chatFrame.tabIndex == tabButton:GetID() then
+            self.chatFrame:SetFilter(tabButton.filter)
+          else
+            self.chatFrame:SetTabSelectedAndFilter(tabButton:GetID(), tabButton.filter)
+          end
+          self.chatFrame.ScrollingMessages:Render()
+        end
       elseif mouseButton == "RightButton" then
         MenuUtil.CreateContextMenu(tabButton, function(_, rootDescription)
-          rootDescription:CreateButton(addonTable.Locales.TAB_SETTINGS, function()
-            addonTable.CustomiseDialog.ToggleTabFilters(self.chatFrame:GetID(), tabButton:GetID())
-          end)
+          if tabData.custom == "combat_log" then
+            rootDescription:CreateButton(addonTable.Locales.BLIZZARD_SETTINGS, function()
+              ShowUIPanel(ChatConfigFrame)
+            end)
+          else
+            rootDescription:CreateButton(addonTable.Locales.TAB_SETTINGS, function()
+              addonTable.CustomiseDialog.ToggleTabFilters(self.chatFrame:GetID(), tabButton:GetID())
+            end)
+          end
           rootDescription:CreateButton(addonTable.Locales.GLOBAL_SETTINGS, function()
             addonTable.CustomiseDialog.Toggle()
           end)
@@ -386,79 +409,6 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
     table.insert(allTabs, tabButton)
   end
 
-  if self.chatFrame:GetID() == 1 and addonTable.Config.Get(addonTable.Config.Options.SHOW_COMBAT_LOG) then
-    local combatLogButton = self.tabsPool:Acquire()
-    combatLogButton.filter = nil
-    combatLogButton.minWidth = false
-    combatLogButton:SetID(#allTabs + 1)
-    combatLogButton:Show()
-    combatLogButton:SetText(COMBAT_LOG)
-    combatLogButton.isDraggable = false
-    combatLogButton:SetScript("OnClick", function(_, mouseButton)
-      if mouseButton == "LeftButton" then
-        for _, otherTab in ipairs(allTabs) do
-          otherTab:SetSelected(false)
-        end
-        self.chatFrame:SetBackgroundColor(0.15, 0.15, 0.15)
-        combatLogButton:SetSelected(true)
-        self.chatFrame.ScrollingMessages:Hide()
-        CombatLogQuickButtonFrame_Custom:SetParent(ChatFrame2)
-        CombatLogQuickButtonFrame_Custom:ClearAllPoints()
-        CombatLogQuickButtonFrame_Custom:SetPoint("TOPLEFT", self.chatFrame.ScrollingMessages, 0, 0)
-        CombatLogQuickButtonFrame_Custom:SetPoint("TOPRIGHT", self.chatFrame.ScrollingMessages, 0, 0)
-        ChatFrame2:SetParent(self.chatFrame)
-        if ChatFrame2ResizeButton then
-          ChatFrame2ResizeButton:SetParent(addonTable.hiddenFrame)
-        end
-        ChatFrame2:ClearAllPoints()
-        ChatFrame2:SetPoint("TOPLEFT", self.chatFrame.ScrollingMessages, 0, -22)
-        ChatFrame2:SetPoint("BOTTOMRIGHT", self.chatFrame.ScrollingMessages, -15, 0)
-        ChatFrame2Background:SetParent(addonTable.hiddenFrame)
-        ChatFrame2BottomRightTexture:SetParent(addonTable.hiddenFrame)
-        ChatFrame2BottomLeftTexture:SetParent(addonTable.hiddenFrame)
-        ChatFrame2BottomTexture:SetParent(addonTable.hiddenFrame)
-        ChatFrame2TopLeftTexture:SetParent(addonTable.hiddenFrame)
-        ChatFrame2TopRightTexture:SetParent(addonTable.hiddenFrame)
-        ChatFrame2TopTexture:SetParent(addonTable.hiddenFrame)
-        ChatFrame2RightTexture:SetParent(addonTable.hiddenFrame)
-        ChatFrame2LeftTexture:SetParent(addonTable.hiddenFrame)
-        ChatFrame2:SetClampRectInsets(0, 0, 0, 0)
-        if ChatFrame2ButtonFrameBackground then
-          ChatFrame2ButtonFrameBackground:SetParent(addonTable.hiddenFrame)
-          ChatFrame2ButtonFrameRightTexture:SetParent(addonTable.hiddenFrame)
-        end
-        if ChatFrame2ButtonFrameUpButton then
-          ChatFrame2ButtonFrameUpButton:SetParent(addonTable.hiddenFrame)
-          ChatFrame2ButtonFrameDownButton:SetParent(addonTable.hiddenFrame)
-        end
-        ChatFrame2:Show()
-      elseif mouseButton == "RightButton" then
-        MenuUtil.CreateContextMenu(combatLogButton, function(menu, rootDescription)
-          rootDescription:CreateButton(addonTable.Locales.TAB_SETTINGS, function()
-            ShowUIPanel(ChatConfigFrame)
-          end)
-          rootDescription:CreateDivider()
-          if not addonTable.Config.Get(addonTable.Config.Options.LOCKED) then
-            rootDescription:CreateButton(addonTable.Locales.LOCK_CHAT, function()
-              addonTable.Config.Set(addonTable.Config.Options.LOCKED, true)
-            end)
-            rootDescription:CreateButton(addonTable.Locales.CLOSE_TAB, function()
-              addonTable.Config.Set(addonTable.Config.Options.SHOW_COMBAT_LOG, false)
-            end)
-          else
-            rootDescription:CreateButton(addonTable.Locales.UNLOCK_CHAT, function()
-              addonTable.Config.Set(addonTable.Config.Options.LOCKED, false)
-            end)
-          end
-        end)
-      end
-    end)
-    local combatLogColor = CreateColor(201/255, 124/255, 72/255)
-    combatLogButton:SetColor(combatLogColor.r, combatLogColor.g, combatLogColor.b)
-
-    table.insert(allTabs, combatLogButton)
-  end
-
   if not addonTable.Config.Get(addonTable.Config.Options.LOCKED) then
     local newTab = self.tabsPool:Acquire()
     newTab.minWidth = true
@@ -479,13 +429,7 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
   self.Tabs = allTabs
   self:PositionTabs()
   local currentTab = self.chatFrame.tabIndex and math.min(self.chatFrame.tabIndex, #addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self.chatFrame:GetID()].tabs) or 1
-  allTabs[currentTab]:SetSelected(true)
-  self.chatFrame:SetFilter(allTabs[currentTab].filter)
-  self.chatFrame:SetBackgroundColor(allTabs[currentTab].bgColor.r, allTabs[currentTab].bgColor.g, allTabs[currentTab].bgColor.b)
-  if currentTab ~= self.chatFrame.tabIndex then
-    self.chatFrame:SetTabSelectedAndFilter(currentTab, allTabs[currentTab].filter)
-    self.chatFrame.ScrollingMessages:Render()
-  end
+  allTabs[currentTab]:Click()
 
   local show = addonTable.Config.Get(addonTable.Config.Options.SHOW_TABS)
   self:SetShown(show ~= "never")

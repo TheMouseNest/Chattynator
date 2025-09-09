@@ -39,6 +39,16 @@ function addonTable.Core.MigrateSettings()
   if addonTable.Config.Get(addonTable.Config.Options.SHOW_BUTTONS) == "unset" then
     addonTable.Config.Set(addonTable.Config.Options.SHOW_BUTTONS, addonTable.Config.Get("show_buttons_on_hover") and "hover" or "always")
   end
+  if addonTable.Config.Get(addonTable.Config.Options.COMBAT_LOG_MIGRATION) == 0 then
+    if addonTable.Config.Get(addonTable.Config.Options.SHOW_COMBAT_LOG) then
+      local blank = addonTable.Config.GetEmptyTabConfig("COMBAT_LOG")
+      blank.backgroundColor = "262626"
+      blank.tabColor = "c97c48"
+      blank.custom = "combat_log"
+      table.insert(allWindows[1].tabs, blank)
+    end
+    addonTable.Config.Set(addonTable.Config.Options.COMBAT_LOG_MIGRATION, 1)
+  end
   addonTable.Skins.InstallOptions()
 end
 

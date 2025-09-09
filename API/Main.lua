@@ -154,6 +154,15 @@ function Chattynator.API.AddMessageToWindowAndTab(windowIndex, tabIndex, message
   addonTable.Messages:AddMessage(message, r, g, b)
 end
 
+addonTable.API.CustomTabs = {}
+
+---@param label string
+---@param id string
+---@param installCallback function(parent) Note: Must be safe to be called multiple times on different parents
+function Chattynator.API.RegisterCustomTab(label, id, installCallback)
+  addonTable.API.CustomTabs[id] = { label = label, install = installCallback }
+end
+
 function addonTable.API.Initialize()
   for _, func in ipairs(dynamicModFuncQueue) do
     addonTable.Messages:AddLiveModifier(func)

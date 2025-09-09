@@ -248,6 +248,10 @@ function addonTable.Display.ChatFrameMixin:SetBackgroundColor(r, g, b)
   self.backgroundColor = {r = r, g = g, b = b}
 end
 
+function addonTable.Display.ChatFrameMixin:SetTabSelectedOnly(index)
+  self.tabIndex = index
+end
+
 function addonTable.Display.ChatFrameMixin:SetTabSelectedAndFilter(index, func)
   self.tabIndex = index
 

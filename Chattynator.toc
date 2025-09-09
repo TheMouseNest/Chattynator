@@ -39,6 +39,7 @@ Core/CommandHistory.lua
 Core/Dialogs.lua
 
 API/Main.lua
+API/CustomTab.lua
 
 Display/Main.lua
 Display/Tabs.lua

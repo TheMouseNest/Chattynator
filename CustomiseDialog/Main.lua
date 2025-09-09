@@ -134,13 +134,6 @@ local function SetupGeneral(parent)
   storeMessages:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
   table.insert(allFrames, storeMessages)
 
-  local showCombatLog = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_COMBAT_LOG, 28, function(state)
-    addonTable.Config.Set(addonTable.Config.Options.SHOW_COMBAT_LOG, state)
-  end)
-  showCombatLog.option = addonTable.Config.Options.SHOW_COMBAT_LOG
-  showCombatLog:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
-  table.insert(allFrames, showCombatLog)
-
   container:SetScript("OnShow", function()
     for _, f in ipairs(allFrames) do
       if f.SetValue then

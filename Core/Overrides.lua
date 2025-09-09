@@ -73,6 +73,17 @@ function addonTable.Core.ApplyOverrides()
 
   FloatingChatFrameManager:UnregisterAllEvents()
 
+  -- Prevent custom tabs generated from Blizzard tabs getting hidden on login
+  -- ie combat log is immediately hidden because the Blizz code thinks it is definitely not visible
+  -- (we handle that ourselves)
+  local oldSetScript = GeneralDockManager.SetScript
+  GeneralDockManager:SetScript("OnSizeChanged", nil)
+  hooksecurefunc(GeneralDockManager, "SetScript", function()
+    oldSetScript(GeneralDockManager, "OnSizeChanged", nil)
+    oldSetScript(GeneralDockManager, "OnUpdate", nil)
+  end)
+
+
   -- We delay unregistering so that the chat frame colours get applied properly,
   -- and then ensure that chat colour events get processed, both to avoid errors
   local frame = CreateFrame("Frame")
@@ -82,7 +93,9 @@ function addonTable.Core.ApplyOverrides()
     C_Timer.After(0, function()
       for _, tabName in pairs(CHAT_FRAMES) do
         local tab = _G[tabName]
-        tab:SetParent(addonTable.hiddenFrame)
+        if tab:GetParent() == UIParent then
+          tab:SetParent(addonTable.hiddenFrame)
+        end
         if tabName ~= "ChatFrame2" then
           tab:UnregisterAllEvents()
           tab:RegisterEvent("UPDATE_CHAT_COLOR") -- Needed to prevent errors in OnUpdate from UIParent

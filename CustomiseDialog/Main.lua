@@ -134,6 +134,71 @@ local function SetupGeneral(parent)
   storeMessages:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
   table.insert(allFrames, storeMessages)
 
+  local customTabsDropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.SPECIAL_TABS)
+  do
+    customTabsDropdown.SetValue = nil
+    customTabsDropdown:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
+    customTabsDropdown.DropDown:SetDefaultText(GRAY_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.USE_TO_TOGGLE_COMBAT_LOG_ETC))
+    local function IsActive(customType)
+      local windows = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)
+      for _, w in ipairs(windows) do
+        for _, t in ipairs(w.tabs) do
+          if t.custom == customType then
+            return true
+          end
+        end
+      end
+      return false
+    end
+
+    customTabsDropdown.DropDown:SetupMenu(function(menu, rootDescription)
+      local details = {}
+      for key, val in pairs(addonTable.API.CustomTabs) do
+        table.insert(details, {
+          custom = key,
+          label = addonTable.Display.GetTabNameFromName(val.label),
+        })
+      end
+      table.sort(details, function(a, b)
+        return a.label:lower() < b.label:lower()
+      end)
+
+      for _, d in ipairs(details) do
+        rootDescription:CreateCheckbox(d.label, function()
+          return IsActive(d.custom)
+        end, function()
+          local windows = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)
+          if IsActive(d.custom) then
+            local found = false
+            for windowIndex, w in ipairs(windows) do
+              for tabIndex, t in ipairs(w.tabs) do
+                if t.custom == d.custom then
+                  table.remove(w.tabs, tabIndex)
+                  if #w.tabs == 0 then
+                    table.insert(w.tabs, addonTable.Config.GetEmptyTabConfig(addonTable.Locales.EMPTY_WINDOW))
+                  end
+                  found = true
+                  break
+                end
+              end
+              if found then
+                break
+              end
+            end
+          else
+            local blank = addonTable.Config.GetEmptyTabConfig(d.label)
+            blank.backgroundColor = "262626"
+            blank.tabColor = "c97c48"
+            blank.custom = d.custom
+            table.insert(windows[1].tabs, blank)
+          end
+          addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+        end)
+      end
+    end)
+  end
+  table.insert(allFrames, customTabsDropdown)
+
   container:SetScript("OnShow", function()
     for _, f in ipairs(allFrames) do
       if f.SetValue then

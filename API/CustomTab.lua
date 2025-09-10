@@ -54,4 +54,4 @@ local function CombatLogInstall(parent)
   end)
 end
 
-Chattynator.API.RegisterCustomTab(COMBAT_LOG, "combat_log", CombatLogInstall)
+Chattynator.API.RegisterCustomTab("COMBAT_LOG", "combat_log", CombatLogInstall)

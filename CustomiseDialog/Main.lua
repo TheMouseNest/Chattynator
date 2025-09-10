@@ -138,7 +138,7 @@ local function SetupGeneral(parent)
   do
     customTabsDropdown.SetValue = nil
     customTabsDropdown:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
-    customTabsDropdown.DropDown:SetDefaultText(GRAY_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.USE_TO_TOGGLE_COMBAT_LOG_ETC))
+    customTabsDropdown.DropDown:SetDefaultText(GRAY_FONT_COLOR:WrapTextInColorCode(addonTable.Locales.TOGGLE_COMBAT_LOG_ETC))
     local function IsActive(customType)
       local windows = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)
       for _, w in ipairs(windows) do

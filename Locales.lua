@@ -164,7 +164,7 @@ L["NEW_PROFILE_BLANK"] = "New Profile (blank)"
 L["CONFIRM_DELETE_PROFILE_X"] = "Are you sure you want to delete profile \"%s\"?"
 
 L["SPECIAL_TABS"] = "Special tabs"
-L["USE_TO_TOGGLE_COMBAT_LOG_ETC"] = "Use to toggle combat log, etc."
+L["TOGGLE_COMBAT_LOG_ETC"] = "Toggle combat log, etc."
 
 L["SLASH_RESET"] = "reset"
 L["SLASH_RESET_HELP"] = "Reset all Chattynator settings, then reload."

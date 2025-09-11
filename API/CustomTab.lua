@@ -38,8 +38,10 @@ local function CombatLogInstall(parent)
   ChatFrame2TopTexture:SetParent(addonTable.hiddenFrame)
   ChatFrame2RightTexture:SetParent(addonTable.hiddenFrame)
   ChatFrame2LeftTexture:SetParent(addonTable.hiddenFrame)
-  ChatFrame2ButtonFrameLeftTexture:SetParent(addonTable.hiddenFrame)
   ChatFrame2:SetClampRectInsets(0, 0, 0, 0)
+  if ChatFrame2ButtonFrameLeftTexture then
+    ChatFrame2ButtonFrameLeftTexture:SetParent(addonTable.hiddenFrame)
+  end
   if ChatFrame2ButtonFrameBackground then
     ChatFrame2ButtonFrameBackground:SetParent(addonTable.hiddenFrame)
     ChatFrame2ButtonFrameRightTexture:SetParent(addonTable.hiddenFrame)

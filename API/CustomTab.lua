@@ -51,9 +51,6 @@ local function CombatLogInstall(parent)
     ChatFrame2ButtonFrameDownButton:SetParent(addonTable.hiddenFrame)
   end
   ChatFrame2:Show()
-  hooksecurefunc(ChatFrame2, "Hide", function()
-    print(debugstack())
-  end)
 end
 
 Chattynator.API.RegisterCustomTab("COMBAT_LOG", "combat_log", CombatLogInstall)

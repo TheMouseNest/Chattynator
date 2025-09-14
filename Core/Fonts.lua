@@ -81,11 +81,20 @@ local function GetDefaultMembers(outline)
 end
 
 function addonTable.Core.CreateFont(lsmPath, outline, shadow, force)
-  if fonts[lsmPath .. outline .. shadow] and not force then
-    error("duplicate font creation " .. lsmPath .. outline .. shadow)
+  local key = lsmPath .. outline .. shadow
+  if fonts[key] and not force then
+    error("duplicate font creation " .. key)
+  end
+  local globalName = "ChattynatorFont" .. key
+  local lowerGlobal = globalName:lower()
+
+  --Protection against different lsmPaths with different capitalisation clashing when trying to make a font family
+  local val = FindValueInTableIf(GetFonts(), function(a) return a:lower() == lowerGlobal:lower() end)
+  if val then
+    fonts[key] = val
+    return
   end
   if lsmPath == "default" then
-    local globalName = "ChattynatorFontdefault" .. outline .. shadow
     local font = CreateFontFamily(globalName, GetDefaultMembers(outline))
     if shadow == "SHADOW" then
       font:SetShadowOffset(1, -1)
@@ -94,8 +103,6 @@ function addonTable.Core.CreateFont(lsmPath, outline, shadow, force)
 
     fonts["default" .. outline .. shadow] = globalName
   else
-    local key = lsmPath .. outline .. shadow
-    local globalName = "ChattynatorFont" .. key
     local path = LibSharedMedia:Fetch("font", lsmPath, true)
     if not path then
       return

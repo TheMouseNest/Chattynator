@@ -218,18 +218,26 @@ function addonTable.Display.ButtonsBarMixin:OnLeave()
   if self.hideTimer then
     self.hideTimer:Cancel()
   end
-  self.hideTimer = C_Timer.NewTimer(2, function()
-    self.fadeInterpolator:Interpolate(self.buttons[1]:GetAlpha(), 0, 0.15, function(value)
-      for _, b in ipairs(self.buttons) do
-        b:SetAlpha(value)
+  local function Hide()
+    self.hideTimer = C_Timer.NewTimer(2, function()
+      if Menu.GetManager():IsAnyMenuOpen() and (InCombatLockdown() or tIndexOf(Menu.GetOpenMenuTags(), "MENU_CHAT_SHORTCUTS") ~= nil) then
+        Hide()
+        return
       end
-    end, function()
-      for _, b in ipairs(self.buttons) do
-        b:Hide()
-      end
+
+      self.fadeInterpolator:Interpolate(self.buttons[1]:GetAlpha(), 0, 0.15, function(value)
+        for _, b in ipairs(self.buttons) do
+          b:SetAlpha(value)
+        end
+      end, function()
+        for _, b in ipairs(self.buttons) do
+          b:Hide()
+        end
+      end)
+      self.active = false
     end)
-    self.active = false
-  end)
+  end
+  Hide()
 end
 
 function addonTable.Display.ButtonsBarMixin:Update()

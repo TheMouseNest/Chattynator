@@ -565,6 +565,7 @@ local skinners = {
     local tex = frame:CreateTexture(nil, "ARTWORK")
     tex:SetVertexColor(intensity.r, intensity.g, intensity.b)
     tex:SetTexture("Interface/AddOns/GW2_UI/textures/uistuff/resize")
+    tex:SetTexCoord(0, 1, 1, 0)
     tex:SetAllPoints()
     frame:SetScript("OnEnter", function()
       tex:SetVertexColor(hoverColor.r, hoverColor.g, hoverColor.b)

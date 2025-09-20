@@ -337,6 +337,7 @@ local skinners = {
     local tex = frame:CreateTexture(nil, "ARTWORK")
     tex:SetVertexColor(intensity, intensity, intensity)
     tex:SetTexture("Interface/AddOns/Chattynator/Assets/resize.png")
+    tex:SetTexCoord(0, 1, 1, 0)
     tex:SetAllPoints()
     frame:SetScript("OnEnter", function()
       tex:SetVertexColor(59/255, 210/255, 237/255)

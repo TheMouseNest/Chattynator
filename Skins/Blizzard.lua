@@ -243,8 +243,12 @@ local skinners = {
   end,
   ResizeWidget = function(frame, tags)
     frame:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up")
+    frame:GetNormalTexture():SetTexCoord(0, 1, 1, 0)
+    frame:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Down")
+    frame:GetPushedTexture():SetTexCoord(0, 1, 1, 0)
     frame:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Down")
     frame:SetHighlightTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Highlight")
+    frame:GetHighlightTexture():SetTexCoord(0, 1, 1, 0)
   end,
 }
 

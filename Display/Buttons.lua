@@ -286,10 +286,8 @@ function addonTable.Display.ButtonsBarMixin:Update()
     end
     if position:match("inside") then
       offsetX, offsetY = 26 + 2, -2
-      self.ScrollToBottomButton:SetPoint("BOTTOMLEFT", self:GetParent().ScrollingMessages, "BOTTOMLEFT", 2, 5)
-    else
-      self.ScrollToBottomButton:SetPoint("BOTTOMRIGHT", self:GetParent().ScrollingMessages, "BOTTOMLEFT", -5, 5)
     end
+    self.ScrollToBottomButton:SetPoint("BOTTOMRIGHT", self:GetParent().ScrollingMessages, "BOTTOMRIGHT", -2, 5)
     local startingOffsetY = offsetY
     self:ClearAllPoints()
     self:SetPoint("TOPRIGHT", self:GetParent().ScrollingMessages, "TOPLEFT", offsetX, offsetY)
@@ -320,7 +318,7 @@ function addonTable.Display.ButtonsBarMixin:Update()
       end
     end
     self.ScrollToBottomButton:ClearAllPoints()
-    self.ScrollToBottomButton:SetPoint("BOTTOMLEFT", self:GetParent().ScrollingMessages, "BOTTOMLEFT", 2, 5)
+    self.ScrollToBottomButton:SetPoint("BOTTOMRIGHT", self:GetParent().ScrollingMessages, "BOTTOMRIGHT", -2, 5)
     self:ClearAllPoints()
     self:SetPoint("TOPLEFT", self:GetParent().ScrollingMessages, "TOPLEFT", offsetX, offsetY)
     for _, b in ipairs(self.buttons) do

@@ -95,13 +95,7 @@ function addonTable.Core.CreateFont(lsmPath, outline, shadow, force)
     return
   end
   if lsmPath == "default" then
-    local font = CreateFontFamily(globalName, GetDefaultMembers(outline))
-    if shadow == "SHADOW" then
-      font:SetShadowOffset(1, -1)
-      font:SetShadowColor(0, 0, 0, 0.8)
-    end
-
-    fonts["default" .. outline .. shadow] = globalName
+    CreateFontFamily(globalName, GetDefaultMembers(outline))
   else
     local path = LibSharedMedia:Fetch("font", lsmPath, true)
     if not path then
@@ -111,12 +105,18 @@ function addonTable.Core.CreateFont(lsmPath, outline, shadow, force)
     local font = CreateFontFamily(globalName, GetDefaultMembers(outline))
     font:SetFont(path, 14, outline)
     font:SetTextColor(1, 1, 1)
-    if shadow == "SHADOW" then
+  end
+
+  fonts[key] = globalName
+
+  local fontFamily = _G[globalName]
+
+  if shadow == "SHADOW" then
+    for _, a in ipairs(alphabet) do
+      local font = fontFamily:GetFontObjectForAlphabet(a)
       font:SetShadowOffset(1, -1)
       font:SetShadowColor(0, 0, 0, 0.8)
     end
-
-    fonts[key] = globalName
   end
 end
 

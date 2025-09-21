@@ -91,6 +91,7 @@ function addonTable.Core.ApplyOverrides()
   frame:SetScript("OnEvent", function()
     frame:UnregisterEvent("PLAYER_ENTERING_WORLD")
     C_Timer.After(0, function()
+      GeneralDockManagerOverflowButton:SetParent(addonTable.hiddenFrame)
       for _, tabName in pairs(CHAT_FRAMES) do
         local tab = _G[tabName]
         if tab:GetParent() == UIParent then

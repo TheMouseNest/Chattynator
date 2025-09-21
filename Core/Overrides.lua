@@ -88,38 +88,43 @@ function addonTable.Core.ApplyOverrides()
   -- and then ensure that chat colour events get processed, both to avoid errors
   local frame = CreateFrame("Frame")
   frame:RegisterEvent("PLAYER_ENTERING_WORLD")
-  frame:SetScript("OnEvent", function()
-    frame:UnregisterEvent("PLAYER_ENTERING_WORLD")
-    C_Timer.After(0, function()
-      GeneralDockManagerOverflowButton:SetParent(addonTable.hiddenFrame)
-      for _, tabName in pairs(CHAT_FRAMES) do
-        local tab = _G[tabName]
-        if tab:GetParent() == UIParent then
-          tab:SetParent(addonTable.hiddenFrame)
-        end
-        if tabName ~= "ChatFrame2" then
-          tab:UnregisterAllEvents()
-          tab:RegisterEvent("UPDATE_CHAT_COLOR") -- Needed to prevent errors in OnUpdate from UIParent
-          -- Workaround for addons trying to prevent messages showing in chat frame by unregistering and reregistering events
-          hooksecurefunc(tab, "RegisterEvent", function(_, name)
-            if name ~= "UPDATE_CHAT_COLOR" then
-              tab:UnregisterEvent(name)
+  frame:SetScript("OnEvent", function(_, event)
+    if event == "PLAYER_ENTERING_WORLD" then
+      frame:RegisterEvent("UPDATE_CHAT_WINDOWS")
+      frame:UnregisterEvent("PLAYER_ENTERING_WORLD")
+      C_Timer.After(0, function()
+        for _, tabName in pairs(CHAT_FRAMES) do
+          local tab = _G[tabName]
+          if tab:GetParent() == UIParent then
+            tab:SetParent(addonTable.hiddenFrame)
+          end
+          if tabName ~= "ChatFrame2" then
+            tab:UnregisterAllEvents()
+            tab:RegisterEvent("UPDATE_CHAT_COLOR") -- Needed to prevent errors in OnUpdate from UIParent
+            -- Workaround for addons trying to prevent messages showing in chat frame by unregistering and reregistering events
+            hooksecurefunc(tab, "RegisterEvent", function(_, name)
+              if name ~= "UPDATE_CHAT_COLOR" then
+                tab:UnregisterEvent(name)
+              end
+            end)
+          end
+          tab:HookScript("OnEvent", function(_, e)
+            if e == "UPDATE_CHAT_WINDOWS" then
+              tab:UnregisterEvent("UPDATE_CHAT_WINDOWS")
+              tab:UnregisterEvent("UPDATE_FLOATING_CHAT_WINDOWS")
             end
           end)
+          local tabButton = _G[tabName .. "Tab"]
+          tabButton:SetParent(addonTable.hiddenFrame)
+          local SetParent = tabButton.SetParent
+          hooksecurefunc(tabButton, "SetParent", function(self) SetParent(self, addonTable.hiddenFrame) end)
         end
-        tab:HookScript("OnEvent", function(_, e)
-          if e == "UPDATE_CHAT_WINDOWS" then
-            tab:UnregisterEvent("UPDATE_CHAT_WINDOWS")
-            tab:UnregisterEvent("UPDATE_FLOATING_CHAT_WINDOWS")
-          end
-        end)
-        local tabButton = _G[tabName .. "Tab"]
-        tabButton:SetParent(addonTable.hiddenFrame)
-        local SetParent = tabButton.SetParent
-        hooksecurefunc(tabButton, "SetParent", function(self) SetParent(self, addonTable.hiddenFrame) end)
-      end
-      _G["ChatFrame1Tab"].IsVisible = function() return true end -- Workaround for TSM assuming chat tabs are always visible
-    end)
+        _G["ChatFrame1Tab"].IsVisible = function() return true end -- Workaround for TSM assuming chat tabs are always visible
+      end)
+    elseif event == "UPDATE_CHAT_WINDOWS" then
+      frame:UnregisterEvent("UPDATE_CHAT_WINDOWS")
+      GeneralDockManagerOverflowButton:SetParent(addonTable.hiddenFrame)
+    end
   end)
 
   hooksecurefunc("ChatEdit_DeactivateChat", function(editBox)

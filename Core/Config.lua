@@ -84,6 +84,7 @@ local settings = {
   CURRENT_SKIN = {key = "current_skin", default = "dark"},
 
   STORE_MESSAGES = {key = "store_messages", default = true},
+  REMOVE_OLD_MESSAGES = {key = "remove_old_messages", default = true},
 
   SHOW_COMBAT_LOG = {key = "show_combat_log", default = true, refresh = {addonTable.Constants.RefreshReason.Tabs}},
   COMBAT_LOG_MIGRATION = {key = "combat_log_migration", default = 0},

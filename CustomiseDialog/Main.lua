@@ -134,6 +134,13 @@ local function SetupGeneral(parent)
   storeMessages:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
   table.insert(allFrames, storeMessages)
 
+  local removeOldMessages = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.REMOVE_OLD_MESSAGES, 28, function(state)
+    addonTable.Config.Set(addonTable.Config.Options.REMOVE_OLD_MESSAGES, state)
+  end)
+  removeOldMessages.option = addonTable.Config.Options.REMOVE_OLD_MESSAGES
+  removeOldMessages:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, 0)
+  table.insert(allFrames, removeOldMessages)
+
   local customTabsDropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.SPECIAL_TABS)
   do
     customTabsDropdown.SetValue = nil

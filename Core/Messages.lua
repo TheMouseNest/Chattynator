@@ -5,6 +5,7 @@ local addonTable = select(2, ...)
 addonTable.MessagesMonitorMixin ={}
 
 local conversionThreshold = 5000
+local batchLimit = 10
 
 local function GetNewLog()
   return { current = {}, historical = {}, version = 1, cleanIndex = 0}
@@ -365,6 +366,7 @@ end
 function addonTable.MessagesMonitorMixin:ConfigureStore()
   if addonTable.Config.Get(addonTable.Config.Options.STORE_MESSAGES) then
     self.store = CHATTYNATOR_MESSAGE_LOG.current
+    self:PurgeOldMessages()
   else
     CHATTYNATOR_MESSAGE_LOG = GetNewLog()
     self.store = {} -- fake store to hide that messages aren't being saved
@@ -704,6 +706,14 @@ function addonTable.MessagesMonitorMixin:GetMessageHeight(reverseIndex)
   return self.heights[index]
 end
 
+function addonTable.MessagesMonitorMixin:PurgeOldMessages()
+  if addonTable.Config.Get(addonTable.Config.Options.REMOVE_OLD_MESSAGES) and #CHATTYNATOR_MESSAGE_LOG.historical > batchLimit then
+    for i = 1, #CHATTYNATOR_MESSAGE_LOG.historical - batchLimit do
+      CHATTYNATOR_MESSAGE_LOG.historical[i].data = {}
+    end
+  end
+end
+
 function addonTable.MessagesMonitorMixin:UpdateStores()
   if self.storeCount < conversionThreshold or not addonTable.Config.Get(addonTable.Config.Options.STORE_MESSAGES) then
     return
@@ -734,6 +744,7 @@ function addonTable.MessagesMonitorMixin:UpdateStores()
   CHATTYNATOR_MESSAGE_LOG.current = newCurrent
   self.store = newCurrent
   self.storeCount = #self.store
+  self:PurgeOldMessages()
 end
 
 function addonTable.MessagesMonitorMixin:ReduceMessages()

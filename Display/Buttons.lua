@@ -309,7 +309,7 @@ function addonTable.Display.ButtonsBarMixin:Update()
       offsetY = offsetY - b:GetHeight() - 5
     end
 
-    local heightAvailable = self:GetParent().ScrollingMessages:GetHeight() - 2 - startingOffsetY
+    local heightAvailable = self:GetParent().ScrollingMessages:GetHeight() - 2 + startingOffsetY
     local currentHeight = 0
     for _, b in ipairs(self.buttons) do
       currentHeight = currentHeight + b:GetHeight() + 5

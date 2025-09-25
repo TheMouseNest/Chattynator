@@ -163,6 +163,7 @@ local skinners = {
       alpha = 1 - addonTable.Config.Get("skins.dark.chat_transparency")
       if addonTable.Config.Get("skins.dark.solid_chat_background") then
         frame.background:SetColorTexture(r, g, b, alpha)
+        frame.background:SetVertexColor(1, 1, 1, 1)
       else
         frame.background:SetTexture("Interface/AddOns/Chattynator/Assets/ChatBackground")
         frame.background:SetTexCoord(0, 1, 1, 0)

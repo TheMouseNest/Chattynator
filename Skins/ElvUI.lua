@@ -274,8 +274,8 @@ local skinners = {
         LeftChatPanel:SetParent(addonTable.hiddenFrame)
         LeftChatDataPanel:ClearAllPoints()
         LeftChatDataPanel:SetParent(frame)
-        LeftChatDataPanel:SetPoint(isAbove and "BOTTOMLEFT" or "TOPLEFT", frame, isAbove and "TOPLEFT" or "BOTTOMLEFT", E.db.chat.hideChatToggles and 0 or 19, position == "bottom" and not isAbove and 22 or 0)
-        LeftChatDataPanel:SetPoint(isAbove and "BOTTOMRIGHT" or "TOPRIGHT", frame, isAbove and "TOPRIGHT" or "BOTTOMRIGHT", -(E.PixelMode and 1 or -1), position == "bottom" and not isAbove and 22 or 0)
+        LeftChatDataPanel:SetPoint(isAbove and "BOTTOMLEFT" or "TOPLEFT", frame, isAbove and "TOPLEFT" or "BOTTOMLEFT", E.db.chat.hideChatToggles and 0 or 18, position == "bottom" and not isAbove and 22 or 0)
+        LeftChatDataPanel:SetPoint(isAbove and "BOTTOMRIGHT" or "TOPRIGHT", frame, isAbove and "TOPRIGHT" or "BOTTOMRIGHT", 1, position == "bottom" and not isAbove and 22 or 0)
         LeftChatDataPanel:SetHeight(23)
         LeftChatToggleButton:SetParent(frame)
         local panelEnabled = E.db.datatexts.panels.LeftChatDataPanel.enable

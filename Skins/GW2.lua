@@ -233,14 +233,14 @@ local skinners = {
       end
     end
 
-    frame.fakeEditBoxTex = frame:CreateTexture(nil, "BACKGROUND")
-    frame.fakeEditBoxTex:SetTexture("Interface/AddOns/GW2_UI/textures/chat/chateditboxmid")
-    frame.fakeEditBoxTex:SetPoint("BOTTOMLEFT")
-    frame.fakeEditBoxTex:SetPoint("BOTTOMRIGHT")
-    frame.fakeEditBoxTex:SetHeight(32)
+    frame.visuals.fakeEditBoxTex = frame.visuals:CreateTexture(nil, "BACKGROUND")
+    frame.visuals.fakeEditBoxTex:SetTexture("Interface/AddOns/GW2_UI/textures/chat/chateditboxmid")
+    frame.visuals.fakeEditBoxTex:SetPoint("BOTTOMLEFT")
+    frame.visuals.fakeEditBoxTex:SetPoint("BOTTOMRIGHT")
+    frame.visuals.fakeEditBoxTex:SetHeight(32)
 
     local position = addonTable.Config.Get(addonTable.Config.Options.EDIT_BOX_POSITION)
-    frame.fakeEditBoxTex:SetShown(position == "bottom")
+    frame.visuals.fakeEditBoxTex:SetShown(position == "bottom")
 
     frame.ScrollingMessages:SetIgnoreParentAlpha(true)
     frame.fadeOutAnimation = frame:CreateAnimationGroup()
@@ -312,7 +312,7 @@ local skinners = {
       end
       if settingName == addonTable.Config.Options.EDIT_BOX_POSITION then
         position = addonTable.Config.Get(addonTable.Config.Options.EDIT_BOX_POSITION)
-        frame.fakeEditBoxTex:SetShown(position == "bottom")
+        frame.visuals.fakeEditBoxTex:SetShown(position == "bottom")
       elseif settingName == "skins.gw2_ui.fade_chat" then
         local fadeStatus = addonTable.Config.Get("skins.gw2_ui.fade_chat")
         frame.GW2HoverTracker:SetShown(fadeStatus)

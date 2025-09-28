@@ -353,8 +353,6 @@ local function SetupLayout(parent)
 end
 
 local function SetupDisplay(parent)
-  local LibSharedMedia = LibStub("LibSharedMedia-3.0")
-
   local container = CreateFrame("Frame", nil, parent)
 
   local allFrames = {}
@@ -436,8 +434,12 @@ local function SetupDisplay(parent)
   table.insert(allFrames, flashOnDropdown)
 
   container:SetScript("OnShow", function()
-    local fontValues = CopyTable(LibSharedMedia:List("font"))
-    local fontLabels = CopyTable(LibSharedMedia:List("font"))
+    local LibSharedMedia = LibStub and LibStub:GetLibrary("LibSharedMedia-3.0", true)
+    local fontValues, fontLabels = {}, {}
+    if LibSharedMedia then
+      fontValues = CopyTable(LibSharedMedia:List("font"))
+      fontLabels = CopyTable(LibSharedMedia:List("font"))
+    end
     table.insert(fontValues, 1, "default")
     table.insert(fontLabels, 1, DEFAULT)
 

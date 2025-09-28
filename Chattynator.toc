@@ -18,11 +18,6 @@
 ## Category-zhCN: 聊天
 ## Category-zhTW: 對話
 
-Libs/LibStub/LibStub.lua
-Libs/CallbackHandler-1.0/CallbackHandler-1.0.lua
-Libs/LibSharedMedia-3.0/lib.xml
-
-
 Locales.lua
 
 Core/Objects.lua

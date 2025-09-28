@@ -253,6 +253,7 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
             table.insert(fields, {name, StripHyperlinks(title)})
           end
         end
+        table.insert(fields, {"/loadstring", addonTable.Locales.RUN_OR_WA})
         table.sort(fields, function(a, b) return a[2]:lower() < b[2]:lower() end)
         if tab.invert then
           for _, f in ipairs(fields) do

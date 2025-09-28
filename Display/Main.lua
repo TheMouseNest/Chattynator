@@ -159,7 +159,6 @@ function addonTable.Display.ChatFrameMixin:RepositionBlizzardWidgets()
     addonTable.Data.BlizzardEditBoxAssigned = true
 
     -- We use the default edit box rather than instantiating our own so that the keyboard shortcuts to open it work
-    ChatFrame1EditBox:SetParent(self)
     self:UpdateEditBox()
     addonTable.Skins.AddFrame("ChatEditBox", ChatFrame1EditBox)
   end

@@ -133,6 +133,7 @@ L["SPECIFIC_ADDONS"] = "Specific Addons"
 L["LEAVE_UNTICKED_ADDONS"] = "Leave unticked to control which addons show"
 L["ADDONS"] = "Addons"
 L["DATA_DUMPS"] = "Data Dumps"
+L["RUN_OR_WA"] = "/run or WAs"
 
 L["SELECT_TYPE_TO_CHANGE"] = "Select type to change?"
 

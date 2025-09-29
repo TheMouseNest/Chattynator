@@ -58,7 +58,7 @@ local skinners = {
     editBox.backdrop:SetPoint("RIGHT", -1, 0)
     local _, size = editBox:GetFont()
     editBox:FontTemplate(LSM:Fetch('font', CH.db.font), size, CH.db.fontOutline)
-    editBox:GetParent():UpdateEditBox()
+    addonTable.allChatFrames[1]:UpdateEditBox()
   end,
   TabButton = function(frame)
     S:HandleTab(frame)

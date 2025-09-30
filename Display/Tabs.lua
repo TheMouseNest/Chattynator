@@ -294,11 +294,7 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
           addonTable.API.CustomTabs[tabData.custom].install(self.customHolders[tabData.custom])
         else
           self.chatFrame.ScrollingMessages:Show()
-          if self.chatFrame.tabIndex == tabButton:GetID() then
-            self.chatFrame:SetFilter(tabButton.filter)
-          else
-            self.chatFrame:SetTabSelectedAndFilter(tabButton:GetID(), tabButton.filter)
-          end
+          self.chatFrame:SetTabSelectedAndFilter(tabButton:GetID(), tabButton.filter)
           self.chatFrame.ScrollingMessages:Render()
         end
       elseif mouseButton == "RightButton" then

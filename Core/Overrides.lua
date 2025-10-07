@@ -88,7 +88,6 @@ function addonTable.Core.ApplyOverrides()
   -- and then ensure that chat colour events get processed, both to avoid errors
   local frame = CreateFrame("Frame")
   frame:RegisterEvent("PLAYER_ENTERING_WORLD")
-  frame:RegisterEvent("UPDATE_CHAT_WINDOWS")
   frame:SetScript("OnEvent", function(_, event)
     if event == "PLAYER_ENTERING_WORLD" then
       frame:RegisterEvent("UPDATE_CHAT_WINDOWS")
@@ -121,11 +120,6 @@ function addonTable.Core.ApplyOverrides()
           hooksecurefunc(tabButton, "SetParent", function(self) SetParent(self, addonTable.hiddenFrame) end)
         end
         _G["ChatFrame1Tab"].IsVisible = function() return true end -- Workaround for TSM assuming chat tabs are always visible
-      end)
-    elseif event == "UPDATE_CHAT_WINDOWS" then
-      frame:UnregisterEvent("UPDATE_CHAT_WINDOWS")
-      C_Timer.After(0, function()
-        GeneralDockManagerOverflowButton:SetParent(addonTable.hiddenFrame)
       end)
     end
   end)

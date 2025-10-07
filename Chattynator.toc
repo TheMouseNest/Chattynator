@@ -1,4 +1,4 @@
-## Interface: 110200, 50500, 50501, 40402, 11507
+## Interface: 110200, 110205, 50501, 40402, 11507
 ## Title: Chattynator
 ## Version: @project-version@
 ## Author: plusmouse

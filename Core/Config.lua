@@ -11,6 +11,7 @@ function addonTable.Config.GetEmptyTabConfig(name)
     backgroundColor = "1a1a1a", tabColor = "b5926c",
     whispersTemp = {}, filters = {},
     isTemporary = false,
+    showPlayerLootOnly = false,
   }
 end
 

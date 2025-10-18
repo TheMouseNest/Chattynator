@@ -537,6 +537,9 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
     elseif type(playerArg) ~= "string" or playerArg == "" then
       playerArg = nil
     end
+    if ChatTypeGroupInverted[eventName] == "LOOT" and playerArg == nil then
+      playerArg = addonTable.Data.CharacterName
+    end
     self:SetIncomingType({
       type = ChatTypeGroupInverted[eventName] or "NONE",
       event = eventName,

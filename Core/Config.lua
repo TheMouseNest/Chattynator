@@ -10,7 +10,7 @@ function addonTable.Config.GetEmptyTabConfig(name)
     addons = {},
     backgroundColor = "1a1a1a", tabColor = "b5926c",
     whispersTemp = {}, filters = {},
-    isTemporary = false,
+    isTemporary = false, filterOtherLoot = false,
   }
 end
 

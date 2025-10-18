@@ -209,6 +209,9 @@ function addonTable.Display.TabsBarMixin:GetFilter(tabData, tabTag)
   local func
   if tabData.invert then
     func = function(data)
+      if tabData.filterOtherLoot and data.typeInfo.type == "LOOT" and data.text:find(addonTable.Locales.SHORT_LOOT_OTHER:gsub("%%1", "(.-)"):gsub("%%2", "(.-)")) then
+        return false
+      end
       return tabData.groups[data.typeInfo.type] ~= false and (data.typeInfo.tabTag == nil or data.typeInfo.tabTag == tabTag) and
         (
         not data.typeInfo.channel or
@@ -219,6 +222,9 @@ function addonTable.Display.TabsBarMixin:GetFilter(tabData, tabTag)
     end
   else
     func = function(data)
+      if tabData.filterOtherLoot and data.typeInfo.type == "LOOT" and data.text:find(addonTable.Locales.SHORT_LOOT_OTHER:gsub("%%1", "(.-)"):gsub("%%2", "(.-)")) then
+        return false
+      end
       return tabData.groups[data.typeInfo.type] and (data.typeInfo.tabTag == nil or data.typeInfo.tabTag == tabTag) or
         (data.typeInfo.type == "WHISPER" or data.typeInfo.type == "BN_WHISPER") and tabData.whispersTemp[data.typeInfo.player and data.typeInfo.player.name] or
         tabData.channels[data.typeInfo.channel and data.typeInfo.channel.name] or

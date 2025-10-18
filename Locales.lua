@@ -172,6 +172,7 @@ L["SLASH_RESET"] = "reset"
 L["SLASH_RESET_HELP"] = "Reset all Chattynator settings, then reload."
 L["SLASH_HELP"] = "Open the Chattynator settings."
 L["SLASH_UNKNOWN_COMMAND"] = "Unknown command '%s'"
+L["FILTER_OTHER_LOOT"] = "Show only my loot"
 
 local L = Locales.frFR
 --@localization(locale="frFR", format="lua_additive_table")@

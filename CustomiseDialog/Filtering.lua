@@ -79,7 +79,7 @@ addonTable.CustomiseDialog.TYPE_LAYOUT_ORDER = {
 }
 
 function addonTable.CustomiseDialog.GetChatColor(group)
-  local colors = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS) 
+  local colors = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS)
   local info = colors[group]
   if not info then
     for _, event in ipairs(ChatTypeGroup[group]) do
@@ -185,6 +185,14 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
               )
             end
           end
+        end
+        if entry[2] == "OTHER_COMBAT" then
+          rootDescription:CreateCheckbox(addonTable.Locales.FILTER_OTHER_LOOT, function()
+            return tab.filterOtherLoot
+          end, function()
+            tab.filterOtherLoot = not tab.filterOtherLoot
+            addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+          end)
         end
       end)
     end

@@ -79,7 +79,7 @@ addonTable.CustomiseDialog.TYPE_LAYOUT_ORDER = {
 }
 
 function addonTable.CustomiseDialog.GetChatColor(group)
-  local colors = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS) 
+  local colors = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS)
   local info = colors[group]
   if not info then
     for _, event in ipairs(ChatTypeGroup[group]) do
@@ -287,6 +287,13 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
     end)
   end
 
+  local showPlayerLootOnly = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_PLAYER_LOOT_ONLY, 28, function(state)
+    tab.showPlayerLootOnly = state
+    addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+  end)
+  showPlayerLootOnly:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
+  table.insert(allFrames, showPlayerLootOnly)
+
   container:SetSize(500, 500)
 
   local function UpdateHeader()
@@ -299,6 +306,7 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
     local windows = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)
     tab = windows[windowIndex].tabs[tabIndex]
     UpdateHeader()
+    showPlayerLootOnly:SetValue(tab.showPlayerLootOnly)
     for _, f in ipairs(allFrames) do
       if f.DropDown then
         f:SetValue()

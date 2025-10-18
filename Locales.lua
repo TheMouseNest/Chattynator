@@ -154,6 +154,7 @@ L["TAB_COLOR"] = "Tab Color"
 
 L["MESSAGE_TYPES"] = "Message types"
 L["NONE_SELECTED"] = "None Selected"
+L["SHOW_PLAYER_LOOT_ONLY"] = "Show player loot only"
 L["REWARDS"] = "Rewards"
 L["WINDOW_X"] = "Window %s"
 L["TAB_X"] = "%s Tab"

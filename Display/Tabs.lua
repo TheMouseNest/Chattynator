@@ -370,6 +370,7 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
                 local windows = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)
                 windows[newChatFrame:GetID()].tabs[1] = windows[self.chatFrame:GetID()].tabs[tabButton:GetID()]
                 table.remove(windows[self.chatFrame:GetID()].tabs, tabButton:GetID())
+                self.chatFrame.tabIndex = 1
                 newChatFrame:Reset()
                 newChatFrame.ScrollingMessages:Render()
                 addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
@@ -383,6 +384,7 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
               rootDescription:CreateButton(addonTable.Locales.CLOSE_TAB, function()
                 local allTabData = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self.chatFrame:GetID()].tabs
                 table.remove(allTabData, tabButton:GetID())
+                self.chatFrame.tabIndex = 1
                 addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
               end)
             end
@@ -396,6 +398,7 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
         if tabData.isTemporary or not addonTable.Config.Get(addonTable.Config.Options.LOCKED) then
           local allTabData = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[self.chatFrame:GetID()].tabs
           table.remove(allTabData, tabButton:GetID())
+          self.chatFrame.tabIndex = 1
           addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
         end
       end

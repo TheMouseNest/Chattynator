@@ -77,6 +77,13 @@ function addonTable.Display.ScrollingMessagesMixin:OnLoad()
     end
   end)
 
+  -- Protection against scrolling stopping during a loading screen and messages appearing during it
+  self:RegisterEvent("LOADING_SCREEN_ENABLED")
+  self:RegisterEvent("LOADING_SCREEN_DISABLED")
+  self:SetScript("OnEvent", function(_, eventName)
+    self.instantScroll = eventName == "LOADING_SCREEN_ENABLED"
+  end)
+
   self.scrollCallback = nil
 end
 
@@ -93,10 +100,17 @@ function addonTable.Display.ScrollingMessagesMixin:Reset()
 end
 
 function addonTable.Display.ScrollingMessagesMixin:ScrollTo(target, easyMode)
+
   self.destination = math.max(0, target)
   if self.scrollCallback then
     self.scrollCallback(self.destination)
   end
+
+  if self.instantScroll then
+    self.scrollOffset = self.destination
+    self:Render()
+  end
+
   if self.destination == self.scrollOffset then -- Already done
     self:UpdateAlphas()
     return
@@ -236,6 +250,14 @@ function addonTable.Display.ScrollingMessagesMixin:UpdateAlphas(elapsed)
   end
 
   if any then
+    if self.instantScroll then -- Skip alpha fading
+      for _, f in ipairs(self.activeFrames) do
+        if f.animationTime ~= f.animationFinalTime then
+          f:SetAlpha(f.animationFinalAlpha)
+          f.animationTime = f.animationFinalTime
+        end
+      end
+    end
     self.animationsPending = true
     self:SetScript("OnUpdate", self.UpdateAlphas)
   end

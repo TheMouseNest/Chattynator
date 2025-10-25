@@ -3,7 +3,7 @@ local addonTable = select(2, ...)
 
 function addonTable.Core.ApplyOverrides()
   -- Disable context menu to move channel to new window (for now, will add functionality back)
-  hooksecurefunc("ChatChannelDropdown_Show", function(_, chatType, chatTarget, chatName)
+  local function ChannelDropDown(_, chatType, chatTarget, chatName)
     local actualChatFrame
     for _, frame in ipairs(addonTable.allChatFrames) do
       if frame:IsMouseOver() then
@@ -27,7 +27,12 @@ function addonTable.Core.ApplyOverrides()
         actualChatFrame.TabsBar.Tabs[#config.tabs]:Click()
       end)
     end)
-  end)
+  end
+  if ChatFrameUtil and ChatFrameUtil.ShowChatChannelContextMenu then
+    hooksecurefunc(ChatFrameUtil, "ShowChatChannelContextMenu", ChannelDropDown)
+  elseif ChatChannelDropdown_Show then
+    hooksecurefunc("ChatChannelDropdown_Show", ChannelDropDown)
+  end
 
   do
     local actualChatFrame
@@ -59,16 +64,30 @@ function addonTable.Core.ApplyOverrides()
     end
   end
 
-  ChatFrame_ChatPageUp = function()
-    addonTable.allChatFrames[1].ScrollingMessages:ScrollBy(200)
-  end
+  if ChatFrameUtil and ChatFrameUtil.ChatPageUp then
+    ChatFrameUtil.ChatPageUp = function()
+      addonTable.allChatFrames[1].ScrollingMessages:ScrollBy(200)
+    end
 
-  ChatFrame_ChatPageDown = function()
-    addonTable.allChatFrames[1].ScrollingMessages:ScrollBy(-200)
-  end
+    ChatFrameUtil.ChatPageDown = function()
+      addonTable.allChatFrames[1].ScrollingMessages:ScrollBy(-200)
+    end
 
-  ChatFrame_ScrollToBottom = function()
-    addonTable.allChatFrames[1].ScrollingMessages:ScrollToEnd()
+    ChatFrameUtil.ScrollToBottom = function()
+      addonTable.allChatFrames[1].ScrollingMessages:ScrollToEnd()
+    end
+  elseif ChatFrame_ChatPageUp then
+    ChatFrame_ChatPageUp = function()
+      addonTable.allChatFrames[1].ScrollingMessages:ScrollBy(200)
+    end
+
+    ChatFrame_ChatPageDown = function()
+      addonTable.allChatFrames[1].ScrollingMessages:ScrollBy(-200)
+    end
+
+    ChatFrame_ScrollToBottom = function()
+      addonTable.allChatFrames[1].ScrollingMessages:ScrollToEnd()
+    end
   end
 
   FloatingChatFrameManager:UnregisterAllEvents()
@@ -124,14 +143,23 @@ function addonTable.Core.ApplyOverrides()
     end
   end)
 
-  hooksecurefunc("ChatEdit_DeactivateChat", function(editBox)
-    editBox:Hide()
-  end)
-  hooksecurefunc("ChatEdit_ActivateChat", function(editBox)
-    editBox:Show()
-  end)
+  if ChatFrameUtil and ChatFrameUtil.DeactivateChat then
+    hooksecurefunc(ChatFrameUtil, "DeactivateChat", function(editBox)
+      editBox:Hide()
+    end)
+    hooksecurefunc(ChatFrameUtil, "ActivateChat", function(editBox)
+      editBox:Show()
+    end)
+  else
+    hooksecurefunc("ChatEdit_DeactivateChat", function(editBox)
+      editBox:Hide()
+    end)
+    hooksecurefunc("ChatEdit_ActivateChat", function(editBox)
+      editBox:Show()
+    end)
+  end
 
-  hooksecurefunc("ChatEdit_UpdateHeader", function(editBox)
+  local function UpdateHeader(editBox)
     if editBox ~= ChatFrame1EditBox then
       return
     end
@@ -159,5 +187,10 @@ function addonTable.Core.ApplyOverrides()
         editBox.focusMid:SetVertexColor(color.r, color.g, color.b)
       end
     end
-  end)
+  end
+  if ChatFrame1EditBox.UpdateHeader then
+    hooksecurefunc(ChatFrame1EditBox, "UpdateHeader", UpdateHeader)
+  else
+    hooksecurefunc("ChatEdit_UpdateHeader", UpdateHeader)
+  end
 end

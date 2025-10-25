@@ -270,8 +270,13 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   }
 
   setmetatable(env, {__index = _G, __newindex = _G})
-  setfenv(ChatFrame_MessageEventHandler, env)
-  setfenv(ChatFrame_SystemEventHandler, env)
+  if ChatFrameMixin.MessageEventHandler then
+    setfenv(ChatFrameMixin.MessageEventHandler, env)
+    setfenv(ChatFrameMixin.SystemEventHandler, env)
+  else
+    setfenv(ChatFrame_MessageEventHandler, env)
+    setfenv(ChatFrame_SystemEventHandler, env)
+  end
   self:SetScript("OnEvent", self.OnEvent)
 
   addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
@@ -336,6 +341,13 @@ function addonTable.MessagesMonitorMixin:OnLoad()
       self:UpdateChannels()
     end)
     hooksecurefunc("ChatFrame_RemoveCommunitiesChannel", function()
+      self:UpdateChannels()
+    end)
+  elseif ChatFrameUtil and ChatFrameUtil.AddCommunitiesChannel then
+    hooksecurefunc(ChatFrameUtil, "AddCommunitiesChannel", function()
+      self:UpdateChannels()
+    end)
+    hooksecurefunc(ChatFrameUtil, "RemoveCommunitiesChannel", function()
       self:UpdateChannels()
     end)
   end
@@ -546,7 +558,13 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
     self.lineID = lineID
     self.playerGUID = playerGUID
     self.lockType = true
-    ChatFrame_OnEvent(self, eventName, ...)
+    if ChatFrameMixin.OnEvent then
+      if not ChatFrameMixin.SystemEventHandler(self, eventName, ...) then
+        ChatFrameMixin.MessageEventHandler(self, eventName, ...)
+      end
+    else
+      ChatFrame_OnEvent(self, eventName, ...)
+    end
     self.lockType = false
     self.incomingType = nil
     self.playerGUID = nil

@@ -270,7 +270,7 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   }
 
   setmetatable(env, {__index = _G, __newindex = _G})
-  if ChatFrameMixin.MessageEventHandler then
+  if ChatFrameMixin and ChatFrameMixin.MessageEventHandler then
     setfenv(ChatFrameMixin.MessageEventHandler, env)
     setfenv(ChatFrameMixin.SystemEventHandler, env)
   else
@@ -558,7 +558,7 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
     self.lineID = lineID
     self.playerGUID = playerGUID
     self.lockType = true
-    if ChatFrameMixin.OnEvent then
+    if ChatFrameMixin and ChatFrameMixin.OnEvent then
       if not ChatFrameMixin.SystemEventHandler(self, eventName, ...) then
         ChatFrameMixin.MessageEventHandler(self, eventName, ...)
       end

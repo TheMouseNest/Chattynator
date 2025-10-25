@@ -428,7 +428,7 @@ local function LoadSkin()
     end
   end)
 
-  hooksecurefunc("ChatEdit_UpdateHeader", function(editBox)
+  function UpdateHeader(editBox)
     if tIndexOf(editBoxes, editBox) ~= nil then
       local promptWidth = editBox.header:GetWidth() + (editBox.headerSuffix:IsShown() and editBox.headerSuffix:GetWidth() or 0) + (editBox.languageHeader and editBox.languageHeader:IsShown() and editBox.languageHeader:GetWidth() or 0)
       local wantedOffset = addonTable.Messages.inset
@@ -440,7 +440,12 @@ local function LoadSkin()
       editBox.header:SetPoint("LEFT", realPosition, 0)
       editBox:SetTextInsets(promptWidth + realPosition, 13, 0, 0)
     end
-  end)
+  end
+  if ChatFrame1EditBox.UpdateHeader then
+    hooksecurefunc(ChatFrame1EditBox, "UpdateHeader", UpdateHeader)
+  else
+    hooksecurefunc("ChatEdit_UpdateHeader", UpdateHeader)
+  end
 end
 
 addonTable.Skins.RegisterSkin(addonTable.Locales.DARK, "dark", LoadSkin, SkinFrame, SetConstants, {

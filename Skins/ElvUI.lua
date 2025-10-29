@@ -317,7 +317,7 @@ local skinners = {
     S:HandleCheckBox(frame)
   end,
   Slider = function(frame)
-    S:HandleSliderFrame(frame)
+    S:HandleStepSlider(frame)
   end,
   InsetFrame = function(frame)
     if frame.NineSlice then

@@ -19,12 +19,12 @@ local function ConvertTags(tags)
 end
 
 local function AddHeader(frame, texture)
-  (frame.GwStripTextures or frame.StripTextures)(frame)
+  frame:GwStripTextures(frame)
   GW.CreateFrameHeaderWithBody(frame, frame:GetTitleText(), texture, {})
   frame.gwHeader:ClearAllPoints()
   frame.gwHeader:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", 0, -25)
   frame.gwHeader:SetPoint("BOTTOMRIGHT", frame, "TOPRIGHT", 0, -25)
-  ;(frame.CloseButton.GwSkinButton or frame.CloseButton.SkinButton)(frame.CloseButton, true)
+  frame.CloseButton:GwSkinButton(frame.CloseButton, true)
   frame.CloseButton:SetPoint("TOPRIGHT", -10, 4)
   frame.CloseButton:SetSize(20, 20)
 end
@@ -327,7 +327,7 @@ local skinners = {
     end)
   end,
   ChatButton = function(button, tags)
-    button:SetSize(26, 28);
+    button:SetSize(26, 28)
     button:ClearNormalTexture()
     button:ClearPushedTexture()
     button:ClearHighlightTexture()
@@ -481,8 +481,8 @@ local skinners = {
     if GW.HandleTabs then
       GW.HandleTabs(frame, false)
     else
-      (frame.GwStripTextures or frame.StripTextures)(frame)
-      ;(frame.GwSkinButton or frame.SkinButton)(frame, false, true, false, false, false, false)
+      frame:GwStripTextures(frame)
+      frame:GwSkinButton(frame, false, true, false, false, false, false)
       if Chattynator.Constants.IsRetail then
         -- Work around GW2 bug on retail where the hover texture doesn't hide
         -- properly
@@ -511,8 +511,8 @@ local skinners = {
     if GW.HandleTabs then
       GW.HandleTabs(frame, "bottom")
     else
-      (frame.GwStripTextures or frame.StripTextures)(frame)
-      ;(frame.GwSkinButton or frame.SkinButton)(frame, false, true, false, false, false, false)
+      frame:GwStripTextures(frame)
+      frame:GwSkinButton(frame, false, true, false, false, false, false)
       if Chattynator.Constants.IsRetail then
         -- Work around GW2 bug on retail where the hover texture doesn't hide
         -- properly
@@ -532,12 +532,13 @@ local skinners = {
     end
   end,
   CheckBox = function(frame)
-    (frame.GwSkinCheckButton or frame.SkinCheckButton)(frame)
+    frame:GwSkinCheckButton(frame)
     frame:SetPoint("TOP", 0, -12)
     frame:SetSize(15, 15)
   end,
   Slider = function(frame)
-    (frame.GwSkinSliderFrame or frame.SkinSliderFrame)(frame)
+    frame = frame.Slider
+    frame:GwSkinSliderFrame(frame)
     frame:GetThumbTexture():SetSize(16, 16)
     frame.tex:SetDrawLayer("ARTWORK")
     frame.tex:SetPoint("TOPLEFT", 0, 2)
@@ -545,7 +546,7 @@ local skinners = {
   end,
   InsetFrame = function(frame)
     frame.Bg:Hide()
-    ;(frame.GwStripTextures or frame.StripTextures)(frame)
+    frame:GwStripTextures(frame)
     if frame.NineSlice then
       frame.NineSlice:Hide()
     end
@@ -570,11 +571,11 @@ local skinners = {
     button:SetHitRectInsets(-5, 0, 0, 0)
   end,
   Dialog = function(frame)
-    (frame.GwStripTextures or frame.StripTextures)(frame)
+    frame:GwStripTextures(frame)
     if frame.NineSlice then
       frame.NineSlice:Hide()
     end
-    ;(frame.GwCreateBackdrop or frame.CreateBackdrop)(frame)
+    frame:GwCreateBackdrop(frame)
     local tex = frame:CreateTexture(nil, "BACKGROUND")
     tex:SetAllPoints(frame)
     tex:SetTexture("Interface/AddOns/GW2_UI/textures/party/manage-group-bg")

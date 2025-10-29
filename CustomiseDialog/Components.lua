@@ -117,41 +117,33 @@ function addonTable.CustomiseDialog.Components.GetSlider(parent, label, min, max
   holder.Label:SetPoint("RIGHT", holder, "CENTER", -50, 0)
   holder.Label:SetText(label)
 
-  holder.ValueText = holder:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-  holder.ValueText:SetJustifyH("LEFT")
-  holder.ValueText:SetPoint("LEFT", holder, "RIGHT", -35, 0)
-
-  holder.Slider = CreateFrame("Slider", nil, holder, "UISliderTemplate")
+  holder.Slider = CreateFrame("Slider", nil, holder, "MinimalSliderWithSteppersTemplate")
   holder.Slider:SetPoint("LEFT", holder, "CENTER", -32, 0)
   holder.Slider:SetPoint("RIGHT", -45, 0)
   holder.Slider:SetHeight(20)
-  holder.Slider:SetMinMaxValues(min, max)
-  holder.Slider:SetValueStep(1)
-  holder.Slider:SetObeyStepOnDrag(true)
+  holder.Slider:Init(max, min, max, max - min, {
+    [MinimalSliderWithSteppersMixin.Label.Right]  = CreateMinimalSliderFormatter(MinimalSliderWithSteppersMixin.Label.Right, function(value)
+      return WHITE_FONT_COLOR:WrapTextInColorCode(valuePattern:format(value))
+    end)
+  })
 
-  holder.Slider:SetScript("OnValueChanged", function(_, _, userInput)
-    local value = holder.Slider:GetValue()
-    --[[if scale then
-      value = value / scale
-    end]]
-    holder.ValueText:SetText(valuePattern:format(math.floor(holder.Slider:GetValue())))
+  holder.Slider:RegisterCallback(MinimalSliderWithSteppersMixin.Event.OnValueChanged, function(_, value)
     callback(value)
   end)
 
   function holder:GetValue()
-    return holder.Slider:GetValue()
+    return holder.Slider.Slider:GetValue()
   end
 
   function holder:SetValue(value)
     return holder.Slider:SetValue(value)
   end
 
-  addonTable.Skins.AddFrame("Slider", holder.Slider)
+  --addonTable.Skins.AddFrame("Slider", holder.Slider)
 
   holder:SetScript("OnMouseWheel", function(_, delta)
-    if holder.Slider:IsEnabled() then
-      holder.Slider:SetValue(holder.Slider:GetValue() + delta)
-      callback(holder.Slider:GetValue())
+    if holder.Slider.Slider:IsEnabled() then
+      holder.Slider:SetValue(holder.Slider.Slider:GetValue() + delta)
     end
   end)
 

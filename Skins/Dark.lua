@@ -428,7 +428,7 @@ local function LoadSkin()
     end
   end)
 
-  function UpdateHeader(editBox)
+  local function UpdateHeader(editBox)
     if tIndexOf(editBoxes, editBox) ~= nil then
       local promptWidth = editBox.header:GetWidth() + (editBox.headerSuffix:IsShown() and editBox.headerSuffix:GetWidth() or 0) + (editBox.languageHeader and editBox.languageHeader:IsShown() and editBox.languageHeader:GetWidth() or 0)
       local wantedOffset = addonTable.Messages.inset

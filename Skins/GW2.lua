@@ -145,7 +145,7 @@ local skinners = {
     tab.Middle:SetPoint("BOTTOMRIGHT", tab.Right, "BOTTOMLEFT")
     tab.Middle:SetBlendMode("BLEND")
     tab.Middle:SetVertexColor(1, 1, 1, 1)
-    tab.glow = tab:CreateTexture("BORDER")
+    tab.glow = tab:CreateTexture(nil, "BORDER")
     tab.glow:SetTexture("Interface\\AddOns\\Chattynator\\Assets\\ElvUIChatTabNewMessageFlash")
     tab.glow:SetPoint("BOTTOMLEFT", 8, 0)
     tab.glow:SetPoint("BOTTOMRIGHT", -8, 0)

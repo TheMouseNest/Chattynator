@@ -33,7 +33,6 @@ local patternsByEvent = {
   ["MONSTER_SAY"] = {Clean(CHAT_MONSTER_SAY_GET), "%1:\32"},
   ["MONSTER_YELL"] = {Clean(CHAT_MONSTER_YELL_GET), "%1:\32"},
   ["MONSTER_WHISPER"] = {Clean(CHAT_MONSTER_WHISPER_GET), "%1:\32"},
-  ["MONSTER_WHISPER"] = {Clean(CHAT_MONSTER_WHISPER_GET), "%1:\32"},
   ["SAY"] = {Clean(CHAT_SAY_GET), "%1:\32"},
   ["WHISPER"] = {Clean(CHAT_WHISPER_GET), "%1:\32"},
   ["WHISPER_INFORM"] = {Clean(CHAT_WHISPER_INFORM_GET), addonTable.Locales.SHORT_WHISPER_SEND},

@@ -264,7 +264,7 @@ function addonTable.MessagesMonitorMixin:OnLoad()
     GetChatTimestampFormat = function() return nil end,
     FCFManager_ShouldSuppressMessage = function() return false end,
     ChatFrame_CheckAddChannel = function(_, _, channelID)
-      return true or ChatFrame_AddChannel(self, C_ChatInfo.GetChannelShortcutForChannelID(channelID)) ~= nil
+      return true--ChatFrame_AddChannel(self, C_ChatInfo.GetChannelShortcutForChannelID(channelID)) ~= nil
     end,
     ChatTypeInfo = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS),
   }

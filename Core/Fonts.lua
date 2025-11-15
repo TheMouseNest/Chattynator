@@ -1,6 +1,8 @@
 ---@class addonTableChattynator
 local addonTable = select(2, ...)
 
+local LSM = LibStub("LibSharedMedia-3.0")
+
 local fonts = {
   default = "ChatFontNormal",
 }
@@ -59,17 +61,36 @@ end
 
 local alphabet = {"roman", "korean", "simplifiedchinese", "traditionalchinese", "russian"}
 
-local function GetDefaultMembers(outline)
+local locale = GetLocale()
+local overrideAlphabet = "roman"
+if locale == "koKR" then
+  overrideAlphabet = "korean"
+elseif locale == "zhCN" then
+  overrideAlphabet = "simplifiedchinese"
+elseif locale == "zhTW" then
+  overrideAlphabet = "traditionalchinese"
+elseif locale == "ruRU" then
+  overrideAlphabet = "russian"
+end
+
+local function GetMembers(overrideFile, outline)
   local members = {}
   local coreFont = _G[fonts["default"]]
   for _, a in ipairs(alphabet) do
     local forAlphabet = coreFont:GetFontObjectForAlphabet(a)
-    if forAlphabet then
-      local file, height, flags = forAlphabet:GetFont()
+    local file, size, _ = forAlphabet:GetFont()
+    if a == overrideAlphabet and overrideFile then
+      table.insert(members, {
+        alphabet = a,
+        file = overrideFile,
+        height = size,
+        flags = outline,
+      })
+    else
       table.insert(members, {
         alphabet = a,
         file = file,
-        height = height,
+        height = size,
         flags = outline,
       })
     end
@@ -93,19 +114,15 @@ function addonTable.Core.CreateFont(lsmPath, outline, shadow, force)
     return
   end
   if lsmPath == "default" then
-    CreateFontFamily(globalName, GetDefaultMembers(outline))
-  elseif LibStub and LibStub:GetLibrary("LibSharedMedia-3.0", true) then
-    local LibSharedMedia = LibStub("LibSharedMedia-3.0")
-    local path = LibSharedMedia:Fetch("font", lsmPath, true)
+    CreateFontFamily(globalName, GetMembers(nil, outline))
+  else
+    local path = LSM:Fetch("font", lsmPath, true)
     if not path then
       return
     end
 
-    local font = CreateFontFamily(globalName, GetDefaultMembers(outline))
-    font:SetFont(path, 14, outline)
+    local font = CreateFontFamily(globalName, GetMembers(path, outline))
     font:SetTextColor(1, 1, 1)
-  else
-    return
   end
 
   fonts[key] = globalName

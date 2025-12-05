@@ -900,7 +900,7 @@ function addonTable.MessagesMonitorMixin:GetFont() -- Compatibility with any emo
 end
 
 function addonTable.MessagesMonitorMixin:AddMessage(text, r, g, b, _, _, _, _, _, Formatter)
-  if (not issecretvalue and not issecretvalue(text) and text == "") or type(text) ~= "string" then
+  if (not issecretvalue or not issecretvalue(text)) and text == "" or type(text) ~= "string" then
     if not self.lockType then
       self.incomingType = nil
     end
@@ -1094,13 +1094,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
 			local message = arg1:format(GetPlayerLink(arg2, ("[%s]"):format(coloredName)));
 			self:AddMessage(message, info.r, info.g, info.b, info.id);
 		elseif (type == "PING") then
-			--Add Timestamps
-			local chatTimestampFmt = ChatFrameUtil.GetTimestampFormat();
 			local outMsg = arg1;
-			if ( chatTimestampFmt ) then
-				outMsg = BetterDate(chatTimestampFmt, time())..outMsg;
-			end
-
 			self:AddMessage(outMsg, info.r, info.g, info.b, info.id);
 		elseif ( type == "IGNORED" ) then
 			self:AddMessage(format(CHAT_IGNORED, arg2), info.r, info.g, info.b, info.id);
@@ -1110,7 +1104,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
 			self:AddMessage(CHAT_RESTRICTED_TRIAL, info.r, info.g, info.b, info.id);
 		elseif ( type == "CHANNEL_LIST") then
 			if(channelLength > 0) then
-				self:AddMessage(format(ChatFrameUtil.GetOutMessageFormatKey(type)..arg1, tonumber(arg8), arg4), info.r, info.g, info.b, info.id);
+				self:AddMessage(format(string.format(ChatFrameUtil.GetOutMessageFormatKey(type)..arg1, tonumber(arg8), arg4), info.r, info.g, info.b, info.id);
 			else
 				self:AddMessage(arg1, info.r, info.g, info.b, info.id);
 			end
@@ -1205,12 +1199,14 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
 			self:AddMessage(message, info.r, info.g, info.b, info.id);
 		elseif ( type == "BN_INLINE_TOAST_BROADCAST" ) then
 			if ( arg1 ~= "" ) then
+				--arg1 = RemoveNewlines(RemoveExtraSpaces(arg1));
 				local linkDisplayText = ("[%s]"):format(arg2);
 				local playerLink = GetBNPlayerLink(arg2, linkDisplayText, arg13, arg11, ChatFrameUtil.GetChatCategory(type), 0);
 				self:AddMessage(format(BN_INLINE_TOAST_BROADCAST, playerLink, arg1), info.r, info.g, info.b, info.id);
 			end
 		elseif ( type == "BN_INLINE_TOAST_BROADCAST_INFORM" ) then
 			if ( arg1 ~= "" ) then
+				--arg1 = RemoveExtraSpaces(arg1);
 				self:AddMessage(BN_INLINE_TOAST_BROADCAST_INFORM, info.r, info.g, info.b, info.id);
 			end
 		else
@@ -1240,6 +1236,9 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
 
 				-- Search for icon links and replace them with texture links.
 				msg = C_ChatInfo.ReplaceIconAndGroupExpressions(msg, arg17, not ChatFrameUtil.CanChatGroupPerformExpressionExpansion(chatGroup)); -- If arg17 is true, don't convert to raid icons
+
+				--Remove groups of many spaces
+				--msg = RemoveExtraSpaces(msg);
 
 				local playerLink;
 				local playerLinkDisplayText = coloredName;

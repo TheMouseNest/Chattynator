@@ -1089,22 +1089,22 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
 		elseif ( strsub(type,1,10) == "BG_SYSTEM_" ) then
 			self:AddMessage(arg1, info.r, info.g, info.b, info.id);
 		elseif ( strsub(type,1,11) == "ACHIEVEMENT" ) then
-			self:AddMessage(arg1:format(GetPlayerLink(arg2, ("[%s]"):format(coloredName))), info.r, info.g, info.b, info.id);
+			self:AddMessage(arg1:format(string.format("|Hplayer:%s|h%s|h", arg2, ("[%s]"):format(coloredName))), info.r, info.g, info.b, info.id);
 		elseif ( strsub(type,1,18) == "GUILD_ACHIEVEMENT" ) then
-			local message = arg1:format(GetPlayerLink(arg2, ("[%s]"):format(coloredName)));
+			local message = arg1:format(string.format("|Hplayer:%s|h%s|h", arg2, ("[%s]"):format(coloredName)));
 			self:AddMessage(message, info.r, info.g, info.b, info.id);
 		elseif (type == "PING") then
 			local outMsg = arg1;
 			self:AddMessage(outMsg, info.r, info.g, info.b, info.id);
 		elseif ( type == "IGNORED" ) then
-			self:AddMessage(format(CHAT_IGNORED, arg2), info.r, info.g, info.b, info.id);
+			self:AddMessage(string.format(CHAT_IGNORED, arg2), info.r, info.g, info.b, info.id);
 		elseif ( type == "FILTERED" ) then
-			self:AddMessage(format(CHAT_FILTERED, arg2), info.r, info.g, info.b, info.id);
+			self:AddMessage(string.format(CHAT_FILTERED, arg2), info.r, info.g, info.b, info.id);
 		elseif ( type == "RESTRICTED" ) then
 			self:AddMessage(CHAT_RESTRICTED_TRIAL, info.r, info.g, info.b, info.id);
 		elseif ( type == "CHANNEL_LIST") then
 			if(channelLength > 0) then
-				self:AddMessage(format(string.format(ChatFrameUtil.GetOutMessageFormatKey(type)..arg1, tonumber(arg8), arg4), info.r, info.g, info.b, info.id);
+				self:AddMessage(string.format(ChatFrameUtil.GetOutMessageFormatKey(type)..arg1, tonumber(arg8), arg4), info.r, info.g, info.b, info.id)
 			else
 				self:AddMessage(arg1, info.r, info.g, info.b, info.id);
 			end
@@ -1124,9 +1124,9 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
 				local playerLink = GetPlayerLink(arg2, ("[%s]"):format(arg2), arg11);
 				local accessID = ChatHistory_GetAccessID(chatGroup, chatTarget);
 				local typeID = ChatHistory_GetAccessID(infoType, chatTarget, arg12);
-				self:AddMessage(format(globalstring, arg4, playerLink), info.r, info.g, info.b, info.id, accessID, typeID);
+				self:AddMessage(string.format(globalstring, arg4, playerLink), info.r, info.g, info.b, info.id, accessID, typeID);
 			else
-				self:AddMessage(format(globalstring, arg8, arg4, arg2), info.r, info.g, info.b, info.id);
+				self:AddMessage(string.format(globalstring, arg8, arg4, arg2), info.r, info.g, info.b, info.id);
 			end
 			if ( arg1 == "INVITE" and GetCVarBool("blockChannelInvites") ) then
 				self:AddMessage(CHAT_MSG_BLOCK_CHAT_CHANNEL_INVITE, info.r, info.g, info.b, info.id);
@@ -1268,9 +1268,9 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
 					end
 				else
 					if ( type == "BN_WHISPER" or type == "BN_WHISPER_INFORM" ) then
-						playerLink = string.format("%s:%s:%s:%s%s%s%s", "|HBNplayer:", bnetIDAccount, lineID, chatGroup, chatTarget, playerLinkDisplayText, "|h");
+						playerLink = string.format("%s:%s:%s:%s%s%s%s", "|HBNplayer", bnetIDAccount, lineID, chatGroup, chatTarget, playerLinkDisplayText, "|h");
 					else
-						playerLink = string.format("%s:%s:%s:%s:%s%s%s%s", "|Hplayer:", playerName, lineID or 0, chatGroup or 0, chatTarget or "", "|h",  playerLinkDisplayText, "|h");
+						playerLink = string.format("%s:%s:%s:%s:%s%s%s%s", "|Hplayer", playerName, lineID or 0, chatGroup or 0, chatTarget or "", "|h",  playerLinkDisplayText, "|h");
 						local senderGUID = arg12;
 						--[[if not usingEmote and ShouldAddRecentAllyIconToName(self.chatType, senderGUID) then
 							playerLink = playerLink .. " " .. CreateAtlasMarkup("friendslist-recentallies-yellow", 11, 11);

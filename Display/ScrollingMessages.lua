@@ -8,34 +8,12 @@ addonTable.Display.ScrollingMessagesMixin = {}
 
 function addonTable.Display.ScrollingMessagesMixin:MyOnLoad()
   self:SetHyperlinkPropagateToParent(true)
-
-  addonTable.CallbackRegistry:RegisterCallback("RefreshStateChange", function(_, state)
-    if state[addonTable.Constants.RefreshReason.MessageModifier] then
-      self.cleanRender = true
-    elseif state[addonTable.Constants.RefreshReason.MessageWidget] then
-      self:UpdateAllocated()
-      if self:GetParent():GetID() ~= 0 then
-        self:Render()
-      end
-    end
-  end)
+  self:SetHyperlinksEnabled(true)
 
   self:SetFontObject(addonTable.Messages.font)
   self:SetTextColor(1, 1, 1)
   self:SetJustifyH("LEFT")
 
-  self:SetPropagateMouseClicks(true)
-
-  self:SetScript("OnMouseWheel", function(_, delta)
-    if delta > 0 then
-      self:ScrollUp()
-    else
-      self:ScrollDown()
-    end
-  end)
-  self:SetScript("OnSizeChanged", function()
-    self:MarkLayoutDirty()
-  end)
   self:SetTimeVisible(addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FADE_TIME))
 end
 

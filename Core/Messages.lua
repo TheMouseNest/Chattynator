@@ -1205,14 +1205,12 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
 			self:AddMessage(message, info.r, info.g, info.b, info.id);
 		elseif ( type == "BN_INLINE_TOAST_BROADCAST" ) then
 			if ( arg1 ~= "" ) then
-				arg1 = RemoveNewlines(RemoveExtraSpaces(arg1));
 				local linkDisplayText = ("[%s]"):format(arg2);
 				local playerLink = GetBNPlayerLink(arg2, linkDisplayText, arg13, arg11, ChatFrameUtil.GetChatCategory(type), 0);
 				self:AddMessage(format(BN_INLINE_TOAST_BROADCAST, playerLink, arg1), info.r, info.g, info.b, info.id);
 			end
 		elseif ( type == "BN_INLINE_TOAST_BROADCAST_INFORM" ) then
 			if ( arg1 ~= "" ) then
-				arg1 = RemoveExtraSpaces(arg1);
 				self:AddMessage(BN_INLINE_TOAST_BROADCAST_INFORM, info.r, info.g, info.b, info.id);
 			end
 		else
@@ -1237,14 +1235,11 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
 				if ( strsub(type, 1, 7) == "MONSTER" or strsub(type, 1, 9) == "RAID_BOSS") then
 					showLink = nil;
 				else
-					msg = gsub(msg, "%%", "%%%%");
+					--msg = gsub(msg, "%%", "%%%%");
 				end
 
 				-- Search for icon links and replace them with texture links.
 				msg = C_ChatInfo.ReplaceIconAndGroupExpressions(msg, arg17, not ChatFrameUtil.CanChatGroupPerformExpressionExpansion(chatGroup)); -- If arg17 is true, don't convert to raid icons
-
-				--Remove groups of many spaces
-				msg = RemoveExtraSpaces(msg);
 
 				local playerLink;
 				local playerLinkDisplayText = coloredName;
@@ -1274,9 +1269,9 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
 					end
 				else
 					if ( type == "BN_WHISPER" or type == "BN_WHISPER_INFORM" ) then
-						playerLink = GetBNPlayerLink(playerName, playerLinkDisplayText, bnetIDAccount, lineID, chatGroup, chatTarget);
+						playerLink = string.format("%s:%s:%s:%s%s%s%s", "|HBNplayer:", bnetIDAccount, lineID, chatGroup, chatTarget, playerLinkDisplayText, "|h");
 					else
-						playerLink = GetPlayerLink(playerName, playerLinkDisplayText, lineID, chatGroup, chatTarget);
+						playerLink = string.format("%s:%s:%s:%s:%s%s%s%s", "|Hplayer:", playerName, lineID or 0, chatGroup or 0, chatTarget or "", "|h",  playerLinkDisplayText, "|h");
 						local senderGUID = arg12;
 						--[[if not usingEmote and ShouldAddRecentAllyIconToName(self.chatType, senderGUID) then
 							playerLink = playerLink .. " " .. CreateAtlasMarkup("friendslist-recentallies-yellow", 11, 11);
@@ -1293,40 +1288,34 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
 				local outMsg;
 				if ( usingDifferentLanguage ) then
 					local languageHeader = "["..arg3.."] ";
-					if ( showLink and (arg2 ~= "") ) then
-						outMsg = format(ChatFrameUtil.GetOutMessageFormatKey(type)..languageHeader..message, pflag..playerLink);
+					if ( showLink ) then
+						outMsg = string.format(ChatFrameUtil.GetOutMessageFormatKey(type) .. "%s%s", string.format("%s%s", pflag, playerLink), languageHeader, message);
 					else
-						outMsg = format(ChatFrameUtil.GetOutMessageFormatKey(type)..languageHeader..message, pflag..arg2);
+						outMsg = string.format(ChatFrameUtil.GetOutMessageFormatKey(type) .. "%s%s", string.format("%s%s", pflag, arg2), languageHeader, message);
 					end
 				else
-					if ( not showLink or arg2 == "" ) then
+					if ( not showLink ) then
 						if ( type == "TEXT_EMOTE" ) then
 							outMsg = message;
 						else
-							outMsg = format(ChatFrameUtil.GetOutMessageFormatKey(type)..message, pflag..arg2, arg2);
+							outMsg = string.format(ChatFrameUtil.GetOutMessageFormatKey(type).. "%s", string.format("%s%s", pflag, arg2), arg2, message);
 						end
 					else
 						if ( type == "EMOTE" ) then
-							outMsg = format(ChatFrameUtil.GetOutMessageFormatKey(type)..message, pflag..playerLink);
+							outMsg = string.format(string.format("%s%s", ChatFrameUtil.GetOutMessageFormatKey(type), message), string.format("%s%s", pflag, playerLink));
 						elseif ( type == "TEXT_EMOTE") then
 							outMsg = string.gsub(message, arg2, pflag..playerLink, 1);
 						elseif (type == "GUILD_ITEM_LOOTED") then
 							outMsg = string.gsub(message, "$s", GetPlayerLink(arg2, playerLinkDisplayText));
 						else
-							outMsg = format(ChatFrameUtil.GetOutMessageFormatKey(type)..message, pflag..playerLink);
+							outMsg = string.format(ChatFrameUtil.GetOutMessageFormatKey(type).. "%s", string.format("%s%s", pflag, playerLink), message);
 						end
 					end
 				end
 
 				-- Add Channel
 				if (channelLength > 0) then
-					outMsg = "|Hchannel:channel:"..arg8.."|h["..ChatFrameUtil.ResolvePrefixedChannelName(arg4).."]|h "..outMsg;
-				end
-
-				--Add Timestamps
-				local chatTimestampFmt = ChatFrameUtil.GetTimestampFormat();
-				if ( chatTimestampFmt ) then
-					outMsg = BetterDate(chatTimestampFmt, msgTime)..outMsg;
+					outMsg = string.format("|Hchannel:channel:"..arg8.."|h["..ChatFrameUtil.ResolvePrefixedChannelName(arg4).."]|h %s", outMsg)
 				end
 
 				return outMsg;
@@ -1335,7 +1324,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
 			local isChatLineCensored = C_ChatInfo.IsChatLineCensored(lineID);
 			local msg = isChatLineCensored and arg1 or MessageFormatter(arg1);
 			local accessID = ChatHistory_GetAccessID(chatGroup, chatTarget);
-			local typeID = ChatHistory_GetAccessID(infoType, chatTarget, arg12 or arg13);
+			local typeID = accessID --ChatHistory_GetAccessID(infoType, chatTarget, arg12 or arg13);
 
 			-- The message formatter is captured so that the original message can be reformatted when a censored message
 			-- is approved to be shown.

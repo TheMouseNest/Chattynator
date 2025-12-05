@@ -37,10 +37,6 @@ function addonTable.Core.InitializeChatCommandLogging()
     CHATTYNATOR_COMMAND_HISTORY = newHistory
   end
   local lines = CHATTYNATOR_COMMAND_HISTORY
-  ChatFrame1EditBox:SetHistoryLines(historyLimit)
-  for _, l in ipairs(lines) do
-    ChatFrame1EditBox:AddHistoryLine(l)
-  end
   local index = #lines
   local top
 
@@ -63,6 +59,9 @@ function addonTable.Core.InitializeChatCommandLogging()
   end)
 
   ChatFrame1EditBox:HookScript("OnKeyDown", function(_, key)
+    if C_ChatInfo and C_ChatInfo.InChatMessagingLockdown and C_ChatInfo.InChatMessagingLockdown() then
+      return
+    end
     if key == "UP" and index > 0 then
       if index == #lines then
         top = GetCurrent(ChatFrame1EditBox)

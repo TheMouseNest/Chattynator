@@ -572,6 +572,9 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
   end
 end
 
+function addonTable.MessagesMonitorMixin:UpdateDefaultChatTarget()
+end
+
 function addonTable.MessagesMonitorMixin:ReplaceColors()
   self:ImportChannelColors()
   local colors = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS)

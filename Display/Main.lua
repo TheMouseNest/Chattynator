@@ -19,9 +19,9 @@ function addonTable.Display.ChatFrameMixin:OnLoad()
     self:SaveSize()
   end)
 
-  self.ScrollingMessages = CreateFrame("Frame", nil, self)
+  self.ScrollingMessages = CreateFrame("ScrollingMessageFrame", nil, self)
   Mixin(self.ScrollingMessages, addonTable.Display.ScrollingMessagesMixin)
-  self.ScrollingMessages:OnLoad()
+  self.ScrollingMessages:MyOnLoad()
 
   self.ScrollingMessages:SetPoint("TOPLEFT", 34, -27)
   self.ScrollingMessages:SetPoint("BOTTOMRIGHT", 0, 38)
@@ -31,7 +31,6 @@ function addonTable.Display.ChatFrameMixin:OnLoad()
   self.resizeWidget:SetPoint("TOPRIGHT", self.ScrollingMessages, -5,  0)
   self.resizeWidget:RegisterForDrag("LeftButton")
   self.resizeWidget:SetScript("OnDragStart", function()
-    self.ScrollingMessages:ScrollToEnd()
     self:StartSizing("TOPRIGHT")
   end)
   self.resizeWidget:SetScript("OnDragStop", function()
@@ -67,9 +66,9 @@ function addonTable.Display.ChatFrameMixin:OnLoad()
       self.ScrollingMessages:Render()
     end
     if refreshState[addonTable.Constants.RefreshReason.MessageWidget] then
-      if self:GetID() ~= 0 then
+      --[[if self:GetID() ~= 0 then
         self.ScrollingMessages:Render()
-      end
+      end]]
     end
     if refreshState[addonTable.Constants.RefreshReason.Locked] then
       self.resizeWidget:SetShown(not addonTable.Config.Get(addonTable.Config.Options.LOCKED))
@@ -138,7 +137,6 @@ function addonTable.Display.ChatFrameMixin:Reset()
   self:AdjustMessageAnchors()
   self:ApplyButtonPositionAnchors()
   self:ApplyTabsShowing()
-  self.ScrollingMessages:Reset()
 
   self.TabsBar:RefreshTabs()
 end
@@ -255,6 +253,4 @@ function addonTable.Display.ChatFrameMixin:SetTabSelectedAndFilter(index, func)
   self.tabIndex = index
 
   self:SetFilter(func)
-
-  self.ScrollingMessages:Reset()
 end

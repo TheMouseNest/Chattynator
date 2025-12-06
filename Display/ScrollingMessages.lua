@@ -15,6 +15,14 @@ function addonTable.Display.ScrollingMessagesMixin:MyOnLoad()
   self:SetJustifyH("LEFT")
 
   self:SetTimeVisible(addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FADE_TIME))
+
+  self:SetScript("OnMouseWheel", function(_, delta)
+    if delta > 0 then
+      self:ScrollUp()
+    else
+      self:ScrollDown()
+    end
+  end)
 end
 
 function addonTable.Display.ScrollingMessagesMixin:SetFilter(filterFunc)

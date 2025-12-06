@@ -1303,9 +1303,9 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
             if ( type == "EMOTE" ) then
               outMsg = string.format(string.format("%s%s", ChatFrameUtil.GetOutMessageFormatKey(type), message), string.format("%s%s", pflag, playerLink));
             elseif ( type == "TEXT_EMOTE") then
-              outMsg = string.gsub(message, arg2, pflag..playerLink, 1);
+              outMsg = message--string.gsub(message, arg2, pflag..playerLink, 1);
             elseif (type == "GUILD_ITEM_LOOTED") then
-              outMsg = string.gsub(message, "$s", GetPlayerLink(arg2, playerLinkDisplayText));
+              --outMsg = string.gsub(message, "$s", GetPlayerLink(arg2, playerLinkDisplayText));
             else
               outMsg = string.format(ChatFrameUtil.GetOutMessageFormatKey(type).. "%s", string.format("%s%s", pflag, playerLink), message);
             end

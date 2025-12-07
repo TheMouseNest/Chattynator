@@ -1399,7 +1399,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
 
         -- Add Channel
         if (channelLength > 0) then
-          outMsg = string.format("|Hchannel:channel:"..arg8.."|h["..ResolvePrefixedChannelName(arg4).."]|h %s", outMsg)
+          outMsg = string.format("|Hchannel:channel:"..arg8.."|h["..(ChatFrame_ResolvePrefixedChannelName or ChatFrameUtil.ResolvePrefixedChannelName)(arg4).."]|h %s", outMsg)
         end
 
         return outMsg;

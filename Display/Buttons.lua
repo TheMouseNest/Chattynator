@@ -11,11 +11,11 @@ function addonTable.Display.ButtonsBarMixin:OnLoad()
 
   addonTable.CallbackRegistry:RegisterCallback("SkinLoaded", self.Update, self)
 
-  self:GetParent().ScrollingMessages.scrollCallback = function(destination)
+  self:GetParent().ScrollingMessages:SetOnScrollChangedCallback(function()
     if self.ScrollToBottomButton then
-      self.ScrollToBottomButton:SetShown(destination ~= 0)
+      self.ScrollToBottomButton:SetShown(not self:GetParent().ScrollingMessages:AtBottom())
     end
-  end
+  end)
 
   self.hookedButtons = false
   self.active = false
@@ -189,8 +189,7 @@ function addonTable.Display.ButtonsBarMixin:AddButtons()
 
   self.ScrollToBottomButton = MakeButton(addonTable.Locales.SCROLL_TO_END)
   self.ScrollToBottomButton:SetScript("OnClick", function()
-    self:GetParent().ScrollingMessages:ResetFading()
-    self:GetParent().ScrollingMessages:ScrollToEnd()
+    self:GetParent().ScrollingMessages:ScrollToBottom()
   end)
   self.ScrollToBottomButton:Hide()
   addonTable.Skins.AddFrame("ChatButton", self.ScrollToBottomButton, {"scrollToEnd"})

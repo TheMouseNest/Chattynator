@@ -1,4 +1,4 @@
-## Interface: 110207, 110205, 50502, 40402, 11508
+## Interface: 120000, 110207, 110205, 50502, 40402, 11508
 ## Title: Chattynator
 ## Version: @project-version@
 ## Author: plusmouse
@@ -45,7 +45,6 @@ Display/Main.lua
 Display/Tabs.lua
 Display/Buttons.lua
 Display/ScrollingMessages.lua
-Display/MessageRow.lua
 Display/CopyChat.lua
 
 Modifiers/ShortenChannels.lua

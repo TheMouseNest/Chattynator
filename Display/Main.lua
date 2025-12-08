@@ -20,6 +20,7 @@ function addonTable.Display.ChatFrameMixin:OnLoad()
   end)
 
   self.ScrollingMessagesWrapper = CreateFrame("Frame", nil, self)
+  self.ScrollingMessagesWrapper:SetHyperlinkPropagateToParent(true)
   self.ScrollingMessages = CreateFrame("ScrollingMessageFrame", nil, self.ScrollingMessagesWrapper)
   self.ScrollingMessages:SetAllPoints()
   Mixin(self.ScrollingMessages, addonTable.Display.ScrollingMessagesMixin)

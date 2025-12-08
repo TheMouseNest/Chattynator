@@ -1,17 +1,16 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_SharedXML/UI.xsd">
-  <ScrollingMessageFrame name="ChattynatorHyperlinkHandler" inherits="ChatFrameTemplate" hyperlinksEnabled="true">
+  <ScrollingMessageFrame name="ChattynatorHyperlinkHandler" inherits="ChatFrameTemplate" parent="UIParent" hyperlinksEnabled="true">
     <Scripts>
       <!-- Remove default handlers (except for hyperlinks) -->
       <OnLoad>
         self:Show()
         self.editBox = ChatFrame1EditBox -- Ensure no errors when using IM chat style in Blizz settings
-        self:RegisterEvent("UI_SCALE_CHANGED")
+        EventRegistry:RegisterCallback("UI.AlternateTopLevelParentChanged", function(_, parent)
+          self:SetParent(parent or UIParent)
+        end)
       </OnLoad>
       <OnUpdate></OnUpdate>
-      <OnEvent>
-        self:SetScale(UIParent:GetScale())
-      </OnEvent>
     </Scripts>
   </ScrollingMessageFrame>
 </Ui>

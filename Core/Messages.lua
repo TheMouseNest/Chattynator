@@ -1125,37 +1125,10 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
           return;
         end
       end
-
-      local found = false;
-      for index, value in pairs(self.channelList) do
-        if ( channelLength > strlen(value) ) then
-          -- arg9 is the channel name without the number in front...
-          if ( ((arg7 > 0) and (self.zoneChannelList[index] == arg7)) or (strupper(value) == strupper(arg9)) ) then
-            found = true;
-            infoType = "CHANNEL"..arg8;
-            info = ChatTypeInfo[infoType];
-            if ( (type == "CHANNEL_NOTICE") and (arg1 == "YOU_LEFT") ) then
-              self.channelList[index] = nil;
-              self.zoneChannelList[index] = nil;
-            end
-            break;
-          end
-        end
-      end
-      if not found or not info then
-        local eventType, channelID = arg1, arg7;
-        if not ChatFrame_CheckAddChannel(self, eventType, channelID) then
-          return true;
-        end
-      end
     end
 
     local chatGroup = GetChatCategory(type);
     local chatTarget = FCFManager_GetChatTarget(chatGroup, arg2, arg8);
-
-    if ( FCFManager_ShouldSuppressMessage(self, chatGroup, chatTarget) ) then
-      return true;
-    end
 
     if ( type == "SYSTEM" or type == "SKILL" or type == "CURRENCY" or type == "MONEY" or
        type == "OPENING" or type == "TRADESKILLS" or type == "PET_INFO" or type == "TARGETICONS" or type == "BN_WHISPER_PLAYER_OFFLINE") then

@@ -127,6 +127,9 @@ function addonTable.Core.ApplyOverrides()
               end
             end)
           end
+          if tabName == "ChatFrame1" and C_EventUtils.IsEventValid("CAUTIONARY_CHAT_MESSAGE") then
+            ChatFrame1:RegisterEvent("CAUTIONARY_CHAT_MESSAGE")
+          end
           tab:HookScript("OnEvent", function(_, e)
             if e == "UPDATE_CHAT_WINDOWS" then
               tab:UnregisterEvent("UPDATE_CHAT_WINDOWS")

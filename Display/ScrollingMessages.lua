@@ -52,7 +52,7 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
   if #messages > 0 then
     for i = #messages, 1, -1 do
       local m = messages[i]
-      self:AddMessage("|cff989898" .. date(addonTable.Messages.timestampFormat, m.timestamp) .. " |||r " .. m.text, m.color.r, m.color.g, m.color.b)
+      self:AddMessage("|cff989898" .. date(addonTable.Messages.timestampFormat, m.timestamp) .. " || |r" .. m.text, m.color.r, m.color.g, m.color.b)
     end
   end
 end

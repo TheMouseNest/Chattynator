@@ -1071,9 +1071,10 @@ else
   ProcessMessageEventFilters = function(self, event, ...)
     local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17 = ...;
     local filter = false;
-    if ChatFrame_GetMessageEventFilters(event) then
+    local filters = ChatFrame_GetMessageEventFilters(event)
+    if filters then
       local newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12, newarg13, newarg14;
-      for _, filterFunc in next, chatFilters[event] do
+      for _, filterFunc in next, filters do
         filter, newarg1, newarg2, newarg3, newarg4, newarg5, newarg6, newarg7, newarg8, newarg9, newarg10, newarg11, newarg12, newarg13, newarg14 = filterFunc(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14);
         if ( filter ) then
           return true;
@@ -1208,7 +1209,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
     local accessID = ChatHistory_GetAccessID(GetChatCategory(type), arg8);
     local typeID = accessID--ChatHistory_GetAccessID(infoType, arg8, arg12);
 
-    if arg1 == "YOU_CHANGED" and C_ChatInfo.GetChannelRuleset(arg8) == Enum.ChatChannelRuleset.Mentor then
+    if arg1 == "YOU_CHANGED" and C_ChatInfo.GetChannelRuleset and C_ChatInfo.GetChannelRuleset(arg8) == Enum.ChatChannelRuleset.Mentor then
       --self:UpdateDefaultChatTarget();
       --self.editBox:UpdateNewcomerEditBoxHint();
     else

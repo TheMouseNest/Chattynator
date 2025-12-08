@@ -24,6 +24,12 @@ function addonTable.Display.ScrollingMessagesMixin:MyOnLoad()
       self:ScrollDown()
     end
   end)
+
+  addonTable.CallbackRegistry:RegisterCallback("MessageDisplayChanged", function()
+    self:SetFontObject(addonTable.Messages.font)
+    self:SetTextColor(1, 1, 1)
+    self:SetScale(addonTable.Core.GetFontScalingFactor())
+  end)
 end
 
 function addonTable.Display.ScrollingMessagesMixin:SetFilter(filterFunc)

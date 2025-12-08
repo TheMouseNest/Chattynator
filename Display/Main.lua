@@ -19,12 +19,14 @@ function addonTable.Display.ChatFrameMixin:OnLoad()
     self:SaveSize()
   end)
 
-  self.ScrollingMessages = CreateFrame("ScrollingMessageFrame", nil, self)
+  self.ScrollingMessagesWrapper = CreateFrame("Frame", nil, self)
+  self.ScrollingMessages = CreateFrame("ScrollingMessageFrame", nil, self.ScrollingMessagesWrapper)
+  self.ScrollingMessages:SetAllPoints()
   Mixin(self.ScrollingMessages, addonTable.Display.ScrollingMessagesMixin)
   self.ScrollingMessages:MyOnLoad()
 
-  self.ScrollingMessages:SetPoint("TOPLEFT", 34, -27)
-  self.ScrollingMessages:SetPoint("BOTTOMRIGHT", 0, 38)
+  self.ScrollingMessagesWrapper:SetPoint("TOPLEFT", 34, -27)
+  self.ScrollingMessagesWrapper:SetPoint("BOTTOMRIGHT", 0, 38)
 
   self.resizeWidget = CreateFrame("Button", nil, self)
   self.resizeWidget:SetSize(20, 22)
@@ -166,7 +168,7 @@ function addonTable.Display.ChatFrameMixin:AdjustMessageAnchors()
   if self:GetID() == 1 then
     return
   end
-  self.ScrollingMessages:SetPoint("BOTTOMRIGHT", 0, 5)
+  self.ScrollingMessagesWrapper:SetPoint("BOTTOMRIGHT", 0, 5)
 end
 
 function addonTable.Display.ChatFrameMixin:ApplyButtonPositionAnchors()
@@ -181,9 +183,9 @@ end
 function addonTable.Display.ChatFrameMixin:ApplyTabsShowing()
   local position = addonTable.Config.Get(addonTable.Config.Options.BUTTON_POSITION)
   if addonTable.Config.Get(addonTable.Config.Options.SHOW_TABS) ~= "never" then
-    self.ScrollingMessages:SetPoint("TOPLEFT", position == "outside_left" and 34 or 2, -27)
+    self.ScrollingMessagesWrapper:SetPoint("TOPLEFT", position == "outside_left" and 34 or 2, -27)
   else
-    self.ScrollingMessages:SetPoint("TOPLEFT", position == "outside_left" and 34 or 2, -5)
+    self.ScrollingMessagesWrapper:SetPoint("TOPLEFT", position == "outside_left" and 34 or 2, -5)
   end
 end
 
@@ -198,11 +200,11 @@ function addonTable.Display.ChatFrameMixin:UpdateEditBox()
 
   if position == "bottom" then
     local _, _, _, clampBottom = self:GetClampRectInsets()
-    self.ScrollingMessages:SetPoint("BOTTOMRIGHT", 0, 6 + ChatFrame1EditBox:GetHeight() * ChatFrame1EditBox:GetScale() - clampBottom)
+    self.ScrollingMessagesWrapper:SetPoint("BOTTOMRIGHT", 0, 6 + ChatFrame1EditBox:GetHeight() * ChatFrame1EditBox:GetScale() - clampBottom)
     ChatFrame1EditBox:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, ChatFrame1EditBox:GetHeight() - clampBottom * ChatFrame1EditBox:GetScale())
     ChatFrame1EditBox:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, ChatFrame1EditBox:GetHeight() - clampBottom * ChatFrame1EditBox:GetScale())
   elseif position == "top" then
-    self.ScrollingMessages:SetPoint("BOTTOMRIGHT", 0, 5)
+    self.ScrollingMessagesWrapper:SetPoint("BOTTOMRIGHT", 0, 5)
     ChatFrame1EditBox:SetPoint("TOPLEFT", self, "TOPLEFT", 0, 0)
     ChatFrame1EditBox:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, 0)
   end

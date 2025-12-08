@@ -19,7 +19,7 @@ CHATTYNATOR_LOCALES = Locales
 local L = Locales.enUS
 
 L["CHATTYNATOR"] = "Chattynator"
-L["TO_OPEN_OPTIONS_X"] = "Access options with /ctnr"
+L["TO_OPEN_OPTIONS_X"] = "Access options with /chatty"
 L["VERSION_COLON_X"] = "Version: %s"
 L["OPEN_OPTIONS"] = "Open Options"
 L["QUICK_CHAT"] = "Quick Chat"

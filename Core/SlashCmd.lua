@@ -6,6 +6,7 @@ function addonTable.SlashCmd.Initialize()
   SlashCmdList["Chattynator"] = addonTable.SlashCmd.Handler
   SLASH_Chattynator1 = "/chattynator"
   SLASH_Chattynator2 = "/ctnr"
+  SLASH_Chattynator3 = "/chatty"
 end
 
 local INVALID_OPTION_VALUE = "Wrong config value type %s (required %s)"

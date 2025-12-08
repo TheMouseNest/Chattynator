@@ -15,6 +15,7 @@ function addonTable.Display.ScrollingMessagesMixin:MyOnLoad()
   self:SetJustifyH("LEFT")
   self:SetIndentedWordWrap(true)
 
+  self:SetFading(addonTable.Config.Get(addonTable.Config.Options.ENABLE_MESSAGE_FADE))
   self:SetTimeVisible(addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FADE_TIME))
 
   self:SetScript("OnMouseWheel", function(_, delta)
@@ -34,6 +35,14 @@ function addonTable.Display.ScrollingMessagesMixin:MyOnLoad()
   addonTable.CallbackRegistry:RegisterCallback("RefreshStateChange", function(_, refreshState)
     if refreshState[addonTable.Constants.RefreshReason.MessageWidget] then
       self:Render()
+    end
+  end)
+
+  addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
+    if settingName == addonTable.Config.Options.ENABLE_MESSAGE_FADE then
+      self:SetFading(addonTable.Config.Get(addonTable.Config.Options.ENABLE_MESSAGE_FADE))
+    elseif settingName == addonTable.Config.Options.MESSAGE_FADE_TIME then
+      self:SetTimeVisible(addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FADE_TIME))
     end
   end)
 end

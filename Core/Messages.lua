@@ -1271,14 +1271,18 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
     self:AddMessage(message, info.r, info.g, info.b, info.id);
   elseif ( type == "BN_INLINE_TOAST_BROADCAST" ) then
     if ( arg1 ~= "" ) then
-      --arg1 = RemoveNewlines(RemoveExtraSpaces(arg1));
+      if not issecretvalue or not issecretvalue(arg1) then
+        arg1 = RemoveNewlines(RemoveExtraSpaces(arg1));
+      end
       local linkDisplayText = ("[%s]"):format(arg2);
       local playerLink = GetBNPlayerLink(arg2, linkDisplayText, arg13, arg11, GetChatCategory(type), 0);
       self:AddMessage(format(BN_INLINE_TOAST_BROADCAST, playerLink, arg1), info.r, info.g, info.b, info.id);
     end
   elseif ( type == "BN_INLINE_TOAST_BROADCAST_INFORM" ) then
     if ( arg1 ~= "" ) then
-      --arg1 = RemoveExtraSpaces(arg1);
+      if not issecretvalue or not issecretvalue(arg1) then
+        arg1 = RemoveExtraSpaces(arg1);
+      end
       self:AddMessage(BN_INLINE_TOAST_BROADCAST_INFORM, info.r, info.g, info.b, info.id);
     end
   else
@@ -1297,7 +1301,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
       local showLink = 1;
       if ( strsub(type, 1, 7) == "MONSTER" or strsub(type, 1, 9) == "RAID_BOSS") then
         showLink = nil;
-      else
+      elseif not issecretvalue or not issecretvalue(msg) then
         --msg = gsub(msg, "%%", "%%%%");
       end
 
@@ -1305,7 +1309,9 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
       msg = (ChatFrame_ReplaceIconAndGroupExpressions or C_ChatInfo.ReplaceIconAndGroupExpressions)(msg, arg17, not (ChatFrame_CanChatGroupPerformExpressionExpansion or ChatFrameUtil.CanChatGroupPerformExpressionExpansion)(chatGroup)); -- If arg17 is true, don't convert to raid icons
 
       --Remove groups of many spaces
-      --msg = RemoveExtraSpaces(msg);
+      if not issecretvalue or not issecretvalue(msg) then
+        msg = RemoveExtraSpaces(msg);
+      end
 
       local playerLink;
       local playerLinkDisplayText = coloredName;
@@ -1370,9 +1376,15 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
           if ( type == "EMOTE" ) then
             outMsg = string.format(string.format("%s%s", GetOutMessageFormatKey(type), message), string.format("%s%s", pflag, playerLink));
           elseif ( type == "TEXT_EMOTE") then
-            outMsg = message--string.gsub(message, arg2, pflag..playerLink, 1);
+            if not issecretvalue or not issecretvalue(message) and not issecretvalue(arg2) and not issecretvalue(playerLink) then
+              outMsg = string.gsub(message, arg2, pflag..playerLink, 1);
+            else
+              outMsg = message
+            end
           elseif (type == "GUILD_ITEM_LOOTED") then
-            --outMsg = string.gsub(message, "$s", GetPlayerLink(arg2, playerLinkDisplayText));
+            if not issecretvalue or not issecretvalue(message) and not issecretvalue(arg2) and not issecretvalue(playerLinkDisplayText) then
+              outMsg = string.gsub(message, "$s", GetPlayerLink(arg2, playerLinkDisplayText));
+            end
           else
             outMsg = string.format(GetOutMessageFormatKey(type).. "%s", string.format("%s%s", pflag, playerLink), message);
           end

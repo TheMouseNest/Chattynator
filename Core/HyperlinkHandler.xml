@@ -6,9 +6,14 @@ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Bliz
       <OnLoad>
         self:Show()
         self.editBox = ChatFrame1EditBox -- Ensure no errors when using IM chat style in Blizz settings
-        EventRegistry:RegisterCallback("UI.AlternateTopLevelParentChanged", function(_, parent)
-          self:SetParent(parent or UIParent)
-        end)
+        if FCF_SetFullScreenFrame then
+          hooksecurefunc("FCF_SetFullScreenFrame", function(parent)
+            self:SetParent(parent)
+          end)
+          hooksecurefunc("FCF_ClearFullScreenFrame", function()
+            self:SetParent(UIParent)
+          end)
+        end
       </OnLoad>
       <OnUpdate></OnUpdate>
     </Scripts>

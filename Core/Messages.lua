@@ -259,16 +259,6 @@ function addonTable.MessagesMonitorMixin:OnLoad()
     end
   end)
 
-  local env = {
-    FlashTabIfNotShown = function() end,
-    GetChatTimestampFormat = function() return nil end,
-    FCFManager_ShouldSuppressMessage = function() return false end,
-    ChatFrame_CheckAddChannel = function(_, _, channelID)
-      return true--ChatFrame_AddChannel(self, C_ChatInfo.GetChannelShortcutForChannelID(channelID)) ~= nil
-    end,
-    ChatTypeInfo = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS),
-  }
-
   self:SetScript("OnEvent", self.OnEvent)
 
   addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)

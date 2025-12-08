@@ -1138,8 +1138,8 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
   if type == "VOICE_TEXT" and not GetCVarBool("speechToText") then
     return;
 
-  elseif ( (type == "COMMUNITIES_CHANNEL") or ((strsub(type, 1, 7) == "CHANNEL") and (type ~= "CHANNEL_LIST") and ((arg1 ~= "INVITE") or (type ~= "CHANNEL_NOTICE_USER"))) ) then
-    if ( arg1 == "WRONG_PASSWORD" ) then
+  elseif ( (type == "COMMUNITIES_CHANNEL") or ((strsub(type, 1, 7) == "CHANNEL") and (type ~= "CHANNEL_LIST") and (not issecretvalue or not issecretvalue(arg1)) and arg1 ~= "INVITE") or (type ~= "CHANNEL_NOTICE_USER")) then
+    if ( (not issecretvalue or not issecretvalue(arg1)) and arg1 == "WRONG_PASSWORD" ) then
       if ( staticPopup and strupper(staticPopup.data) == strupper(arg9) ) then
         -- Don't display invalid password messages if we're going to prompt for a password (bug 102312)
         return;
@@ -1206,7 +1206,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
     end
   elseif (type == "CHANNEL_NOTICE") then
     local accessID = ChatHistory_GetAccessID(GetChatCategory(type), arg8);
-    local typeID = ChatHistory_GetAccessID(infoType, arg8, arg12);
+    local typeID = accessID--ChatHistory_GetAccessID(infoType, arg8, arg12);
 
     if arg1 == "YOU_CHANGED" and C_ChatInfo.GetChannelRuleset(arg8) == Enum.ChatChannelRuleset.Mentor then
       --self:UpdateDefaultChatTarget();

@@ -30,10 +30,24 @@ function addonTable.Display.ScrollingMessagesMixin:MyOnLoad()
     self:SetTextColor(1, 1, 1)
     self:SetScale(addonTable.Core.GetFontScalingFactor())
   end)
+
+  addonTable.CallbackRegistry:RegisterCallback("RefreshStateChange", function(_, refreshState)
+    if refreshState[addonTable.Constants.RefreshReason.MessageWidget] then
+      self:Render()
+    end
+  end)
 end
 
 function addonTable.Display.ScrollingMessagesMixin:SetFilter(filterFunc)
   self.filterFunc = filterFunc
+end
+
+local function GetPrefix(timestamp)
+  if addonTable.Config.Get(addonTable.Config.Options.SHOW_TIMESTAMP_SEPARATOR) then
+    return "|cff989898" .. date(addonTable.Messages.timestampFormat, timestamp) .. " || |r"
+  else
+    return "|cff989898" .. date(addonTable.Messages.timestampFormat, timestamp) .. "|r"
+  end
 end
 
 function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
@@ -58,7 +72,7 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
   if #messages > 0 then
     for i = #messages, 1, -1 do
       local m = messages[i]
-      self:AddMessage("|cff989898" .. date(addonTable.Messages.timestampFormat, m.timestamp) .. " || |r" .. m.text, m.color.r, m.color.g, m.color.b)
+      self:AddMessage(GetPrefix(m.timestamp) .. m.text, m.color.r, m.color.g, m.color.b)
     end
   end
 end

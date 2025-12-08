@@ -340,6 +340,9 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   end)
 
   self:SetInset()
+
+  self.defaultLanguage = GetDefaultLanguage()
+  self.alternativeDefaultLanguage = GetAlternativeDefaultLanguage()
 end
 
 function addonTable.MessagesMonitorMixin:InvalidateProcessedMessage(id)
@@ -522,6 +525,9 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
     self:UpdateChannels()
 
     addonTable.CallbackRegistry:TriggerEvent("Render")
+  elseif eventName == "PLAYER_ENTERING_WORLD" then
+    self.defaultLanguage = GetDefaultLanguage()
+    self.alternativeDefaultLanguage = GetAlternativeDefaultLanguage()
   else
     local text, playerArg, _, _, _, _, channelID, channelIndex, _, _, lineID, playerGUID = ...
     local channelName = self.channelMap[channelIndex]
@@ -540,15 +546,8 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
     self.lineID = lineID
     self.playerGUID = playerGUID
     self.lockType = true
-    if ChatFrameMixin and ChatFrameMixin.OnEvent then
-      local oldTS = GetCVar("showTimestamps")
-      SetCVar("showTimestamps", "none")
-      if not ChatFrameMixin.SystemEventHandler(self, eventName, ...) then
-        self:MessageEventHandler(eventName, ...)
-      end
-      SetCVar("showTimestamps", oldTS)
-    else
-      ChatFrame_OnEvent(self, eventName, ...)
+    if not (ChatFrame_SystemEventHandler or ChatFrameMixin.SystemEventHandler)(self, eventName, ...) then
+      self:MessageEventHandler(eventName, ...)
     end
     self.lockType = false
     self.incomingType = nil
@@ -977,7 +976,12 @@ local function GetDecoratedSenderName(event, ...)
 
   if senderGUID and chatTypeInfo and --[[ChatFrameUtil.ShouldColorChatByClass(chatTypeInfo) and]] GetPlayerInfoByGUID ~= nil then
     if englishClass then
-      local classColor = C_ClassColor.GetClassColor(englishClass);
+      local classColor
+      if C_ClassColor then
+        classColor = C_ClassColor.GetClassColor(englishClass);
+      else
+        classColor = RAID_CLASS_COLORS[englishClass]
+      end
 
       if classColor then
         decoratedPlayerName = classColor:WrapTextInColorCode(decoratedPlayerName);
@@ -1064,7 +1068,7 @@ local ProcessMessageEventFilters
 if ChatFrameUtil.ProcessMessageEventFilters then
   ProcessMessageEventFilters = ChatFrameUtil.ProcessMessageEventFilters
 else
-  ProcessMessageEventFilters = function(self, ...)
+  ProcessMessageEventFilters = function(self, event, ...)
     local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17 = ...;
     local filter = false;
     if ChatFrame_GetMessageEventFilters(event) then
@@ -1082,7 +1086,28 @@ else
   end
 end
 
+local function GetChatTarget(chatGroup, arg2, arg8)
+  if FCFManager_GetChatTarget then
+    return FCFManager_GetChatTarget(chatGroup, arg2, arg8)
+  else
+    local chatTarget;
+    if ( chatGroup == "CHANNEL" ) then
+      chatTarget = tostring(arg8);
+    elseif ( chatGroup == "WHISPER" or chatGroup == "BN_WHISPER" ) then
+      if strsub(arg2, 1, 2) ~= "|K" then
+        chatTarget = strupper(arg2);
+      else
+        chatTarget = arg2;
+      end
+    end
+  end
+end
+
 function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
+  if strsub(event, 1, 8) ~= "CHAT_MSG" then
+    return
+  end
+
   local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17 = ...;
   if arg16 then
     -- hiding sender in letterbox: do NOT even show in chat window (only shows in cinematic frame)
@@ -1115,7 +1140,6 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
 
   elseif ( (type == "COMMUNITIES_CHANNEL") or ((strsub(type, 1, 7) == "CHANNEL") and (type ~= "CHANNEL_LIST") and ((arg1 ~= "INVITE") or (type ~= "CHANNEL_NOTICE_USER"))) ) then
     if ( arg1 == "WRONG_PASSWORD" ) then
-      local staticPopup = _G[StaticPopup_Visible("CHAT_CHANNEL_PASSWORD") or ""];
       if ( staticPopup and strupper(staticPopup.data) == strupper(arg9) ) then
         -- Don't display invalid password messages if we're going to prompt for a password (bug 102312)
         return;
@@ -1124,7 +1148,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
   end
 
   local chatGroup = GetChatCategory(type);
-  local chatTarget = FCFManager_GetChatTarget(chatGroup, arg2, arg8);
+  local chatTarget = GetChatTarget(chatGroup, arg2, arg8);
 
   if ( type == "SYSTEM" or type == "SKILL" or type == "CURRENCY" or type == "MONEY" or
       type == "OPENING" or type == "TRADESKILLS" or type == "PET_INFO" or type == "TARGETICONS" or type == "BN_WHISPER_PLAYER_OFFLINE") then
@@ -1172,7 +1196,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
     elseif ( arg1 == "INVITE" ) then
       local playerLink = GetPlayerLink(arg2, ("[%s]"):format(arg2), arg11);
       local accessID = ChatHistory_GetAccessID(chatGroup, chatTarget);
-      local typeID = ChatHistory_GetAccessID(infoType, chatTarget, arg12);
+      local typeID = accessID--ChatHistory_GetAccessID(infoType, chatTarget, arg12);
       self:AddMessage(string.format(globalstring, arg4, playerLink), info.r, info.g, info.b, info.id, accessID, typeID);
     else
       self:AddMessage(string.format(globalstring, arg8, arg4, arg2), info.r, info.g, info.b, info.id);
@@ -1258,7 +1282,6 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
       self:AddMessage(BN_INLINE_TOAST_BROADCAST_INFORM, info.r, info.g, info.b, info.id);
     end
   else
-    local msgTime = time();
     local playerName, lineID, bnetIDAccount = arg2, arg11, arg13;
 
     local function MessageFormatter(msg)
@@ -1279,7 +1302,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
       end
 
       -- Search for icon links and replace them with texture links.
-      msg = C_ChatInfo.ReplaceIconAndGroupExpressions(msg, arg17, not (ChatFrame_CanChatGroupPerformExpressionExpansion or ChatFrameUtil.CanChatGroupPerformExpressionExpansion)(chatGroup)); -- If arg17 is true, don't convert to raid icons
+      msg = (ChatFrame_ReplaceIconAndGroupExpressions or C_ChatInfo.ReplaceIconAndGroupExpressions)(msg, arg17, not (ChatFrame_CanChatGroupPerformExpressionExpansion or ChatFrameUtil.CanChatGroupPerformExpressionExpansion)(chatGroup)); -- If arg17 is true, don't convert to raid icons
 
       --Remove groups of many spaces
       --msg = RemoveExtraSpaces(msg);

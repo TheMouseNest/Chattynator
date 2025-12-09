@@ -999,7 +999,7 @@ local function GetPlayerLink(characterName, linkDisplayText, lineID, chatType, c
 end
 
 function GetBNPlayerLink(name, linkDisplayText, bnetIDAccount, lineID, chatType, chatTarget)
-  return string.format("|HBNplayer:%s:%s:%s:%s|h%s|h", name, bnetIDAccount, lineID, chatType, chatTarget, linkDisplayText);
+  return string.format("|HBNplayer:%s:%s:%s:%s:%s|h%s|h", name, bnetIDAccount, lineID, chatType, chatTarget, linkDisplayText);
 end
 
 local function SanitizeCommunityData(clubId, streamId, epoch, position)

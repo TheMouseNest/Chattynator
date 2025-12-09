@@ -516,8 +516,10 @@ addonTable.CallbackRegistry:RegisterCallback("Render", function(_, newMessages)
           tabConfig.whispersTemp[m.typeInfo.player.name] = true
           tabConfig.isTemporary = true
           table.insert(window.tabs, tabConfig)
-          addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
-          addonTable.allChatFrames[targetWindow].TabsBar.Tabs[#window.tabs]:SetFlashing(true)
+          C_Timer.After(0, function()
+            addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+            addonTable.allChatFrames[targetWindow].TabsBar.Tabs[#window.tabs]:SetFlashing(true)
+          end)
         end
       end
     end

@@ -1088,20 +1088,17 @@ else
 end
 
 local function GetChatTarget(chatGroup, arg2, arg8)
-  if FCFManager_GetChatTarget then
-    return FCFManager_GetChatTarget(chatGroup, arg2, arg8)
-  else
-    local chatTarget;
-    if ( chatGroup == "CHANNEL" ) then
-      chatTarget = tostring(arg8);
-    elseif ( chatGroup == "WHISPER" or chatGroup == "BN_WHISPER" ) then
-      if strsub(arg2, 1, 2) ~= "|K" then
-        chatTarget = strupper(arg2);
-      else
-        chatTarget = arg2;
-      end
+  local chatTarget;
+  if chatGroup == "CHANNEL" then
+    chatTarget = tostring(arg8);
+  elseif chatGroup == "WHISPER" or chatGroup == "BN_WHISPER" then
+    chatTarget = arg2;
+    if (not issecretvalue or not issecretvalue(arg2)) and strsub(arg2, 1, 2) ~= "|K" then
+      chatTarget = strupper(arg2)
     end
   end
+
+  return chatTarget
 end
 
 function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
@@ -1404,7 +1401,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
 
     local isChatLineCensored = C_ChatInfo.IsChatLineCensored(lineID);
     local msg = isChatLineCensored and arg1 or MessageFormatter(arg1);
-    local accessID = ChatHistory_GetAccessID(chatGroup, chatTarget);
+    local accessID = (not issecretvalue or not issecretvalue(chatTarget)) and ChatHistory_GetAccessID(chatGroup, chatTarget) or 0
     local typeID = (not issecretvalue or not issecretvalue(arg12 or arg13)) and ChatHistory_GetAccessID(infoType, chatTarget, arg12 or arg13) or accessID
 
     -- The message formatter is captured so that the original message can be reformatted when a censored message
@@ -1415,7 +1412,9 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
 
   if ( type == "WHISPER" or type == "BN_WHISPER" ) then
     --BN_WHISPER FIXME
-    (ChatEdit_SetLastTellTarget or ChatFrameUtil.SetLastTellTarget)(arg2, type);
+    if not issecretvalue or not issecretvalue(arg2) then
+      (ChatEdit_SetLastTellTarget or ChatFrameUtil.SetLastTellTarget)(arg2, type);
+    end
 
     if ( not self.tellTimer or (GetTime() > self.tellTimer) ) then
       PlaySound(SOUNDKIT.TELL_MESSAGE);

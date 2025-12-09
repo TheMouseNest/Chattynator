@@ -277,7 +277,6 @@ function addonTable.MessagesMonitorMixin:OnLoad()
           colors[group] = CopyTable(c)
         end
       end
-      env.ChatTypeInfo = colors
       self:ReplaceColors()
       renderNeeded = true
     elseif settingName == addonTable.Config.Options.STORE_MESSAGES then
@@ -1113,7 +1112,8 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
   end
 
   local type = strsub(event, 10);
-  local info = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS)[type];
+  local chatTypeInfo = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS)
+  local info = chatTypeInfo[type];
 
   --If it was a GM whisper, dispatch it to the GMChat addon.
   if arg6 == "GM" and type == "WHISPER" then
@@ -1136,12 +1136,19 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
   if type == "VOICE_TEXT" and not GetCVarBool("speechToText") then
     return;
 
-  elseif ( (type == "COMMUNITIES_CHANNEL") or ((strsub(type, 1, 7) == "CHANNEL") and (type ~= "CHANNEL_LIST") and (not issecretvalue or not issecretvalue(arg1)) and arg1 ~= "INVITE") or (type ~= "CHANNEL_NOTICE_USER")) then
+  elseif type == "COMMUNITIES_CHANNEL"
+      or strsub(type, 1, 7) == "CHANNEL" and type ~= "CHANNEL_LIST" and ((issecretvalue and issecretvalue(arg1)) or arg1 ~= "INVITE" or type ~= "CHANNEL_NOTICE_USER")
+  then
     if ( (not issecretvalue or not issecretvalue(arg1)) and arg1 == "WRONG_PASSWORD" ) then
       if ( staticPopup and strupper(staticPopup.data) == strupper(arg9) ) then
         -- Don't display invalid password messages if we're going to prompt for a password (bug 102312)
         return;
       end
+    end
+    local newInfoType = "CHANNEL"..arg8;
+    if chatTypeInfo[newInfoType] then
+      infoType = newInfoType
+      info = chatTypeInfo[infoType]
     end
   end
 

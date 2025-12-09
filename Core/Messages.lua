@@ -1116,7 +1116,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
   end
 
   local type = strsub(event, 10);
-  local info = ChatTypeInfo[type];
+  local info = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS)[type];
 
   --If it was a GM whisper, dispatch it to the GMChat addon.
   if arg6 == "GM" and type == "WHISPER" then
@@ -1163,9 +1163,9 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
   elseif ( strsub(type,1,10) == "BG_SYSTEM_" ) then
     self:AddMessage(arg1, info.r, info.g, info.b, info.id);
   elseif ( strsub(type,1,11) == "ACHIEVEMENT" ) then
-    self:AddMessage(arg1:format(string.format("|Hplayer:%s|h%s|h", arg2, ("[%s]"):format(coloredName))), info.r, info.g, info.b, info.id);
+    self:AddMessage(string.format(arg1, string.format("|Hplayer:%s|h%s|h", arg2, ("[%s]"):format(coloredName))), info.r, info.g, info.b, info.id);
   elseif ( strsub(type,1,18) == "GUILD_ACHIEVEMENT" ) then
-    local message = arg1:format(string.format("|Hplayer:%s|h%s|h", arg2, ("[%s]"):format(coloredName)));
+    local message = string.format(arg1, string.format("|Hplayer:%s|h%s|h", arg2, ("[%s]"):format(coloredName)));
     self:AddMessage(message, info.r, info.g, info.b, info.id);
   elseif (type == "PING") then
     local outMsg = arg1;
@@ -1197,7 +1197,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
     elseif ( arg1 == "INVITE" ) then
       local playerLink = GetPlayerLink(arg2, ("[%s]"):format(arg2), arg11);
       local accessID = ChatHistory_GetAccessID(chatGroup, chatTarget);
-      local typeID = accessID--ChatHistory_GetAccessID(infoType, chatTarget, arg12);
+      local typeID = (not issecretvalue or not issecretvalue(arg12)) and ChatHistory_GetAccessID(infoType, chatTarget, arg12) or accessID
       self:AddMessage(string.format(globalstring, arg4, playerLink), info.r, info.g, info.b, info.id, accessID, typeID);
     else
       self:AddMessage(string.format(globalstring, arg8, arg4, arg2), info.r, info.g, info.b, info.id);
@@ -1207,7 +1207,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
     end
   elseif (type == "CHANNEL_NOTICE") then
     local accessID = ChatHistory_GetAccessID(GetChatCategory(type), arg8);
-    local typeID = accessID--ChatHistory_GetAccessID(infoType, arg8, arg12);
+    local typeID = (not issecretvalue or not issecretvalue(arg12)) and ChatHistory_GetAccessID(infoType, chatTarget, arg12) or accessID
 
     if arg1 == "YOU_CHANGED" and C_ChatInfo.GetChannelRuleset and C_ChatInfo.GetChannelRuleset(arg8) == Enum.ChatChannelRuleset.Mentor then
       --self:UpdateDefaultChatTarget();
@@ -1303,7 +1303,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
       if ( strsub(type, 1, 7) == "MONSTER" or strsub(type, 1, 9) == "RAID_BOSS") then
         showLink = nil;
       elseif not issecretvalue or not issecretvalue(msg) then
-        --msg = gsub(msg, "%%", "%%%%");
+        msg = string.gsub(msg, "%%", "%%%%");
       end
 
       -- Search for icon links and replace them with texture links.
@@ -1371,11 +1371,11 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
           if ( type == "TEXT_EMOTE" ) then
             outMsg = message;
           else
-            outMsg = string.format(string.format("%s%s", GetOutMessageFormatKey(type), message), string.format("%s%s", pflag, arg2), arg2);
+            outMsg = string.format(GetOutMessageFormatKey(type) .. message, pflag .. arg2, arg2);
           end
         else
           if ( type == "EMOTE" ) then
-            outMsg = string.format(string.format("%s%s", GetOutMessageFormatKey(type), message), string.format("%s%s", pflag, playerLink));
+            outMsg = string.format(GetOutMessageFormatKey(type) .. message, pflag .. playerLink);
           elseif ( type == "TEXT_EMOTE") then
             if not issecretvalue or not issecretvalue(message) and not issecretvalue(arg2) and not issecretvalue(playerLink) then
               outMsg = string.gsub(message, arg2, pflag..playerLink, 1);
@@ -1386,15 +1386,17 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
             if not issecretvalue or not issecretvalue(message) and not issecretvalue(arg2) and not issecretvalue(playerLinkDisplayText) then
               outMsg = string.gsub(message, "$s", GetPlayerLink(arg2, playerLinkDisplayText));
             end
+          elseif not issecretvalue or (not issecretvalue(message) and not issecretvalue(playerLink)) then
+            outMsg = string.format(GetOutMessageFormatKey(type) .. message, pflag..playerLink)
           else
-            outMsg = string.format(GetOutMessageFormatKey(type).. "%s", string.format("%s%s", pflag, playerLink), message);
+            outMsg = string.format(GetOutMessageFormatKey(type), pflag..playerLink) .. message;
           end
         end
       end
 
       -- Add Channel
       if (channelLength > 0) then
-        outMsg = string.format("|Hchannel:channel:"..arg8.."|h["..(ChatFrame_ResolvePrefixedChannelName or ChatFrameUtil.ResolvePrefixedChannelName)(arg4).."]|h %s", outMsg)
+        outMsg = "|Hchannel:channel:"..arg8.."|h["..(ChatFrame_ResolvePrefixedChannelName or ChatFrameUtil.ResolvePrefixedChannelName)(arg4).."]|h " .. outMsg
       end
 
       return outMsg;
@@ -1403,7 +1405,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
     local isChatLineCensored = C_ChatInfo.IsChatLineCensored(lineID);
     local msg = isChatLineCensored and arg1 or MessageFormatter(arg1);
     local accessID = ChatHistory_GetAccessID(chatGroup, chatTarget);
-    local typeID = accessID --ChatHistory_GetAccessID(infoType, chatTarget, arg12 or arg13);
+    local typeID = (not issecretvalue or not issecretvalue(arg12 or arg13)) and ChatHistory_GetAccessID(infoType, chatTarget, arg12 or arg13) or accessID
 
     -- The message formatter is captured so that the original message can be reformatted when a censored message
     -- is approved to be shown.
@@ -1418,8 +1420,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
     if ( not self.tellTimer or (GetTime() > self.tellTimer) ) then
       PlaySound(SOUNDKIT.TELL_MESSAGE);
     end
-    self.tellTimer = GetTime() + ChatFrameConstants.WhisperSoundAlertCooldown;
-    --FCF_FlashTab(self);
+    self.tellTimer = GetTime() + (CHAT_TELL_ALERT_TIME or ChatFrameConstants.WhisperSoundAlertCooldown);
 
     -- We don't flash the app icon for front end chat for now.
     if FlashClientIcon then

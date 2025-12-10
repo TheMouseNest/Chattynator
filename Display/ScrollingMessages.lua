@@ -60,8 +60,10 @@ end
 local function GetPrefix(timestamp)
   if addonTable.Config.Get(addonTable.Config.Options.SHOW_TIMESTAMP_SEPARATOR) then
     return "|cff989898" .. date(addonTable.Messages.timestampFormat, timestamp) .. " || |r"
+  elseif addonTable.Messages.timestampFormat == " " then
+    return ""
   else
-    return "|cff989898" .. date(addonTable.Messages.timestampFormat, timestamp) .. "|r"
+    return "|cff989898" .. date(addonTable.Messages.timestampFormat, timestamp) .. "|r "
   end
 end
 

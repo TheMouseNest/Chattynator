@@ -82,10 +82,6 @@ local hidden = CreateFrame("Frame")
 hidden:Hide()
 addonTable.hiddenFrame = hidden
 
-local offscreen = CreateFrame("Frame")
-offscreen:SetPoint("TOPLEFT", UIParent, "TOPRIGHT")
-addonTable.offscreenFrame = hidden
-
 function addonTable.Core.Initialize()
   addonTable.Config.InitializeData()
   addonTable.Core.MigrateSettings()
@@ -142,7 +138,7 @@ function addonTable.Core.Initialize()
   ChattynatorHyperlinkHandler:SetScript("OnHyperlinkEnter", function(_, hyperlink)
     local type = hyperlink:match("^(.-):")
     if validLinks[type] then
-      GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR_RIGHT")
+      GameTooltip:SetOwner(ChattynatorHyperlinkHandler:GetParent(), "ANCHOR_CURSOR_RIGHT")
       GameTooltip:SetHyperlink(hyperlink)
       GameTooltip:Show()
     end
@@ -152,7 +148,7 @@ function addonTable.Core.Initialize()
     GameTooltip:Hide()
   end)
 
-  addonTable.Messages = CreateFrame("Frame", nil, UIParent)
+  addonTable.Messages = CreateFrame("Frame")
   Mixin(addonTable.Messages, addonTable.MessagesMonitorMixin)
   addonTable.Messages:OnLoad()
 

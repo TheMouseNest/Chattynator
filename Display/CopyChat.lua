@@ -85,6 +85,7 @@ function addonTable.Display.CopyChatMixin:OnLoad()
 end
 
 function addonTable.Display.CopyChatMixin:LoadMessages(filterFunc, indexOffset)
+  self:SetParent(ChattynatorHyperlinkHandler:GetParent())
   local messages = {}
   local index = indexOffset or 1
   local showTimestamp = addonTable.Config.Get(addonTable.Config.Options.COPY_TIMESTAMPS)

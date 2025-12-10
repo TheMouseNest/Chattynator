@@ -91,7 +91,7 @@ local settings = {
 
   LOCKED = {key = "locked", default = false, refresh = {addonTable.Constants.RefreshReason.Tabs, addonTable.Constants.RefreshReason.Locked}},
 
-  MESSAGE_SPACING = {key = "message_spacing", default = 5},
+  LINE_SPACING = {key = "line_spacing", default = 2},
   TIMESTAMP_FORMAT = {key = "timestamp_format", default = "%X"},
   SHOW_TIMESTAMP_SEPARATOR = {key = "show_timestamp_separator", default = true, refresh = {addonTable.Constants.RefreshReason.MessageWidget}},
 

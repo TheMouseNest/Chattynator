@@ -17,6 +17,7 @@ function addonTable.Display.ScrollingMessagesMixin:MyOnLoad()
 
   self:SetFading(addonTable.Config.Get(addonTable.Config.Options.ENABLE_MESSAGE_FADE))
   self:SetTimeVisible(addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FADE_TIME))
+  self:SetSpacing(addonTable.Config.Get(addonTable.Config.Options.LINE_SPACING))
 
   self:SetScript("OnMouseWheel", function(_, delta)
     local multiplier = 1
@@ -49,6 +50,8 @@ function addonTable.Display.ScrollingMessagesMixin:MyOnLoad()
       self:SetFading(addonTable.Config.Get(addonTable.Config.Options.ENABLE_MESSAGE_FADE))
     elseif settingName == addonTable.Config.Options.MESSAGE_FADE_TIME then
       self:SetTimeVisible(addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FADE_TIME))
+    elseif settingName == addonTable.Config.Options.LINE_SPACING then
+      self:SetSpacing(addonTable.Config.Get(addonTable.Config.Options.LINE_SPACING))
     end
   end)
 end

@@ -84,7 +84,6 @@ local function ConvertFormat()
 end
 
 function addonTable.MessagesMonitorMixin:OnLoad()
-  self.spacing = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_SPACING)
   self.timestampFormat = addonTable.Config.Get(addonTable.Config.Options.TIMESTAMP_FORMAT)
 
   self.liveModifiers = {}
@@ -252,10 +251,7 @@ function addonTable.MessagesMonitorMixin:OnLoad()
 
   addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
     local renderNeeded = false
-    if settingName == addonTable.Config.Options.MESSAGE_SPACING then
-      self.spacing = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_SPACING)
-      renderNeeded = true
-    elseif settingName == addonTable.Config.Options.TIMESTAMP_FORMAT then
+    if settingName == addonTable.Config.Options.TIMESTAMP_FORMAT then
       self.timestampFormat = addonTable.Config.Get(addonTable.Config.Options.TIMESTAMP_FORMAT)
       renderNeeded = true
     elseif settingName == addonTable.Config.Options.CHAT_COLORS then

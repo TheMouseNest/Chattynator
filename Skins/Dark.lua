@@ -152,9 +152,9 @@ local skinners = {
     local alpha = 1 - addonTable.Config.Get("skins.dark.chat_transparency")
     table.insert(chatFrames, frame)
     frame.background = frame:CreateTexture(nil, "BACKGROUND")
-    frame.background:SetPoint("TOP", frame.ScrollingMessages, 0, 5)
+    frame.background:SetPoint("TOP", frame.ScrollingMessagesWrapper, 0, 5)
     frame.background:SetPoint("LEFT")
-    frame.background:SetPoint("BOTTOMRIGHT", frame.ScrollingMessages, 0, -5)
+    frame.background:SetPoint("BOTTOMRIGHT", frame.ScrollingMessagesWrapper, 0, -5)
 
     hooksecurefunc(frame, "SetBackgroundColor", function(_, r, g, b)
       if not enableHooks then

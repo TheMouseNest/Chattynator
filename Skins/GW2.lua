@@ -191,15 +191,9 @@ local skinners = {
     _G[frame:GetName() .. "Right"]:GwKill()
     _G[frame:GetName() .. "Mid"]:GwKill()
     if _G[frame:GetName() .. "FocusLeft"] then
-      _G[frame:GetName() .. "FocusLeft"]:GwKill()
-      _G[frame:GetName() .. "FocusRight"]:GwKill()
-      _G[frame:GetName() .. "FocusMid"]:GwKill()
-    end
-    if GW.settings.CHAT_USE_GW2_STYLE then
-      local chatFont = GW.Libs.LSM:Fetch("font", "GW2_UI_Chat")
-      local _, _, fontFlags = frame:GetFont()
-      frame:SetFont(chatFont, addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT_SIZE), fontFlags)
-      _G[frame:GetName() .. "Header"]:SetFont(chatFont, addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT_SIZE), fontFlags)
+      _G[frame:GetName() .. "FocusLeft"]:SetColorTexture(0, 0, 0, 0)
+      _G[frame:GetName() .. "FocusRight"]:SetColorTexture(0, 0, 0, 0)
+      _G[frame:GetName() .. "FocusMid"]:SetColorTexture(0, 0, 0, 0)
     end
     frame.backgroundTex = frame:CreateTexture(nil, "BACKGROUND")
     frame.backgroundTex:SetTexture("Interface/AddOns/GW2_UI/textures/chat/chateditboxmid")
@@ -215,12 +209,12 @@ local skinners = {
     frame.visuals.backgroundTex = frame.visuals:CreateTexture(nil, "BACKGROUND")
     frame.visuals.backgroundTex:SetTexture("Interface/AddOns/GW2_UI/textures/chat/chatframebackground")
     frame.visuals.backgroundTex:SetPoint("TOPLEFT", frame, 0, -22)
-    frame.visuals.backgroundTex:SetPoint("BOTTOMRIGHT", frame.ScrollingMessages, 0, -7)
+    frame.visuals.backgroundTex:SetPoint("BOTTOMRIGHT", frame.ScrollingMessagesWrapper, 0, -7)
     frame.visuals.borderTex = frame.visuals:CreateTexture(nil, "ARTWORK")
     frame.visuals.borderTex:SetSize(2, 2)
     frame.visuals.borderTex:SetTexture("Interface/AddOns/GW2_UI/textures/chat/chatframeborder")
     frame.visuals.borderTex:SetPoint("TOPRIGHT", frame, 0, -22)
-    frame.visuals.borderTex:SetPoint("BOTTOMRIGHT", frame.ScrollingMessages, 0, -7)
+    frame.visuals.borderTex:SetPoint("BOTTOMRIGHT", frame.ScrollingMessagesWrapper, 0, -7)
     frame.visuals.dockTex = frame.visuals:CreateTexture(nil, "BACKGROUND")
     frame.visuals.dockTex:SetTexture("Interface/AddOns/GW2_UI/textures/chat/chatdockbg")
     frame.visuals.dockTex:SetHeight(25)
@@ -238,11 +232,12 @@ local skinners = {
     frame.visuals.fakeEditBoxTex:SetPoint("BOTTOMLEFT")
     frame.visuals.fakeEditBoxTex:SetPoint("BOTTOMRIGHT")
     frame.visuals.fakeEditBoxTex:SetHeight(32)
+    frame.visuals.fakeEditBoxTex:SetScale(addonTable.Core.GetFontScalingFactor())
 
     local position = addonTable.Config.Get(addonTable.Config.Options.EDIT_BOX_POSITION)
     frame.visuals.fakeEditBoxTex:SetShown(position == "bottom")
 
-    frame.ScrollingMessages:SetIgnoreParentAlpha(true)
+    frame.ScrollingMessagesWrapper:SetIgnoreParentAlpha(true)
     frame.fadeOutAnimation = frame:CreateAnimationGroup()
     frame.fadeOutAnimation:SetToFinalAlpha(true)
     local alpha1 = frame.fadeOutAnimation:CreateAnimation("Alpha")

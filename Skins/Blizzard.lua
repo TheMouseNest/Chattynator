@@ -68,8 +68,8 @@ local skinners = {
     frame.background = CreateFrame("Frame", nil, frame, "FloatingBorderedFrame")
     frame.background:SetFrameStrata("BACKGROUND")
     frame.background:SetFrameLevel(frame:GetFrameLevel() - 1)
-    frame.background:SetPoint("TOPLEFT", frame.ScrollingMessages, 0, 2)
-    frame.background:SetPoint("BOTTOMRIGHT", frame.ScrollingMessages)
+    frame.background:SetPoint("TOPLEFT", frame.ScrollingMessagesWrapper, 0, 2)
+    frame.background:SetPoint("BOTTOMRIGHT", frame.ScrollingMessagesWrapper)
 
     hooksecurefunc(frame, "SetBackgroundColor", function(_, r, g, b)
       for _, region in ipairs({frame.background:GetRegions()}) do

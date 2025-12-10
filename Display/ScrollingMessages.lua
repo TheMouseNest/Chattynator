@@ -19,10 +19,16 @@ function addonTable.Display.ScrollingMessagesMixin:MyOnLoad()
   self:SetTimeVisible(addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FADE_TIME))
 
   self:SetScript("OnMouseWheel", function(_, delta)
+    local multiplier = 1
+    if IsShiftKeyDown() then
+      multiplier = 1000
+    elseif IsControlKeyDown() then
+      multiplier = 5
+    end
     if delta > 0 then
-      self:ScrollUp()
+      self:ScrollByAmount(1 * multiplier)
     else
-      self:ScrollDown()
+      self:ScrollByAmount(-1 * multiplier)
     end
   end)
 

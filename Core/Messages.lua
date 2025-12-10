@@ -92,15 +92,6 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   self.fontKey = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT)
   self.font = addonTable.Core.GetFontByID(self.fontKey)
   self.scalingFactor = addonTable.Core.GetFontScalingFactor()
-  self.widths = {}
-
-  self.inset = 0
-
-  self.sizingFontString = self:CreateFontString(nil, "BACKGROUND")
-
-  self.sizingFontString:SetNonSpaceWrap(true)
-  self.sizingFontString:SetWordWrap(true)
-  self.sizingFontString:Hide()
 
   CHATTYNATOR_MESSAGE_LOG = CHATTYNATOR_MESSAGE_LOG or GetNewLog()
   if CHATTYNATOR_MESSAGE_LOG.version ~= 1 then
@@ -131,8 +122,6 @@ function addonTable.MessagesMonitorMixin:OnLoad()
       self:AddMessage(text, r, g, b)
     end
   end
-
-  self.heights = {}
 
   self.defaultColors = {}
 
@@ -268,7 +257,6 @@ function addonTable.MessagesMonitorMixin:OnLoad()
       renderNeeded = true
     elseif settingName == addonTable.Config.Options.TIMESTAMP_FORMAT then
       self.timestampFormat = addonTable.Config.Get(addonTable.Config.Options.TIMESTAMP_FORMAT)
-      self:SetInset()
       renderNeeded = true
     elseif settingName == addonTable.Config.Options.CHAT_COLORS then
       local colors = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS)
@@ -297,8 +285,6 @@ function addonTable.MessagesMonitorMixin:OnLoad()
     if state[addonTable.Constants.RefreshReason.MessageFont] then
       self.font = addonTable.Core.GetFontByID(addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT))
       self.scalingFactor = addonTable.Core.GetFontScalingFactor()
-      self:SetInset()
-      self.heights = {}
       addonTable.CallbackRegistry:TriggerEvent("MessageDisplayChanged")
       if self:GetScript("OnUpdate") == nil then
         self:SetScript("OnUpdate", function()
@@ -338,8 +324,6 @@ function addonTable.MessagesMonitorMixin:OnLoad()
     self:UpdateChannels()
   end)
 
-  self:SetInset()
-
   self.defaultLanguage = GetDefaultLanguage()
   self.alternativeDefaultLanguage = GetAlternativeDefaultLanguage()
 end
@@ -348,7 +332,6 @@ function addonTable.MessagesMonitorMixin:InvalidateProcessedMessage(id)
   for index, message in ipairs(self.messages) do
     if message.id == id then
       self.messagesProcessed[index] = nil
-      self.heights[index] = nil
       addonTable.CallbackRegistry:TriggerEvent("ResetOneMessageCache", id)
       if self:GetScript("OnUpdate") == nil and self.playerLoginFired then
         self:SetScript("OnUpdate", function()
@@ -371,28 +354,6 @@ function addonTable.MessagesMonitorMixin:ConfigureStore()
   self.storeIDRoot = #CHATTYNATOR_MESSAGE_LOG.historical
 
   self:UpdateStores()
-end
-
-function addonTable.MessagesMonitorMixin:SetInset()
-  self.sizingFontString:SetFontObject(self.font)
-  self.sizingFontString:SetTextScale(self.scalingFactor)
-  if self.timestampFormat == "%X" then
-    self.sizingFontString:SetText("00:00:00")
-  elseif self.timestampFormat == "%H:%M" then
-    self.sizingFontString:SetText("00:00")
-  elseif self.timestampFormat == "%I:%M %p" then
-    self.sizingFontString:SetText("00:00 mm")
-  elseif self.timestampFormat == "%I:%M:%S %p" then
-    self.sizingFontString:SetText("00:00:00 mm")
-  elseif self.timestampFormat == " " then
-    self.sizingFontString:SetText(" ")
-  else
-    error("unknown format")
-  end
-  self.inset = self.sizingFontString:GetUnboundedStringWidth() + 10
-  if self.timestampFormat == " " then
-    self.inset = 8
-  end
 end
 
 function addonTable.MessagesMonitorMixin:ShowGMOTD()
@@ -449,8 +410,6 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
     self:ShowGMOTD()
   elseif eventName == "UI_SCALE_CHANGED" then
     C_Timer.After(0, function()
-      self:SetInset()
-      self.heights = {}
       addonTable.CallbackRegistry:TriggerEvent("MessageDisplayChanged")
       if self:GetScript("OnUpdate") == nil and self.playerLoginFired then
         self:SetScript("OnUpdate", function()
@@ -472,15 +431,12 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
         removedIDs[m.id] = true
         table.remove(self.messages, index)
         self.messagesProcessed[index] = nil
-        self.heights[index] = nil
         if index < self.messageCount then
           for j = index + 1, self.messageCount do
             if self.messagesProcessed[j] then
               self.messagesProcessed[j-1] = self.messagesProcessed[j]
-              self.heights[j-1] = self.heights[j]
 
               self.messagesProcessed[j] = nil
-              self.heights[j] = nil
             end
           end
         end
@@ -510,10 +466,6 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
     self.fontKey = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT)
     self.font = addonTable.Core.GetFontByID(self.fontKey)
     self.scalingFactor = addonTable.Core.GetFontScalingFactor()
-    if oldFontKey ~= self.fontKey then
-      self.heights = {}
-    end
-    self:SetInset()
     local name, realm = UnitFullName("player")
     addonTable.Data.CharacterName = name .. "-" .. realm
     for _, data in ipairs(self.awaitingRecorderSet) do
@@ -594,7 +546,6 @@ function addonTable.MessagesMonitorMixin:AddLiveModifier(func)
   local index = tIndexOf(self.liveModifiers, func)
   if not index then
     self.messagesProcessed = {}
-    self.heights = {}
     table.insert(self.liveModifiers, func)
     if self:GetScript("OnUpdate") == nil and self.playerLoginFired then
       self:SetScript("OnUpdate", function()
@@ -609,7 +560,6 @@ function addonTable.MessagesMonitorMixin:RemoveLiveModifier(func)
   local index = tIndexOf(self.liveModifiers, func)
   if index then
     self.messagesProcessed = {}
-    self.heights = {}
     table.remove(self.liveModifiers, index)
     if self:GetScript("OnUpdate") == nil and self.playerLoginFired then
       self:SetScript("OnUpdate", function()
@@ -643,32 +593,6 @@ function addonTable.MessagesMonitorMixin:CleanStore(store, index)
   return #store
 end
 
-function addonTable.MessagesMonitorMixin:RegisterWidth(width)
-  width = math.floor(width)
-  self.widths[width] = (self.widths[width] or 0) + 1
-  if self.widths[width] == 1 then
-    self.heights = {} -- No need to recompute, rendering will do that (other widths are low cost to reassess)
-  end
-end
-
-function addonTable.MessagesMonitorMixin:UnregisterWidth(width)
-  width = math.floor(width)
-  self.widths[width] = (self.widths[width] or 0) - 1
-
-  if self.widths[width] <= 0 then
-    self.widths[width] = nil
-    local tail = " " .. width .. "$"
-    for index, height in pairs(self.heights) do
-      for key in ipairs(height) do
-        if key:match(tail) then
-          height[key] = nil
-        end
-      end
-      self.heights[index] = CopyTable(height) -- Optimisation to avoid lots of nils after resizing chat frame
-    end
-  end
-end
-
 function addonTable.MessagesMonitorMixin:GetMessageProcessed(reverseIndex)
   local index = self.messageCount - reverseIndex + 1
   if not self.messages[index] then
@@ -683,7 +607,6 @@ function addonTable.MessagesMonitorMixin:GetMessageProcessed(reverseIndex)
       func(new)
     end
   end
-  self.heights[index] = nil
   self.messagesProcessed[index] = new
   return new
 end
@@ -691,22 +614,6 @@ end
 function addonTable.MessagesMonitorMixin:GetMessageRaw(reverseIndex)
   local index = self.messageCount - reverseIndex + 1
   return self.messages[index]
-end
-
-function addonTable.MessagesMonitorMixin:GetMessageHeight(reverseIndex)
-  local index = self.messageCount - reverseIndex + 1
-  if not self.heights[index] and self.messagesProcessed[index] then
-    local height = {}
-    self.heights[index] = height
-    self.sizingFontString:SetText("")
-    self.sizingFontString:SetSpacing(0)
-    self.sizingFontString:SetText(self.messagesProcessed[index].text)
-    for width in pairs(self.widths) do
-      self.sizingFontString:SetWidth(width)
-      height[width] = self.sizingFontString:GetStringHeight()
-    end
-  end
-  return self.heights[index]
 end
 
 function addonTable.MessagesMonitorMixin:PurgeOldMessages()
@@ -760,18 +667,13 @@ function addonTable.MessagesMonitorMixin:ReduceMessages()
   end
 
   local oldMessages = self.messages
-  local oldHeights = self.heights
   local oldFormatters = self.formatters
   local oldProcessed = self.messagesProcessed
   self.messages = {}
-  self.heights = {}
   self.formatters = {}
   self.messagesProcessed = {}
   for i = math.max(1, math.floor(self.messageCount - conversionThreshold / 2)), self.messageCount do
     table.insert(self.messages, oldMessages[i])
-    if oldHeights[i] then
-      self.heights[#self.messages] = oldHeights[i]
-    end
     if oldFormatters[i] then
       self.formatters[#self.messages] = oldFormatters[i]
     end

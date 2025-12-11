@@ -13,12 +13,17 @@ function addonTable.Display.ScrollingMessagesMixin:MyOnLoad()
   self:SetFontObject(addonTable.Messages.font)
   self:SetTextColor(1, 1, 1)
   self:SetJustifyH("LEFT")
-  self:SetJustifyV("BOTTOM")
   self:SetIndentedWordWrap(true)
 
   self:SetFading(addonTable.Config.Get(addonTable.Config.Options.ENABLE_MESSAGE_FADE))
   self:SetTimeVisible(addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FADE_TIME))
   self:SetSpacing(addonTable.Config.Get(addonTable.Config.Options.LINE_SPACING))
+
+  if addonTable.Config.Get(addonTable.Config.Options.MESSAGE_SPACING) == 0 then
+    self:SetJustifyV("MIDDLE")
+  else
+    self:SetJustifyV("BOTTOM")
+  end
 
   self:SetScript("OnMouseWheel", function(_, delta)
     local multiplier = 1
@@ -54,6 +59,11 @@ function addonTable.Display.ScrollingMessagesMixin:MyOnLoad()
     elseif settingName == addonTable.Config.Options.LINE_SPACING then
       self:SetSpacing(addonTable.Config.Get(addonTable.Config.Options.LINE_SPACING))
     elseif settingName == addonTable.Config.Options.MESSAGE_SPACING then
+      if addonTable.Config.Get(addonTable.Config.Options.MESSAGE_SPACING) == 0 then
+        self:SetJustifyV("MIDDLE")
+      else
+        self:SetJustifyV("BOTTOM")
+      end
       self:Render()
     end
   end)

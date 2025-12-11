@@ -1263,13 +1263,13 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
       local outMsg;
       if ( usingDifferentLanguage ) then
         local languageHeader = "["..arg3.."] ";
-        if ( showLink or (issecretvalue and issecretvalue(arg2)) or arg2 ~= "" then
+        if showLink or (issecretvalue and issecretvalue(arg2)) or arg2 ~= "" then
           outMsg = string.format(GetOutMessageFormatKey(type) .. "%s%s", string.format("%s%s", pflag, playerLink), languageHeader, message);
         else
           outMsg = string.format(GetOutMessageFormatKey(type) .. "%s%s", string.format("%s%s", pflag, arg2), languageHeader, message);
         end
       else
-        if ( not showLink or (not issecretvalue or not issecretvalue(arg2)) and arg2 == "" then
+        if not showLink or (not issecretvalue or not issecretvalue(arg2)) and arg2 == "" then
           if ( type == "TEXT_EMOTE" ) then
             outMsg = message;
           else

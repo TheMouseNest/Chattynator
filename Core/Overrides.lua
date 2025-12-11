@@ -66,11 +66,11 @@ function addonTable.Core.ApplyOverrides()
 
   if ChatFrameUtil and ChatFrameUtil.ChatPageUp then
     ChatFrameUtil.ChatPageUp = function()
-      addonTable.allChatFrames[1].ScrollingMessages:ScrollBy(200)
+      addonTable.allChatFrames[1].ScrollingMessages:PageUp()
     end
 
     ChatFrameUtil.ChatPageDown = function()
-      addonTable.allChatFrames[1].ScrollingMessages:ScrollBy(-200)
+      addonTable.allChatFrames[1].ScrollingMessages:PageDown()
     end
 
     ChatFrameUtil.ScrollToBottom = function()
@@ -78,11 +78,11 @@ function addonTable.Core.ApplyOverrides()
     end
   elseif ChatFrame_ChatPageUp then
     ChatFrame_ChatPageUp = function()
-      addonTable.allChatFrames[1].ScrollingMessages:ScrollBy(200)
+      addonTable.allChatFrames[1].ScrollingMessages:PageUp()
     end
 
     ChatFrame_ChatPageDown = function()
-      addonTable.allChatFrames[1].ScrollingMessages:ScrollBy(-200)
+      addonTable.allChatFrames[1].ScrollingMessages:PageDown()
     end
 
     ChatFrame_ScrollToBottom = function()

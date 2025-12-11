@@ -13,6 +13,7 @@ function addonTable.Display.ScrollingMessagesMixin:MyOnLoad()
   self:SetFontObject(addonTable.Messages.font)
   self:SetTextColor(1, 1, 1)
   self:SetJustifyH("LEFT")
+  self:SetJustifyV("MIDDLE")
   self:SetIndentedWordWrap(true)
 
   self:SetFading(addonTable.Config.Get(addonTable.Config.Options.ENABLE_MESSAGE_FADE))
@@ -52,6 +53,8 @@ function addonTable.Display.ScrollingMessagesMixin:MyOnLoad()
       self:SetTimeVisible(addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FADE_TIME))
     elseif settingName == addonTable.Config.Options.LINE_SPACING then
       self:SetSpacing(addonTable.Config.Get(addonTable.Config.Options.LINE_SPACING))
+    elseif settingName == addonTable.Config.Options.MESSAGE_SPACING then
+      self:Render()
     end
   end)
 end
@@ -60,13 +63,20 @@ function addonTable.Display.ScrollingMessagesMixin:SetFilter(filterFunc)
   self.filterFunc = filterFunc
 end
 
+local function GetSuffix()
+  local spacing = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_SPACING)
+  local height = "|A:TransparentSquareMask:" .. (14 + spacing) .. ":1:0:" .. (spacing/2) .. "|a"
+
+  return height
+end
+
 local function GetPrefix(timestamp)
   if addonTable.Config.Get(addonTable.Config.Options.SHOW_TIMESTAMP_SEPARATOR) then
     return "|cff989898" .. date(addonTable.Messages.timestampFormat, timestamp) .. " || |r"
   elseif addonTable.Messages.timestampFormat == " " then
     return ""
   else
-    return "|cff989898" .. date(addonTable.Messages.timestampFormat, timestamp) .. "|r "
+    return "|cff989898" .. date(addonTable.Messages.timestampFormat, timestamp) .. " |r"
   end
 end
 
@@ -92,7 +102,7 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
   if #messages > 0 then
     for i = #messages, 1, -1 do
       local m = messages[i]
-      self:AddMessage(GetPrefix(m.timestamp) .. m.text, m.color.r, m.color.g, m.color.b)
+      self:AddMessage(GetPrefix(m.timestamp) .. m.text .. GetSuffix(), m.color.r, m.color.g, m.color.b)
     end
   end
 end

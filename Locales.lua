@@ -81,6 +81,7 @@ L["ALL_MESSAGES"] = "All messages"
 L["WHISPERS_ONLY"] = "Whispers only"
 
 L["MESSAGE_FONT_OUTLINE"] = "Message font outline"
+L["MESSAGE_SPACING"] = "Message spacing"
 L["LINE_SPACING"] = "Line spacing"
 L["MESSAGE_FADE_TIME"] = "Message fade time"
 L["MESSAGE_FONT_SHADOW"] = "Message font shadow"

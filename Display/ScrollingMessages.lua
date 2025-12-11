@@ -13,7 +13,7 @@ function addonTable.Display.ScrollingMessagesMixin:MyOnLoad()
   self:SetFontObject(addonTable.Messages.font)
   self:SetTextColor(1, 1, 1)
   self:SetJustifyH("LEFT")
-  self:SetJustifyV("MIDDLE")
+  self:SetJustifyV("BOTTOM")
   self:SetIndentedWordWrap(true)
 
   self:SetFading(addonTable.Config.Get(addonTable.Config.Options.ENABLE_MESSAGE_FADE))
@@ -63,9 +63,9 @@ function addonTable.Display.ScrollingMessagesMixin:SetFilter(filterFunc)
   self.filterFunc = filterFunc
 end
 
-local function GetSuffix()
+local function GetSpacing()
   local spacing = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_SPACING)
-  local height = "|A:TransparentSquareMask:" .. (14 + spacing) .. ":1:0:" .. (spacing/2) .. "|a"
+  local height = "|A:TransparentSquareMask:" .. (14 + spacing) .. ":1|a"
 
   return height
 end
@@ -102,7 +102,7 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
   if #messages > 0 then
     for i = #messages, 1, -1 do
       local m = messages[i]
-      self:AddMessage(GetPrefix(m.timestamp) .. m.text .. GetSuffix(), m.color.r, m.color.g, m.color.b)
+      self:AddMessage(GetPrefix(m.timestamp) .. GetSpacing() .. m.text, m.color.r, m.color.g, m.color.b)
     end
   end
 end

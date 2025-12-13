@@ -17,13 +17,13 @@ function addonTable.Display.ScrollingMessagesMixin:MyOnLoad()
 
   self:SetFading(addonTable.Config.Get(addonTable.Config.Options.ENABLE_MESSAGE_FADE))
   self:SetTimeVisible(addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FADE_TIME))
-  self:SetSpacing(addonTable.Config.Get(addonTable.Config.Options.LINE_SPACING))
+  --self:SetSpacing(addonTable.Config.Get(addonTable.Config.Options.LINE_SPACING))
 
-  if addonTable.Config.Get(addonTable.Config.Options.MESSAGE_SPACING) == 0 then
+  --if addonTable.Config.Get(addonTable.Config.Options.MESSAGE_SPACING) == 0 then
     self:SetJustifyV("MIDDLE")
-  else
-    self:SetJustifyV("BOTTOM")
-  end
+  --else
+  --  self:SetJustifyV("BOTTOM")
+  --end
 
   self:SetScript("OnMouseWheel", function(_, delta)
     local multiplier = 1
@@ -56,7 +56,7 @@ function addonTable.Display.ScrollingMessagesMixin:MyOnLoad()
       self:SetFading(addonTable.Config.Get(addonTable.Config.Options.ENABLE_MESSAGE_FADE))
     elseif settingName == addonTable.Config.Options.MESSAGE_FADE_TIME then
       self:SetTimeVisible(addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FADE_TIME))
-    elseif settingName == addonTable.Config.Options.LINE_SPACING then
+    --[[elseif settingName == addonTable.Config.Options.LINE_SPACING then
       self:SetSpacing(addonTable.Config.Get(addonTable.Config.Options.LINE_SPACING))
     elseif settingName == addonTable.Config.Options.MESSAGE_SPACING then
       if addonTable.Config.Get(addonTable.Config.Options.MESSAGE_SPACING) == 0 then
@@ -64,7 +64,7 @@ function addonTable.Display.ScrollingMessagesMixin:MyOnLoad()
       else
         self:SetJustifyV("BOTTOM")
       end
-      self:Render()
+      self:Render()]]
     end
   end)
 end
@@ -73,12 +73,12 @@ function addonTable.Display.ScrollingMessagesMixin:SetFilter(filterFunc)
   self.filterFunc = filterFunc
 end
 
-local function GetSpacing()
+--[[local function GetSpacing()
   local spacing = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_SPACING)
   local height = "|A:TransparentSquareMask:" .. (14 + spacing) .. ":1|a"
 
   return height
-end
+end]]
 
 local function GetPrefix(timestamp)
   if addonTable.Config.Get(addonTable.Config.Options.SHOW_TIMESTAMP_SEPARATOR) then
@@ -112,7 +112,7 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
   if #messages > 0 then
     for i = #messages, 1, -1 do
       local m = messages[i]
-      self:AddMessage(GetPrefix(m.timestamp) .. GetSpacing() .. m.text, m.color.r, m.color.g, m.color.b)
+      self:AddMessage(GetPrefix(m.timestamp) .. --[[GetSpacing() ..]] m.text, m.color.r, m.color.g, m.color.b)
     end
   end
 end

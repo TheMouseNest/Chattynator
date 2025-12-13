@@ -96,7 +96,7 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
   end
   local index = 1
   local messages = {}
-  while (newMessages and index <= newMessages) or #messages < 200 do
+  while (newMessages and index <= newMessages) or (not newMessages and #messages < 200) do
     local m = addonTable.Messages:GetMessageRaw(index)
     if not m then
       break

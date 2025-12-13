@@ -93,11 +93,10 @@ end
 function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
   if newMessages == nil then
     self:Clear()
-    newMessages = 200
   end
   local index = 1
   local messages = {}
-  while index <= newMessages do
+  while (newMessages and index <= newMessages) or #messages < 200 do
     local m = addonTable.Messages:GetMessageRaw(index)
     if not m then
       break

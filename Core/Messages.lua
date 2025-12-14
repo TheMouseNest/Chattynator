@@ -1115,7 +1115,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
       --self:UpdateDefaultChatTarget();
       --self.editBox:UpdateNewcomerEditBoxHint();
     else
-      if arg1 == "YOU_LEFT" then
+      if arg1 == "YOU_LEFT" and self.editBox.UpdateNewcomerEditBoxHint then
         self.editBox:UpdateNewcomerEditBoxHint(arg8);
       end
 

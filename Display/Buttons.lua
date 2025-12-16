@@ -198,6 +198,7 @@ end
 function addonTable.Display.ButtonsBarMixin:OnEnter()
   for _, b in ipairs(self.buttons) do
     b:SetShown(b.fitsSize)
+    b:SetFrameStrata("HIGH")
   end
   if self.hideTimer then
     self.hideTimer:Cancel()
@@ -314,6 +315,7 @@ function addonTable.Display.ButtonsBarMixin:Update()
       currentHeight = currentHeight + b:GetHeight() + 5
       b.fitsSize = currentHeight <= heightAvailable
       b:SetShown(self.active and b.fitsSize)
+      b:SetFrameStrata("HIGH")
     end
     self:SetSize(22, math.min(heightAvailable, currentHeight))
   elseif position:match("tabs") then
@@ -344,6 +346,7 @@ function addonTable.Display.ButtonsBarMixin:Update()
       currentWidth = currentWidth + b:GetWidth() + 5
       b.fitsSize = currentWidth <= widthAvailable
       b:SetShown(self.active and b.fitsSize)
+      b:SetFrameStrata("HIGH")
     end
     self:SetSize(math.min(widthAvailable, currentWidth), 26)
   end

@@ -210,9 +210,6 @@ function addonTable.MessagesMonitorMixin:OnLoad()
 
   hooksecurefunc(DEFAULT_CHAT_FRAME, "AddMessage", function(_, ...)
     local fullTrace = debugstack()
-    if fullTrace:find("ChatFrame_OnEvent") then
-      return
-    end
     local trace = debugstack(3, 1, 0)
     if trace:find("Interface/AddOns/Chattynator") then
       return
@@ -903,11 +900,10 @@ local function GetDecoratedSenderName(event, ...)
     decoratedPlayerName = firstName
   end
 
-  --[[
   -- Add timerunning icon when necessary based on player guid
-  if senderGUID and C_ChatInfo.IsTimerunningPlayer(senderGUID) then
+  if senderGUID and (not issecretvalue or not issecretvalue(senderGUID)) and C_ChatInfo.IsTimerunningPlayer(senderGUID) then
     decoratedPlayerName = TimerunningUtil.AddSmallIcon(decoratedPlayerName);
-  end]]
+  end
 
   if senderGUID and chatTypeInfo and --[[ChatFrameUtil.ShouldColorChatByClass(chatTypeInfo) and]] GetPlayerInfoByGUID ~= nil then
     if englishClass then
@@ -1123,6 +1119,9 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
       self:AddMessage(arg1, info.r, info.g, info.b, info.id);
     end
   elseif (type == "CHANNEL_NOTICE_USER") then
+    if issecretvalue and issecretvalue(arg1) then
+      return
+    end
     local globalstring = _G["CHAT_"..arg1.."_NOTICE_BN"];
     if ( not globalstring ) then
       globalstring = _G["CHAT_"..arg1.."_NOTICE"];
@@ -1146,19 +1145,22 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
       self:AddMessage(CHAT_MSG_BLOCK_CHAT_CHANNEL_INVITE, info.r, info.g, info.b, info.id);
     end
   elseif (type == "CHANNEL_NOTICE") then
+    if issecretvalue and issecretvalue(arg1) then
+      return
+    end
     local accessID = ChatHistory_GetAccessID(GetChatCategory(type), arg8);
     local typeID = (not issecretvalue or not issecretvalue(arg12)) and ChatHistory_GetAccessID(infoType, chatTarget, arg12) or accessID
 
-    if arg1 == "YOU_CHANGED" and C_ChatInfo.GetChannelRuleset and C_ChatInfo.GetChannelRuleset(arg8) == Enum.ChatChannelRuleset.Mentor then
+    if not issecretvalue or not issecretvalue(arg1) and arg1 == "YOU_CHANGED" and C_ChatInfo.GetChannelRuleset and C_ChatInfo.GetChannelRuleset(arg8) == Enum.ChatChannelRuleset.Mentor then
       --self:UpdateDefaultChatTarget();
       --self.editBox:UpdateNewcomerEditBoxHint();
     else
-      if arg1 == "YOU_LEFT" and self.editBox.UpdateNewcomerEditBoxHint then
+      if not issecretvalue or not issecretvalue(arg1) and arg1 == "YOU_LEFT" and self.editBox.UpdateNewcomerEditBoxHint then
         self.editBox:UpdateNewcomerEditBoxHint(arg8);
       end
 
       local globalstring;
-      if ( arg1 == "TRIAL_RESTRICTED" ) then
+      if ( not issecretvalue or not issecretvalue(arg1) and arg1 == "TRIAL_RESTRICTED" ) then
         globalstring = CHAT_TRIAL_RESTRICTED_NOTICE_TRIAL;
       else
         globalstring = _G["CHAT_"..arg1.."_NOTICE_BN"];
@@ -1174,6 +1176,9 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
       self:AddMessage(string.format(globalstring, arg8, (ChatFrame_ResolvePrefixedChannelName or ChatFrameUtil.ResolvePrefixedChannelName)(arg4)), info.r, info.g, info.b, info.id, accessID, typeID);
     end
   elseif ( type == "BN_INLINE_TOAST_ALERT" ) then
+    if issecretvalue and issecretvalue(arg1) then
+      return
+    end
     local globalstring = _G["BN_INLINE_TOAST_"..arg1];
     if not globalstring then
       GMError(("Missing global string for %q"):format("BN_INLINE_TOAST_"..arg1));
@@ -1212,8 +1217,10 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
     self:AddMessage(message, info.r, info.g, info.b, info.id);
   elseif ( type == "BN_INLINE_TOAST_BROADCAST" ) then
     if ( arg1 ~= "" ) then
-      if not issecretvalue or not issecretvalue(arg1) then
+      if not issecretvalue then
         arg1 = RemoveNewlines(RemoveExtraSpaces(arg1));
+      else
+        arg1 = trim(C_StringUtil.RemoveContiguousSpaces(arg1, 4))
       end
       local linkDisplayText = ("[%s]"):format(arg2);
       local playerLink = GetBNPlayerLink(arg2, linkDisplayText, arg13, arg11, GetChatCategory(type), 0);
@@ -1242,16 +1249,20 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
       local showLink = 1;
       if ( strsub(type, 1, 7) == "MONSTER" or strsub(type, 1, 9) == "RAID_BOSS") then
         showLink = nil;
-      elseif not issecretvalue or not issecretvalue(msg) then
+      elseif not issecretvalue then
         msg = string.gsub(msg, "%%", "%%%%");
+      else
+        msg = C_StringUtil.EscapeLuaPatterns(msg)
       end
 
       -- Search for icon links and replace them with texture links.
       msg = (ChatFrame_ReplaceIconAndGroupExpressions or C_ChatInfo.ReplaceIconAndGroupExpressions)(msg, arg17, not (ChatFrame_CanChatGroupPerformExpressionExpansion or ChatFrameUtil.CanChatGroupPerformExpressionExpansion)(chatGroup)); -- If arg17 is true, don't convert to raid icons
 
       --Remove groups of many spaces
-      if not issecretvalue or not issecretvalue(msg) then
+      if not issecretvalue then
         msg = RemoveExtraSpaces(msg);
+      else
+        msg = C_StringUtil.RemoveContiguousSpaces(msg, 4)
       end
 
       local playerLink;
@@ -1302,9 +1313,9 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
       if ( usingDifferentLanguage ) then
         local languageHeader = "["..arg3.."] ";
         if showLink or (issecretvalue and issecretvalue(arg2)) or arg2 ~= "" then
-          outMsg = string.format(GetOutMessageFormatKey(type) .. "%s%s", string.format("%s%s", pflag, playerLink), languageHeader, message);
+          outMsg = string.format(GetOutMessageFormatKey(type) .. "%s%s", pflag..playerLink, languageHeader, message);
         else
-          outMsg = string.format(GetOutMessageFormatKey(type) .. "%s%s", string.format("%s%s", pflag, arg2), languageHeader, message);
+          outMsg = string.format(GetOutMessageFormatKey(type) .. "%s%s", pflag..arg2, languageHeader, message);
         end
       else
         if not showLink or (not issecretvalue or not issecretvalue(arg2)) and arg2 == "" then
@@ -1317,19 +1328,11 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
           if ( type == "EMOTE" ) then
             outMsg = string.format(GetOutMessageFormatKey(type) .. message, pflag .. playerLink);
           elseif ( type == "TEXT_EMOTE") then
-            if not issecretvalue or not issecretvalue(message) and not issecretvalue(arg2) and not issecretvalue(playerLink) then
-              outMsg = string.gsub(message, arg2, pflag..playerLink, 1);
-            else
-              outMsg = message
-            end
+            outMsg = string.gsub(message, arg2, pflag..playerLink, 1);
           elseif (type == "GUILD_ITEM_LOOTED") then
-            if not issecretvalue or not issecretvalue(message) and not issecretvalue(arg2) and not issecretvalue(playerLinkDisplayText) then
-              outMsg = string.gsub(message, "$s", GetPlayerLink(arg2, playerLinkDisplayText));
-            end
-          elseif not issecretvalue or (not issecretvalue(message) and not issecretvalue(playerLink)) then
-            outMsg = string.format(GetOutMessageFormatKey(type) .. message, pflag..playerLink)
+            outMsg = string.gsub(message, "$s", GetPlayerLink(arg2, playerLinkDisplayText));
           else
-            outMsg = string.format(GetOutMessageFormatKey(type), pflag..playerLink) .. message;
+            outMsg = string.format(GetOutMessageFormatKey(type) .. message, pflag..playerLink)
           end
         end
       end
@@ -1344,30 +1347,13 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
 
     local isChatLineCensored = C_ChatInfo.IsChatLineCensored(lineID);
     local msg = isChatLineCensored and arg1 or MessageFormatter(arg1);
-    local accessID = (not issecretvalue or not issecretvalue(chatTarget)) and ChatHistory_GetAccessID(chatGroup, chatTarget) or 0
-    local typeID = (not issecretvalue or not issecretvalue(arg12 or arg13)) and ChatHistory_GetAccessID(infoType, chatTarget, arg12 or arg13) or accessID
+    local accessID = 0
+    local typeID = 0
 
     -- The message formatter is captured so that the original message can be reformatted when a censored message
     -- is approved to be shown.
     local eventArgs = SafePack(...);
     self:AddMessage(msg, info.r, info.g, info.b, info.id, accessID, typeID, event, eventArgs, MessageFormatter);
-  end
-
-  if ( type == "WHISPER" or type == "BN_WHISPER" ) then
-    --BN_WHISPER FIXME
-    if not issecretvalue or not issecretvalue(arg2) then
-      (ChatEdit_SetLastTellTarget or ChatFrameUtil.SetLastTellTarget)(arg2, type);
-    end
-
-    if ( not self.tellTimer or (GetTime() > self.tellTimer) ) then
-      PlaySound(SOUNDKIT.TELL_MESSAGE);
-    end
-    self.tellTimer = GetTime() + (CHAT_TELL_ALERT_TIME or ChatFrameConstants.WhisperSoundAlertCooldown);
-
-    -- We don't flash the app icon for front end chat for now.
-    if FlashClientIcon then
-      FlashClientIcon();
-    end
   end
 
   return true;

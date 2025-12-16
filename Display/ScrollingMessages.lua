@@ -214,6 +214,11 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
         fs:SetTextScale(addonTable.Messages.scalingFactor)
         fs:SetAlpha(1)
         fs.animationFinalAlpha = nil
+        fs.animationTime = nil
+        fs.animationStart = nil
+        fs.animationFinalTime = nil
+        fs.animationDestination = nil
+        fs.animationFinalAlpha = nil
         fs:Show()
         if self.visibleLines[1] then
           self.visibleLines[1]:SetPoint("BOTTOM", fs, "TOP", 0, addonTable.Messages.spacing)

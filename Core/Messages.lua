@@ -84,6 +84,7 @@ local function ConvertFormat()
 end
 
 function addonTable.MessagesMonitorMixin:OnLoad()
+  self.spacing = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_SPACING)
   self.timestampFormat = addonTable.Config.Get(addonTable.Config.Options.TIMESTAMP_FORMAT)
 
   self.liveModifiers = {}
@@ -91,6 +92,14 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   self.fontKey = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT)
   self.font = addonTable.Core.GetFontByID(self.fontKey)
   self.scalingFactor = addonTable.Core.GetFontScalingFactor()
+
+  self.inset = 0
+
+  self.sizingFontString = self:CreateFontString(nil, "BACKGROUND")
+
+  self.sizingFontString:SetNonSpaceWrap(true)
+  self.sizingFontString:SetWordWrap(true)
+  self.sizingFontString:Hide()
 
   CHATTYNATOR_MESSAGE_LOG = CHATTYNATOR_MESSAGE_LOG or GetNewLog()
   if CHATTYNATOR_MESSAGE_LOG.version ~= 1 then
@@ -251,8 +260,12 @@ function addonTable.MessagesMonitorMixin:OnLoad()
 
   addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
     local renderNeeded = false
-    if settingName == addonTable.Config.Options.TIMESTAMP_FORMAT then
+    if settingName == addonTable.Config.Options.MESSAGE_SPACING then
+      self.spacing = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_SPACING)
+      renderNeeded = true
+    elseif settingName == addonTable.Config.Options.TIMESTAMP_FORMAT then
       self.timestampFormat = addonTable.Config.Get(addonTable.Config.Options.TIMESTAMP_FORMAT)
+      self:SetInset()
       renderNeeded = true
     elseif settingName == addonTable.Config.Options.CHAT_COLORS then
       local colors = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS)
@@ -281,6 +294,7 @@ function addonTable.MessagesMonitorMixin:OnLoad()
     if state[addonTable.Constants.RefreshReason.MessageFont] then
       self.font = addonTable.Core.GetFontByID(addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT))
       self.scalingFactor = addonTable.Core.GetFontScalingFactor()
+      self:SetInset()
       addonTable.CallbackRegistry:TriggerEvent("MessageDisplayChanged")
       if self:GetScript("OnUpdate") == nil then
         self:SetScript("OnUpdate", function()
@@ -352,6 +366,28 @@ function addonTable.MessagesMonitorMixin:ConfigureStore()
   self:UpdateStores()
 end
 
+function addonTable.MessagesMonitorMixin:SetInset()
+  self.sizingFontString:SetFontObject(self.font)
+  self.sizingFontString:SetTextScale(self.scalingFactor)
+  if self.timestampFormat == "%X" then
+    self.sizingFontString:SetText("00:00:00")
+  elseif self.timestampFormat == "%H:%M" then
+    self.sizingFontString:SetText("00:00")
+  elseif self.timestampFormat == "%I:%M %p" then
+    self.sizingFontString:SetText("00:00 mm")
+  elseif self.timestampFormat == "%I:%M:%S %p" then
+    self.sizingFontString:SetText("00:00:00 mm")
+  elseif self.timestampFormat == " " then
+    self.sizingFontString:SetText(" ")
+  else
+    error("unknown format")
+  end
+  self.inset = self.sizingFontString:GetUnboundedStringWidth() + 10
+  if self.timestampFormat == " " then
+    self.inset = 8
+  end
+end
+
 function addonTable.MessagesMonitorMixin:ShowGMOTD()
   local guildID = C_Club.GetGuildClubId()
   if not guildID then
@@ -414,6 +450,7 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
         end)
       end
     end)
+    self:SetInset()
   elseif eventName == "PLAYER_REPORT_SUBMITTED" then -- Remove messages from chat log
     if self.messageCount < self.newMessageStartPoint then
       return
@@ -475,6 +512,7 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
   elseif eventName == "PLAYER_ENTERING_WORLD" then
     self.defaultLanguage = GetDefaultLanguage()
     self.alternativeDefaultLanguage = GetAlternativeDefaultLanguage()
+    self:SetInset()
   else
     local text, playerArg, _, _, _, _, channelID, channelIndex, _, _, lineID, playerGUID = ...
     local channelName = self.channelMap[channelIndex]

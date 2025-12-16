@@ -21,7 +21,7 @@ function addonTable.Display.ChatFrameMixin:OnLoad()
 
   self.ScrollingMessagesWrapper = CreateFrame("Frame", nil, self)
   self.ScrollingMessagesWrapper:SetHyperlinkPropagateToParent(true)
-  self.ScrollingMessages = CreateFrame("ScrollingMessageFrame", nil, self.ScrollingMessagesWrapper)
+  self.ScrollingMessages = CreateFrame("Frame", nil, self.ScrollingMessagesWrapper)
   self.ScrollingMessages:SetPoint("TOPLEFT")
   self.ScrollingMessages:SetPoint("BOTTOMRIGHT", -5, 0)
   Mixin(self.ScrollingMessages, addonTable.Display.ScrollingMessagesMixin)
@@ -255,6 +255,7 @@ end
 
 function addonTable.Display.ChatFrameMixin:SetTabSelectedAndFilter(index, func)
   self.tabIndex = index
+  self.ScrollingMessages:Reset()
 
   self:SetFilter(func)
 end

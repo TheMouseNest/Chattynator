@@ -8,24 +8,21 @@ addonTable.Display.ScrollingMessagesMixin = {}
 
 function addonTable.Display.ScrollingMessagesMixin:MyOnLoad()
   self:SetHyperlinkPropagateToParent(true)
-  self:SetHyperlinksEnabled(true)
+  self:SetClipsChildren(true)
 
-  self:SetFontObject(addonTable.Messages.font)
-  self:SetTextColor(1, 1, 1)
-  self:SetJustifyH("LEFT")
-  self:SetIndentedWordWrap(true)
+  self.scrollIndex = 1
 
-  self:SetFading(addonTable.Config.Get(addonTable.Config.Options.ENABLE_MESSAGE_FADE))
-  self:SetTimeVisible(addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FADE_TIME))
-  --self:SetSpacing(addonTable.Config.Get(addonTable.Config.Options.LINE_SPACING))
+  self.visibleLines = {}
 
-  --if addonTable.Config.Get(addonTable.Config.Options.MESSAGE_SPACING) == 0 then
-    self:SetJustifyV("MIDDLE")
-  --else
-  --  self:SetJustifyV("BOTTOM")
-  --end
+  self.currentFadeOffsetTime = 0
+  self.accumulatedTime = 0
+  self.timestampOffset = GetTime() - time()
+
+  self.pool = CreateFontStringPool(self, "BACKGROUND", 0, addonTable.Messages.font)
+  self.barPool = CreateTexturePool(self, "BACKGROUND")
 
   self:SetScript("OnMouseWheel", function(_, delta)
+    self.currentFadeOffsetTime = GetTime()
     local multiplier = 1
     if IsShiftKeyDown() then
       multiplier = 1000
@@ -40,9 +37,7 @@ function addonTable.Display.ScrollingMessagesMixin:MyOnLoad()
   end)
 
   addonTable.CallbackRegistry:RegisterCallback("MessageDisplayChanged", function()
-    self:SetFontObject(addonTable.Messages.font)
-    self:SetTextColor(1, 1, 1)
-    self:SetScale(addonTable.Core.GetFontScalingFactor())
+    self:Render()
   end)
 
   addonTable.CallbackRegistry:RegisterCallback("RefreshStateChange", function(_, refreshState)
@@ -52,51 +47,137 @@ function addonTable.Display.ScrollingMessagesMixin:MyOnLoad()
   end)
 
   addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
-    if settingName == addonTable.Config.Options.ENABLE_MESSAGE_FADE then
-      self:SetFading(addonTable.Config.Get(addonTable.Config.Options.ENABLE_MESSAGE_FADE))
-    elseif settingName == addonTable.Config.Options.MESSAGE_FADE_TIME then
-      self:SetTimeVisible(addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FADE_TIME))
-    --[[elseif settingName == addonTable.Config.Options.LINE_SPACING then
-      self:SetSpacing(addonTable.Config.Get(addonTable.Config.Options.LINE_SPACING))
-    elseif settingName == addonTable.Config.Options.MESSAGE_SPACING then
-      if addonTable.Config.Get(addonTable.Config.Options.MESSAGE_SPACING) == 0 then
-        self:SetJustifyV("MIDDLE")
-      else
-        self:SetJustifyV("BOTTOM")
-      end
-      self:Render()]]
+    if settingName == addonTable.Config.Options.ENABLE_MESSAGE_FADE or settingName == addonTable.Config.Options.MESSAGE_FADE_TIME then
+      self:UpdateAlphas()
     end
   end)
+end
+
+function addonTable.Display.ScrollingMessagesMixin:Reset()
+  self.scrollIndex = 1
+  self.currentFadeOffsetTime = 0
+end
+
+function addonTable.Display.ScrollingMessagesMixin:ScrollByAmount(amount)
+  self.scrollIndex = math.max(1, self.scrollIndex + amount)
+  self.scrollCallback()
+
+  self:Render()
+end
+
+function addonTable.Display.ScrollingMessagesMixin:PageUp()
+  self:ScrollByAmount(1)
+end
+
+function addonTable.Display.ScrollingMessagesMixin:PageDown()
+  self:ScrollByAmount(-1)
+end
+
+function addonTable.Display.ScrollingMessagesMixin:ScrollToBottom()
+  self.scrollIndex = 1
+  self.scrollCallback()
+  self:Render()
+end
+
+function addonTable.Display.ScrollingMessagesMixin:AtBottom()
+  return self.scrollIndex == 1
+end
+
+function addonTable.Display.ScrollingMessagesMixin:SetOnScrollChangedCallback(callback)
+  self.scrollCallback = callback
+end
+
+function addonTable.Display.ScrollingMessagesMixin:Clear()
+  self.visibleLines = {}
+  self.pool:ReleaseAll()
+  self.barPool:ReleaseAll()
 end
 
 function addonTable.Display.ScrollingMessagesMixin:SetFilter(filterFunc)
   self.filterFunc = filterFunc
 end
 
---[[local function GetSpacing()
-  local spacing = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_SPACING)
-  local height = "|A:TransparentSquareMask:" .. (14 + spacing) .. ":1|a"
+function addonTable.Display.ScrollingMessagesMixin:UpdateAlphas(elapsed)
+  if elapsed then
+    self.accumulatedTime = self.accumulatedTime + elapsed
+    if self.animationsPending then
+      local any = false
+      for _, f in ipairs(self.visibleLines) do
+        if f.animationTime ~= f.animationFinalTime then
+          any = true
+          f.animationTime = math.min(f.animationFinalTime, f.animationTime + elapsed)
+          local alpha = f.animationStart + (1 - (1 - f.animationTime/f.animationFinalTime) ^ 2) * f.animationDestination
+          f:SetAlpha(alpha)
+          f.timestamp:SetAlpha(alpha)
+          f.bar:SetAlpha(alpha)
+          f:SetShown(alpha > 0)
+        end
+      end
 
-  return height
-end]]
+      if not any then
+        self.animationsPending = false
+      end
+    end
+    if self.accumulatedTime < 1 then
+      return
 
-local function GetPrefix(timestamp)
-  if addonTable.Config.Get(addonTable.Config.Options.SHOW_TIMESTAMP_SEPARATOR) then
-    return "|cff989898" .. date(addonTable.Messages.timestampFormat, timestamp) .. " || |r"
-  elseif addonTable.Messages.timestampFormat == " " then
-    return ""
-  else
-    return "|cff989898" .. date(addonTable.Messages.timestampFormat, timestamp) .. " |r"
+    else
+      self.accumulatedTime = 0
+    end
+  end
+
+  local fadeTime = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FADE_TIME)
+  local fadeEnabled = addonTable.Config.Get(addonTable.Config.Options.ENABLE_MESSAGE_FADE)
+  local currentTime = GetTime()
+
+  local any = false
+  local faded = false
+  for i = #self.visibleLines, 1, -1 do
+    local fs = self.visibleLines[i]
+    if not fs then
+      break
+    end
+    local alpha = fs:GetAlpha()
+    fs:SetShown(alpha > 0)
+    fs.timestamp:SetShown(alpha > 0)
+    fs.bar:SetShown(alpha > 0)
+
+    if fadeEnabled and self.scrollIndex == 1 and math.max(fs.timestampValue + self.timestampOffset, self.currentFadeOffsetTime) + fadeTime - currentTime < 0 then
+      if not faded and self.accumulatedTime == 0 and alpha ~= 0 and (fs.animationFinalAlpha ~= 0 or fs.animationFinalTime == 0) then
+        faded = true
+        any = true
+        fs.animationTime = 0
+        fs.animationStart = alpha
+        fs.animationFinalTime = 3
+        fs.animationDestination = 0 - alpha
+        fs.animationFinalAlpha = 0
+      end
+    elseif alpha == 1 then
+      any = true
+    end
+  end
+
+  if any then
+    self.animationsPending = true
+    self:SetScript("OnUpdate", self.UpdateAlphas)
   end
 end
 
 function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
+  if self.currentFadeOffsetTime == 0 then
+    self.currentFadeOffsetTime = GetTime()
+  end
+
   if newMessages == nil then
     self:Clear()
   end
+  local tmp = self.pool:Acquire()
+  local lines = math.ceil(self:GetHeight() / tmp:GetLineHeight())
+  self.pool:Release(tmp)
+
   local index = 1
   local messages = {}
-  while (newMessages and index <= newMessages) or (not newMessages and #messages < 200) do
+  while (newMessages and self.scrollIndex == 1 and index <= newMessages) or (not newMessages and #messages < self.scrollIndex + lines - 1) do
     local m = addonTable.Messages:GetMessageRaw(index)
     if not m then
       break
@@ -109,9 +190,61 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
   end
 
   if #messages > 0 then
-    for i = #messages, 1, -1 do
-      local m = messages[i]
-      self:AddMessage(GetPrefix(m.timestamp) .. --[[GetSpacing() ..]] m.text, m.color.r, m.color.g, m.color.b)
+    local start = math.min(#messages, self.scrollIndex)
+    while #self.visibleLines > 0 and #self.visibleLines >= lines - math.min(lines, #messages) do
+      local fs = table.remove(self.visibleLines)
+      self.pool:Release(fs.timestamp)
+      fs.timestamp = nil
+      self.barPool:Release(fs.bar)
+      fs.bar = nil
+      self.pool:Release(fs)
     end
+    for i = start + math.min(#messages, lines) - 1, start, -1 do
+      local m = messages[i]
+      if m then
+        local fs = self.pool:Acquire()
+        fs:SetFontObject(addonTable.Messages.font)
+        fs:SetTextColor(1, 1, 1)
+        fs:SetJustifyH("LEFT")
+        fs:SetPoint("LEFT", self, addonTable.Messages.inset + 3, 0)
+        fs:SetPoint("RIGHT", self)
+        fs:SetPoint("BOTTOM", self)
+        fs:SetText(m.text)
+        fs:SetTextColor(m.color.r, m.color.g, m.color.b)
+        fs:SetTextScale(addonTable.Messages.scalingFactor)
+        fs:SetAlpha(1)
+        fs.animationFinalAlpha = nil
+        fs:Show()
+        if self.visibleLines[1] then
+          self.visibleLines[1]:SetPoint("BOTTOM", fs, "TOP", 0, addonTable.Messages.spacing)
+        end
+        local timestamp = self.pool:Acquire()
+        timestamp:SetFontObject(addonTable.Messages.font)
+        timestamp:SetTextColor(0.6, 0.6, 0.6)
+        timestamp:SetJustifyH("LEFT")
+        timestamp:SetPoint("LEFT")
+        timestamp:SetPoint("TOP", fs)
+        timestamp:SetTextScale(addonTable.Messages.scalingFactor)
+        timestamp:Show()
+        timestamp:SetText(date(addonTable.Messages.timestampFormat, m.timestamp))
+        timestamp:SetAlpha(1)
+        fs.timestampValue = m.timestamp
+        fs.timestamp = timestamp
+        if addonTable.Config.Get(addonTable.Config.Options.SHOW_TIMESTAMP_SEPARATOR) then
+          local bar = self.barPool:Acquire()
+          bar:Show()
+          bar:SetTexture("Interface/AddOns/Chattynator/Assets/Fade.png")
+          bar:SetPoint("RIGHT", fs, "LEFT", -4, 0)
+          bar:SetPoint("TOP", fs)
+          bar:SetPoint("BOTTOM", fs, 0, 1)
+          bar:SetWidth(2)
+          bar:SetAlpha(1)
+          fs.bar = bar
+        end
+        table.insert(self.visibleLines, 1, fs)
+      end
+    end
+
+    self:UpdateAlphas()
   end
 end

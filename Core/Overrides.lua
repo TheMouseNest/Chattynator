@@ -142,8 +142,6 @@ function addonTable.Core.ApplyOverrides()
           hooksecurefunc(tabButton, "SetParent", function(self) SetParent(self, addonTable.hiddenFrame) end)
         end
         _G["ChatFrame1Tab"].IsVisible = function() return true end -- Workaround for TSM assuming chat tabs are always visible
-        ChatFrame1:RegisterEvent("CHAT_MSG_WHISPER")
-        ChatFrame1:RegisterEvent("CHAT_MSG_BN_WHISPER")
       end)
     end
   end)

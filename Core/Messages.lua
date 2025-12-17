@@ -1363,5 +1363,22 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
     self:AddMessage(msg, info.r, info.g, info.b, info.id, accessID, typeID, event, eventArgs, MessageFormatter);
   end
 
+  if ( type == "WHISPER" or type == "BN_WHISPER" ) then
+    --BN_WHISPER FIXME
+    if not issecretvalue or not issecretvalue(arg2) then
+      (ChatEdit_SetLastTellTarget or ChatFrameUtil.SetLastTellTarget)(arg2, type);
+    end
+
+    if ( not self.tellTimer or (GetTime() > self.tellTimer) ) then
+      PlaySound(SOUNDKIT.TELL_MESSAGE);
+    end
+    self.tellTimer = GetTime() + (CHAT_TELL_ALERT_TIME or ChatFrameConstants.WhisperSoundAlertCooldown);
+
+    -- We don't flash the app icon for front end chat for now.
+    if FlashClientIcon then
+      FlashClientIcon();
+    end
+  end
+
   return true;
 end

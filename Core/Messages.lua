@@ -1252,7 +1252,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
       local showLink = 1;
       if ( strsub(type, 1, 7) == "MONSTER" or strsub(type, 1, 9) == "RAID_BOSS") then
         showLink = nil;
-      elseif not issecretvalue then
+      elseif not issecretvalue or not issecretvalue(msg) then
         msg = string.gsub(msg, "%%", "%%%%");
       end
 

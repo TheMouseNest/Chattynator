@@ -1254,8 +1254,6 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
         showLink = nil;
       elseif not issecretvalue then
         msg = string.gsub(msg, "%%", "%%%%");
-      else
-        msg = string.gsub(msg, "%%", "%%%%");
       end
 
       -- Search for icon links and replace them with texture links.

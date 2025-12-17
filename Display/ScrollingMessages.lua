@@ -102,15 +102,17 @@ function addonTable.Display.ScrollingMessagesMixin:UpdateAlphas(elapsed)
     self.accumulatedTime = self.accumulatedTime + elapsed
     if self.animationsPending then
       local any = false
-      for _, f in ipairs(self.visibleLines) do
-        if f.animationTime ~= f.animationFinalTime then
+      for _, fs in ipairs(self.visibleLines) do
+        if fs.animationTime ~= fs.animationFinalTime then
           any = true
-          f.animationTime = math.min(f.animationFinalTime, f.animationTime + elapsed)
-          local alpha = f.animationStart + (1 - (1 - f.animationTime/f.animationFinalTime) ^ 2) * f.animationDestination
-          f:SetAlpha(alpha)
-          f.timestamp:SetAlpha(alpha)
-          f.bar:SetAlpha(alpha)
-          f:SetShown(alpha > 0)
+          fs.animationTime = math.min(fs.animationFinalTime, fs.animationTime + elapsed)
+          local alpha = fs.animationStart + (1 - (1 - fs.animationTime/fs.animationFinalTime) ^ 2) * fs.animationDestination
+          fs:SetAlpha(alpha)
+          fs.timestamp:SetAlpha(alpha)
+          if fs.bar then
+            fs.bar:SetAlpha(alpha)
+          end
+          fs:SetShown(alpha > 0)
         end
       end
 
@@ -134,26 +136,41 @@ function addonTable.Display.ScrollingMessagesMixin:UpdateAlphas(elapsed)
   local faded = false
   for i = #self.visibleLines, 1, -1 do
     local fs = self.visibleLines[i]
-    if not fs then
-      break
-    end
-    local alpha = fs:GetAlpha()
-    fs:SetShown(alpha > 0)
-    fs.timestamp:SetShown(alpha > 0)
-    fs.bar:SetShown(alpha > 0)
-
-    if fadeEnabled and self.scrollIndex == 1 and math.max(fs.timestampValue + self.timestampOffset, self.currentFadeOffsetTime) + fadeTime - currentTime < 0 then
-      if not faded and self.accumulatedTime == 0 and alpha ~= 0 and (fs.animationFinalAlpha ~= 0 or fs.animationFinalTime == 0) then
-        faded = true
-        any = true
-        fs.animationTime = 0
-        fs.animationStart = alpha
-        fs.animationFinalTime = 3
-        fs.animationDestination = 0 - alpha
-        fs.animationFinalAlpha = 0
+    if fs then
+      local alpha = fs:GetAlpha()
+      fs:SetShown(alpha > 0)
+      fs.timestamp:SetShown(alpha > 0)
+      if fs.bar then
+        fs.bar:SetShown(alpha > 0)
       end
-    elseif alpha == 1 then
-      any = true
+
+      if fadeEnabled and self.scrollIndex == 1 and math.max(fs.timestampValue + self.timestampOffset, self.currentFadeOffsetTime) + fadeTime - currentTime < 0 then
+        if not faded and self.accumulatedTime == 0 and alpha ~= 0 and (fs.animationFinalAlpha ~= 0 or fs.animationFinalTime == 0) then
+          faded = true
+          any = true
+          fs.animationTime = 0
+          fs.animationStart = alpha
+          fs.animationFinalTime = 3
+          fs.animationDestination = 0 - alpha
+          fs.animationFinalAlpha = 0
+        end
+      elseif not fadeEnabled then
+        fs.animationFinalAlpha = nil
+        fs.animationTime = nil
+        fs.animationStart = nil
+        fs.animationFinalTime = nil
+        fs.animationDestination = nil
+        fs:SetAlpha(1)
+        fs:Show()
+        fs.timestamp:SetAlpha(1)
+        fs.timestamp:Show()
+        if fs.bar then
+          fs.bar:SetAlpha(1)
+          fs.bar:Show()
+        end
+      elseif alpha == 1 then
+        any = true
+      end
     end
   end
 
@@ -195,8 +212,10 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
       local fs = table.remove(self.visibleLines)
       self.pool:Release(fs.timestamp)
       fs.timestamp = nil
-      self.barPool:Release(fs.bar)
-      fs.bar = nil
+      if fs.bar then
+        self.barPool:Release(fs.bar)
+        fs.bar = nil
+      end
       self.pool:Release(fs)
     end
     for i = start + math.min(#messages, lines) - 1, start, -1 do
@@ -213,7 +232,6 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
         fs:SetTextColor(m.color.r, m.color.g, m.color.b)
         fs:SetTextScale(addonTable.Messages.scalingFactor)
         fs:SetAlpha(1)
-        fs.animationFinalAlpha = nil
         fs.animationTime = nil
         fs.animationStart = nil
         fs.animationFinalTime = nil

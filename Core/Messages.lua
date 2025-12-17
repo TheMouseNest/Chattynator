@@ -1217,10 +1217,10 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
     self:AddMessage(message, info.r, info.g, info.b, info.id);
   elseif ( type == "BN_INLINE_TOAST_BROADCAST" ) then
     if ( arg1 ~= "" ) then
-      if not issecretvalue then
-        arg1 = RemoveNewlines(RemoveExtraSpaces(arg1));
-      else
+      if C_StringUtil.RemoveContiguousSpaces then
         arg1 = trim(C_StringUtil.RemoveContiguousSpaces(arg1, 4))
+      else
+        arg1 = RemoveNewlines(RemoveExtraSpaces(arg1));
       end
       local linkDisplayText = ("[%s]"):format(arg2);
       local playerLink = GetBNPlayerLink(arg2, linkDisplayText, arg13, arg11, GetChatCategory(type), 0);
@@ -1249,20 +1249,20 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
       local showLink = 1;
       if ( strsub(type, 1, 7) == "MONSTER" or strsub(type, 1, 9) == "RAID_BOSS") then
         showLink = nil;
-      elseif not issecretvalue then
-        msg = string.gsub(msg, "%%", "%%%%");
-      else
+      elseif C_StringUtil and C_StringUtil.EscapeLuaPatterns then
         msg = C_StringUtil.EscapeLuaPatterns(msg)
+      else
+        msg = string.gsub(msg, "%%", "%%%%");
       end
 
       -- Search for icon links and replace them with texture links.
       msg = (ChatFrame_ReplaceIconAndGroupExpressions or C_ChatInfo.ReplaceIconAndGroupExpressions)(msg, arg17, not (ChatFrame_CanChatGroupPerformExpressionExpansion or ChatFrameUtil.CanChatGroupPerformExpressionExpansion)(chatGroup)); -- If arg17 is true, don't convert to raid icons
 
       --Remove groups of many spaces
-      if not issecretvalue then
-        msg = RemoveExtraSpaces(msg);
-      else
+      if C_StringUtil and C_StringUtil.RemoveContiguousSpaces then
         msg = C_StringUtil.RemoveContiguousSpaces(msg, 4)
+      else
+        msg = RemoveExtraSpaces(msg);
       end
 
       local playerLink;

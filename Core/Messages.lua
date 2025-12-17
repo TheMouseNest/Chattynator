@@ -210,6 +210,9 @@ function addonTable.MessagesMonitorMixin:OnLoad()
 
   hooksecurefunc(DEFAULT_CHAT_FRAME, "AddMessage", function(_, ...)
     local fullTrace = debugstack()
+    if fullTrace:find("ChatFrame_OnEvent") then
+      return
+    end
     local trace = debugstack(3, 1, 0)
     if trace:find("Interface/AddOns/Chattynator") then
       return
@@ -1249,8 +1252,8 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
       local showLink = 1;
       if ( strsub(type, 1, 7) == "MONSTER" or strsub(type, 1, 9) == "RAID_BOSS") then
         showLink = nil;
-      elseif C_StringUtil and C_StringUtil.EscapeLuaPatterns then
-        msg = C_StringUtil.EscapeLuaPatterns(msg)
+      elseif not issecretvalue then
+        msg = string.gsub(msg, "%%", "%%%%");
       else
         msg = string.gsub(msg, "%%", "%%%%");
       end
@@ -1328,11 +1331,17 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
           if ( type == "EMOTE" ) then
             outMsg = string.format(GetOutMessageFormatKey(type) .. message, pflag .. playerLink);
           elseif ( type == "TEXT_EMOTE") then
-            outMsg = string.gsub(message, arg2, pflag..playerLink, 1);
+            if not issecretvalue or not issecretvalue(message) and not issecretvalue(arg2) and not issecretvalue(playerLink) then
+              outMsg = string.gsub(message, arg2, pflag..playerLink, 1);
+            else
+              outMsg = message
+            end
           elseif (type == "GUILD_ITEM_LOOTED") then
             outMsg = string.gsub(message, "$s", GetPlayerLink(arg2, playerLinkDisplayText));
-          else
+          elseif not issecretvalue or (not issecretvalue(message) and not issecretvalue(playerLink)) then
             outMsg = string.format(GetOutMessageFormatKey(type) .. message, pflag..playerLink)
+          else
+            outMsg = string.format(GetOutMessageFormatKey(type), pflag..playerLink) .. message;
           end
         end
       end

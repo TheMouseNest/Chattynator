@@ -1220,7 +1220,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
     self:AddMessage(message, info.r, info.g, info.b, info.id);
   elseif ( type == "BN_INLINE_TOAST_BROADCAST" ) then
     if ( arg1 ~= "" ) then
-      if C_StringUtil.RemoveContiguousSpaces then
+      if C_StringUtil and C_StringUtil.RemoveContiguousSpaces then
         arg1 = trim(C_StringUtil.RemoveContiguousSpaces(arg1, 4))
       else
         arg1 = RemoveNewlines(RemoveExtraSpaces(arg1));

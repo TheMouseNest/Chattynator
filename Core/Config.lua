@@ -122,7 +122,10 @@ local settings = {
   APPLIED_MESSAGE_IDS = {key = "applied_message_ids", default = false, transfer = true},
   APPLIED_PLAYER_TABLE = {key = "applied_player_table_5", default = false, transfer = true},
 
-  CHAT_COLORS = {key = "chat_colors", default = {}, refresh = {addonTable.Constants.RefreshReason.MessageColor}}
+  CHAT_COLORS = {key = "chat_colors", default = {}, refresh = {addonTable.Constants.RefreshReason.MessageColor}},
+
+  TABSIZE_PADDING = {key = "tabsize_padding", default = 30},
+  TABSIZE_SPACING = {key = "tabsize_spacing", default = 10}
 }
 
 addonTable.Config.RefreshType = {}

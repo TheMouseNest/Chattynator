@@ -441,6 +441,26 @@ local function SetupDisplay(parent)
   end
   table.insert(allFrames, flashOnDropdown)
 
+  local tabsettingspadding
+  tabsettingspadding = addonTable.CustomiseDialog.Components.GetSlider(container, addonTable.Locales.TABSIZE_PADDING, 5, 30, "%s", function()
+    addonTable.Config.Set(addonTable.Config.Options.TABSIZE_PADDING, tabsettingspadding:GetValue())
+	addonTable.Constants.TabPadding = tabsettingspadding:GetValue()
+	addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+  end)
+  tabsettingspadding.option = addonTable.Config.Options.TABSIZE_PADDING
+  tabsettingspadding:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
+  table.insert(allFrames, tabsettingspadding)
+
+  local tabsettingsspacing
+  tabsettingsspacing = addonTable.CustomiseDialog.Components.GetSlider(container, addonTable.Locales.TABSIZE_SPACING, 1, 20, "%s", function()
+    addonTable.Config.Set(addonTable.Config.Options.TABSIZE_SPACING, tabsettingsspacing:GetValue())
+    addonTable.Constants.TabSpacing = tabsettingsspacing:GetValue()
+	addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+  end)
+  tabsettingsspacing.option = addonTable.Config.Options.TABSIZE_SPACING
+  tabsettingsspacing:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
+  table.insert(allFrames, tabsettingsspacing)
+
   container:SetScript("OnShow", function()
     local LibSharedMedia = LibStub and LibStub:GetLibrary("LibSharedMedia-3.0", true)
     local fontValues, fontLabels = {}, {}

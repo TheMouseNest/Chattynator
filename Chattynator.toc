@@ -62,3 +62,5 @@ CustomiseDialog/Initialize.lua
 CustomiseDialog/Main.lua
 CustomiseDialog/Filtering.lua
 CustomiseDialog/Components.lua
+
+Core/FinalRefresh.lua

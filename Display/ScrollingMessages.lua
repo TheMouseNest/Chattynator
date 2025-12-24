@@ -242,6 +242,7 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
         fs:SetText(m.text)
         fs:SetTextColor(m.color.r, m.color.g, m.color.b)
         fs:SetTextScale(addonTable.Messages.scalingFactor)
+        fs:SetNonSpaceWrap(true)
         fs:SetAlpha(1)
         fs.animationTime = nil
         fs.animationStart = nil

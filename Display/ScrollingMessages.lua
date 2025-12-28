@@ -47,16 +47,6 @@ function addonTable.Display.ScrollingMessagesMixin:MyOnLoad()
     end
   end)
 
-  addonTable.CallbackRegistry:RegisterCallback("MessageDisplayChanged", function()
-    self:Render()
-  end)
-
-  addonTable.CallbackRegistry:RegisterCallback("RefreshStateChange", function(_, refreshState)
-    if refreshState[addonTable.Constants.RefreshReason.MessageWidget] then
-      self:Render()
-    end
-  end)
-
   addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
     if settingName == addonTable.Config.Options.ENABLE_MESSAGE_FADE or settingName == addonTable.Config.Options.MESSAGE_FADE_TIME then
       self:UpdateAlphas()

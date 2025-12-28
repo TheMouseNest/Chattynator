@@ -70,9 +70,9 @@ function addonTable.Display.ChatFrameMixin:OnLoad()
       self.ScrollingMessages:Render()
     end
     if refreshState[addonTable.Constants.RefreshReason.MessageWidget] then
-      --[[if self:GetID() ~= 0 then
+      if self:GetID() ~= 0 then
         self.ScrollingMessages:Render()
-      end]]
+      end
     end
     if refreshState[addonTable.Constants.RefreshReason.Locked] then
       self.resizeWidget:SetShown(not addonTable.Config.Get(addonTable.Config.Options.LOCKED))

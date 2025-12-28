@@ -508,11 +508,8 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
 
     self:UpdateChannels()
 
-    self:SetScript("OnUpdate", function()
-      self:SetScript("OnUpdate", nil)
-      self.pending = 0
-      addonTable.CallbackRegistry:TriggerEvent("Render")
-    end)
+    self.pending = 0
+    addonTable.CallbackRegistry:TriggerEvent("Render")
   elseif eventName == "PLAYER_ENTERING_WORLD" then
     self.defaultLanguage = GetDefaultLanguage()
     self.alternativeDefaultLanguage = GetAlternativeDefaultLanguage()

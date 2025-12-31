@@ -295,21 +295,12 @@ function addonTable.MessagesMonitorMixin:OnLoad()
       self.font = addonTable.Core.GetFontByID(addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT))
       self.scalingFactor = addonTable.Core.GetFontScalingFactor()
       self:SetInset()
-      addonTable.CallbackRegistry:TriggerEvent("MessageDisplayChanged")
-      if self:GetScript("OnUpdate") == nil then
-        self:SetScript("OnUpdate", function()
-          self:SetScript("OnUpdate", nil)
-          addonTable.CallbackRegistry:TriggerEvent("Render")
-        end)
-      end
+      self.pending = 0
+      addonTable.CallbackRegistry:TriggerEvent("Render")
     elseif state[addonTable.Constants.RefreshReason.MessageColor] then
       self:ReplaceColors()
-      if self:GetScript("OnUpdate") == nil then
-        self:SetScript("OnUpdate", function()
-          self:SetScript("OnUpdate", nil)
-          addonTable.CallbackRegistry:TriggerEvent("Render")
-        end)
-      end
+      self.pending = 0
+      addonTable.CallbackRegistry:TriggerEvent("Render")
     end
   end)
 
@@ -441,16 +432,12 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
   elseif eventName == "GUILD_MOTD" then
     self:ShowGMOTD()
   elseif eventName == "UI_SCALE_CHANGED" then
+    self:SetInset()
     C_Timer.After(0, function()
       addonTable.CallbackRegistry:TriggerEvent("MessageDisplayChanged")
-      if self:GetScript("OnUpdate") == nil and self.playerLoginFired then
-        self:SetScript("OnUpdate", function()
-          self:SetScript("OnUpdate", nil)
-          addonTable.CallbackRegistry:TriggerEvent("Render")
-        end)
-      end
+      self.pending = 0
+      addonTable.CallbackRegistry:TriggerEvent("Render")
     end)
-    self:SetInset()
   elseif eventName == "PLAYER_REPORT_SUBMITTED" then -- Remove messages from chat log
     if self.messageCount < self.newMessageStartPoint then
       return

@@ -11,7 +11,6 @@ local channelMapping = {
   [channel.NewcomerChat] = addonTable.Locales.ABBREV_NEWCOMER_CHAT,
   [channel.Services] = addonTable.Locales.ABBREV_SERVICES,
 }
-local guildAbbrev = addonTable.Locales.ABBREV_GUILD
 
 local letterStyle = {
   player = {

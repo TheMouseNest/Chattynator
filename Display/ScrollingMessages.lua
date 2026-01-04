@@ -22,7 +22,7 @@ function addonTable.Display.ScrollingMessagesMixin:MyOnLoad()
   self.pool = CreateFontStringPool(self, "BACKGROUND", 0, addonTable.Messages.font)
   self.barPool = CreateTexturePool(self, "BACKGROUND")
 
-  do
+  if not IsMacClient() then
     local edgeFadeTop = 20
     local edgeFadeLeft = 0
     local edgeFadeRight = 0

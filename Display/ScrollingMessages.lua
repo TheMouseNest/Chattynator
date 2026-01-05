@@ -89,6 +89,10 @@ function addonTable.Display.ScrollingMessagesMixin:SetOnScrollChangedCallback(ca
 end
 
 function addonTable.Display.ScrollingMessagesMixin:Clear()
+  for _, fs in ipairs(self.visibleLines) do
+    fs.timestamp = nil
+    fs.bar = nil
+  end
   self.visibleLines = {}
   self.pool:ReleaseAll()
   self.barPool:ReleaseAll()
@@ -211,8 +215,10 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
     local start = math.min(#messages, self.scrollIndex)
     while #self.visibleLines > 0 and #self.visibleLines >= lines - math.min(lines, #messages) do
       local fs = table.remove(self.visibleLines)
-      self.pool:Release(fs.timestamp)
-      fs.timestamp = nil
+      if fs.timestamp then
+        self.pool:Release(fs.timestamp)
+        fs.timestamp = nil
+      end
       if fs.bar then
         self.barPool:Release(fs.bar)
         fs.bar = nil

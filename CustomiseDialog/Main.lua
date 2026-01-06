@@ -329,6 +329,14 @@ local function SetupLayout(parent)
   end
   table.insert(allFrames, editBoxPositionDropdown)
 
+  local editBoxUndoHistory
+  editBoxUndoHistory = addonTable.CustomiseDialog.Components.GetSlider(container, addonTable.Locales.EDIT_BOX_UNDO_HISTORY, 1, 200, "%s", function()
+    addonTable.Config.Set(addonTable.Config.Options.EDIT_BOX_UNDO_HISTORY, editBoxUndoHistory:GetValue())
+  end)
+  editBoxUndoHistory.option = addonTable.Config.Options.EDIT_BOX_UNDO_HISTORY
+  editBoxUndoHistory:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
+  table.insert(allFrames, editBoxUndoHistory)
+
   local newWhispersNewTab = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.NEW_WHISPERS_TO_NEW_TAB, 28, function(state)
     addonTable.Config.Set(addonTable.Config.Options.NEW_WHISPER_NEW_TAB, state and 1 or 0)
   end)

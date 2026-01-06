@@ -199,6 +199,7 @@ function addonTable.Core.Initialize()
 
   addonTable.Core.ApplyOverrides()
   addonTable.Core.InitializeChatCommandLogging()
+  addonTable.Core.EditBoxUndo.Initialize()
   addonTable.Modifiers.InitializeShortenChannels()
   addonTable.Modifiers.InitializeClassColors()
   addonTable.Modifiers.InitializeURLs()

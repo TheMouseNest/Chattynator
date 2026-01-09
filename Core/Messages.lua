@@ -902,7 +902,12 @@ local function GetDecoratedSenderName(event, ...)
       if C_ClassColor then
         classColor = C_ClassColor.GetClassColor(englishClass);
       else
-        classColor = RAID_CLASS_COLORS[englishClass]
+        if CUSTOM_CLASS_COLORS then
+          local color = CUSTOM_CLASS_COLORS[englishClass].
+          classColor = CreateColor(color.r, color.g, color.b)
+        else
+          classColor = RAID_CLASS_COLORS[englishClass]
+        end
       end
 
       if classColor then

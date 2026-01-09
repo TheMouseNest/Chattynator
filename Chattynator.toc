@@ -28,6 +28,7 @@ Core/Objects.lua
 Core/Locales.lua
 Core/Constants.lua
 Core/Config.lua
+Core/EditBoxUndo.lua
 Core/Utilities.lua
 Core/HyperlinkHandler.xml
 Core/Fonts.lua

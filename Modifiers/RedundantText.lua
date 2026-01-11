@@ -29,6 +29,19 @@ local questPatterns = {
   {Clean(ERR_QUEST_REWARD_MONEY_S), addonTable.Locales.SHORT_LOOT},
 }
 
+addonTable.Modifiers.CHAT_GET = {
+  ["MONSTER_SAY"] = "%s:\32",
+  ["MONSTER_YELL"] = "%s:\32",
+  ["MONSTER_WHISPER"] = "%s:\32",
+  ["SAY"] = "%s:\32",
+  ["WHISPER"] = "%s:\32",
+  ["WHISPER_INFORM"] = addonTable.Locales.SHORT_WHISPER_SEND:gsub("%%%d", "%%s"),
+  ["BN_WHISPER"] = "%s:\32",
+  ["BN_WHISPER_INFORM"] = addonTable.Locales.SHORT_WHISPER_SEND:gsub("%%%d", "%%s"),
+  ["GUILD_ACHIEVEMENT"] = addonTable.Locales.SHORT_ACHIEVEMENT_OTHER:gsub("%%%d", "%%s"),
+  ["ACHIEVEMENT"] = addonTable.Locales.SHORT_ACHIEVEMENT_OTHER:gsub("%%%d", "%%s"),
+}
+
 local patternsByEvent = {
   ["MONSTER_SAY"] = {Clean(CHAT_MONSTER_SAY_GET), "%1:\32"},
   ["MONSTER_YELL"] = {Clean(CHAT_MONSTER_YELL_GET), "%1:\32"},

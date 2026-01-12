@@ -111,6 +111,12 @@ local typeToPattern = {
   ["number"] = numberStyle,
 }
 
+local typeToPlayerWrapper = {
+  ["none"] = "[%s]",
+  ["letter"] = "%s",
+  ["number"] = "[%s]",
+}
+
 local chatTypeToPatterns = {
   OFFICER = "officer",
   PARTY = "party",
@@ -120,6 +126,8 @@ local chatTypeToPatterns = {
   RAID = "raid",
   RAID_LEADER = "raidLeader",
 }
+
+addonTable.Modifiers.ShortenTypeToPattern = chatTypeToPatterns
 
 local patterns
 
@@ -138,7 +146,9 @@ end
 function addonTable.Modifiers.InitializeShortenChannels()
   local value = addonTable.Config.Get(addonTable.Config.Options.SHORTEN_FORMAT)
   if typeToPattern[value] then
-    patterns  = typeToPattern[value]
+    patterns = typeToPattern[value]
+    addonTable.Modifiers.ShortenPatterns = patterns
+    addonTable.Modifiers.PlayerWrapper = typeToPlayerWrapper[value]
     addonTable.Messages:AddLiveModifier(Shorten)
   end
   addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
@@ -147,8 +157,12 @@ function addonTable.Modifiers.InitializeShortenChannels()
       value = addonTable.Config.Get(addonTable.Config.Options.SHORTEN_FORMAT)
       if typeToPattern[value] then
         patterns = typeToPattern[value]
+        addonTable.Modifiers.ShortenPatterns = patterns
         addonTable.Messages:AddLiveModifier(Shorten)
+      else
+        addonTable.Modifiers.ShortenPatterns = nil
       end
+      addonTable.Modifiers.PlayerWrapper = typeToPlayerWrapper[value]
     end
   end)
 end

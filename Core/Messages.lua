@@ -1061,6 +1061,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
   end
 
   local isSecret = issecretvalue and issecretvalue(arg1)
+  local playerWrapper = isSecret and addonTable.Modifiers.PlayerWrapper or "[%s]"
 
   local type = strsub(event, 10);
   local chatTypeInfo = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS)
@@ -1118,9 +1119,9 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
   elseif ( strsub(type,1,10) == "BG_SYSTEM_" ) then
     self:AddMessage(arg1, info.r, info.g, info.b, info.id);
   elseif ( strsub(type,1,11) == "ACHIEVEMENT" ) then
-    self:AddMessage(string.format(arg1, string.format("|Hplayer:%s|h%s|h", arg2, addonTable.Modifiers.PlayerWrapper:format(coloredName))), info.r, info.g, info.b, info.id);
+    self:AddMessage(string.format(arg1, string.format("|Hplayer:%s|h%s|h", arg2, playerWrapper:format(coloredName))), info.r, info.g, info.b, info.id);
   elseif ( strsub(type,1,18) == "GUILD_ACHIEVEMENT" ) then
-    local message = string.format(arg1, string.format("|Hplayer:%s|h%s|h", arg2, addonTable.Modifiers.PlayerWrapper:format(coloredName)));
+    local message = string.format(arg1, string.format("|Hplayer:%s|h%s|h", arg2, playerWrapper:format(coloredName)));
     self:AddMessage(message, info.r, info.g, info.b, info.id);
   elseif (type == "PING") then
     local outMsg = arg1;
@@ -1153,7 +1154,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
       -- TWO users in this notice (E.G. x kicked y)
       self:AddMessage(format(globalstring, arg8, arg4, arg2, arg5), info.r, info.g, info.b, info.id);
     elseif ( arg1 == "INVITE" ) then
-      local playerLink = GetPlayerLink(arg2, addonTable.Modifiers.PlayerWrapper:format(arg2), arg11);
+      local playerLink = GetPlayerLink(arg2, playerWrapper:format(arg2), arg11);
       local accessID = 0
       local typeID = 0
       self:AddMessage(string.format(globalstring, arg4, playerLink), info.r, info.g, info.b, info.id, accessID, typeID);
@@ -1225,12 +1226,12 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
         end);
         return;
       else
-        local linkDisplayText = addonTable.Modifiers.PlayerWrapper:format(arg2);
+        local linkDisplayText = playerWrapper:format(arg2);
         local playerLink = GetBNPlayerLink(arg2, linkDisplayText, arg13, arg11, GetChatCategory(type), 0);
         message = format(globalstring, playerLink);
       end
     else
-      local linkDisplayText = addonTable.Modifiers.PlayerWrapper:format(arg2);
+      local linkDisplayText = playerWrapper:format(arg2);
       local playerLink = GetBNPlayerLink(arg2, linkDisplayText, arg13, arg11, GetChatCategory(type), 0);
       message = format(globalstring, playerLink);
     end
@@ -1242,7 +1243,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
       else
         arg1 = RemoveNewlines(RemoveExtraSpaces(arg1));
       end
-      local linkDisplayText = addonTable.Modifiers.PlayerWrapper:format(arg2);
+      local linkDisplayText = playerWrapper:format(arg2);
       local playerLink = GetBNPlayerLink(arg2, linkDisplayText, arg13, arg11, GetChatCategory(type), 0);
       self:AddMessage(format(BN_INLINE_TOAST_BROADCAST, playerLink, arg1), info.r, info.g, info.b, info.id);
     end
@@ -1297,7 +1298,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
       local usingEmote = (type == "EMOTE") or (type == "TEXT_EMOTE");
 
       if ( usingDifferentLanguage or not usingEmote ) then
-        playerLinkDisplayText = addonTable.Modifiers.PlayerWrapper:format(coloredName);
+        playerLinkDisplayText = playerWrapper:format(coloredName);
       end
 
       local isCommunityType = type == "COMMUNITIES_CHANNEL";

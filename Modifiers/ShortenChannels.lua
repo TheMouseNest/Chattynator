@@ -148,9 +148,9 @@ function addonTable.Modifiers.InitializeShortenChannels()
   if typeToPattern[value] then
     patterns = typeToPattern[value]
     addonTable.Modifiers.ShortenPatterns = patterns
-    addonTable.Modifiers.PlayerWrapper = typeToPlayerWrapper[value]
     addonTable.Messages:AddLiveModifier(Shorten)
   end
+  addonTable.Modifiers.PlayerWrapper = typeToPlayerWrapper[value]
   addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
     if settingName == addonTable.Config.Options.SHORTEN_FORMAT then
       addonTable.Messages:RemoveLiveModifier(Shorten)

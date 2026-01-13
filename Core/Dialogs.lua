@@ -46,6 +46,7 @@ function addonTable.Dialogs.ShowCopy(text)
     dialog.editBox:SetScript("OnEnterPressed", function()
       dialog:Hide()
     end)
+    addonTable.Core.EditBoxUndo.Attach(dialog.editBox)
 
     local okButton = CreateFrame("Button", nil, dialog, "UIPanelDynamicResizeButtonTemplate")
     okButton:SetText(DONE)
@@ -65,6 +66,7 @@ function addonTable.Dialogs.ShowCopy(text)
   dialog:Hide()
   dialog:Show()
   dialog.editBox:SetText(text)
+  addonTable.Core.EditBoxUndo.Reset(dialog.editBox)
   dialog.editBox:SetFocus()
   dialog.editBox:HighlightText()
 end
@@ -79,6 +81,7 @@ function addonTable.Dialogs.ShowEditBox(text, acceptText, cancelText, confirmCal
     dialog.editBox:SetAutoFocus(false)
     dialog.editBox:SetSize(200, 30)
     dialog.editBox:SetPoint("CENTER")
+    addonTable.Core.EditBoxUndo.Attach(dialog.editBox)
 
     dialog.acceptButton = CreateFrame("Button", nil, dialog, "UIPanelDynamicResizeButtonTemplate")
     dialog.cancelButton = CreateFrame("Button", nil, dialog, "UIPanelDynamicResizeButtonTemplate")
@@ -107,6 +110,7 @@ function addonTable.Dialogs.ShowEditBox(text, acceptText, cancelText, confirmCal
   dialog.acceptButton:SetScript("OnClick", function() confirmCallback(dialog.editBox:GetText()); dialog:Hide() end)
   dialog.editBox:SetScript("OnEnterPressed", function() confirmCallback(dialog.editBox:GetText()); dialog:Hide() end)
   dialog.editBox:SetText("")
+  addonTable.Core.EditBoxUndo.Reset(dialog.editBox)
 
   dialog:Show()
   dialog.editBox:SetFocus()

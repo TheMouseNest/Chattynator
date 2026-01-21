@@ -250,7 +250,7 @@ function addonTable.CustomiseDialog.SetupTabFilters(parent)
         for i = 1, C_AddOns.GetNumAddOns() do
           if C_AddOns.IsAddOnLoaded(i) then
             local name, title = C_AddOns.GetAddOnInfo(i)
-            table.insert(fields, {name, StripHyperlinks(title)})
+            table.insert(fields, {name, (StripHyperlinks or C_StringUtil.StripHyperlinks)(title)})
           end
         end
         table.insert(fields, {"/loadstring", addonTable.Locales.RUN_OR_WA})

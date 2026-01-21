@@ -105,7 +105,11 @@ function addonTable.Display.CopyChatMixin:LoadMessages(filterFunc, indexOffset)
       if showTimestamp then
         timestamp = GRAY_FONT_COLOR:WrapTextInColorCode("[" .. date(timestampFormat, m.timestamp) .. "] ")
       end
-      local text = timestamp .. color:WrapTextInColorCode(m.text):gsub("|K(.-)|k", "???")
+      local text = m.text
+      if issecretvalue and issecretvalue(m.text) then
+        text = "???"
+      end
+      text = timestamp .. color:WrapTextInColorCode(text):gsub("|K(.-)|k", "???")
       text = CustomCleanup(text)
       table.insert(messages, 1, text)
     end

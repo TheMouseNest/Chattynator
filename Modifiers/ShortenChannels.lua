@@ -11,7 +11,6 @@ local channelMapping = {
   [channel.NewcomerChat] = addonTable.Locales.ABBREV_NEWCOMER_CHAT,
   [channel.Services] = addonTable.Locales.ABBREV_SERVICES,
 }
-local guildAbbrev = addonTable.Locales.ABBREV_GUILD
 
 local letterStyle = {
   player = {
@@ -112,6 +111,12 @@ local typeToPattern = {
   ["number"] = numberStyle,
 }
 
+local typeToPlayerWrapper = {
+  ["none"] = "[%s]",
+  ["letter"] = "%s",
+  ["number"] = "[%s]",
+}
+
 local chatTypeToPatterns = {
   OFFICER = "officer",
   PARTY = "party",
@@ -121,6 +126,8 @@ local chatTypeToPatterns = {
   RAID = "raid",
   RAID_LEADER = "raidLeader",
 }
+
+addonTable.Modifiers.ShortenTypeToPattern = chatTypeToPatterns
 
 local patterns
 
@@ -139,17 +146,23 @@ end
 function addonTable.Modifiers.InitializeShortenChannels()
   local value = addonTable.Config.Get(addonTable.Config.Options.SHORTEN_FORMAT)
   if typeToPattern[value] then
-    patterns  = typeToPattern[value]
+    patterns = typeToPattern[value]
+    addonTable.Modifiers.ShortenPatterns = patterns
     addonTable.Messages:AddLiveModifier(Shorten)
   end
+  addonTable.Modifiers.PlayerWrapper = typeToPlayerWrapper[value]
   addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
     if settingName == addonTable.Config.Options.SHORTEN_FORMAT then
       addonTable.Messages:RemoveLiveModifier(Shorten)
       value = addonTable.Config.Get(addonTable.Config.Options.SHORTEN_FORMAT)
       if typeToPattern[value] then
         patterns = typeToPattern[value]
+        addonTable.Modifiers.ShortenPatterns = patterns
         addonTable.Messages:AddLiveModifier(Shorten)
+      else
+        addonTable.Modifiers.ShortenPatterns = nil
       end
+      addonTable.Modifiers.PlayerWrapper = typeToPlayerWrapper[value]
     end
   end)
 end

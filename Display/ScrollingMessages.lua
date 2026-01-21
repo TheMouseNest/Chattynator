@@ -22,7 +22,7 @@ function addonTable.Display.ScrollingMessagesMixin:MyOnLoad()
   self.pool = CreateFontStringPool(self, "BACKGROUND", 0, addonTable.Messages.font)
   self.barPool = CreateTexturePool(self, "BACKGROUND")
 
-  do
+  if not IsMacClient() then
     local edgeFadeTop = 20
     local edgeFadeLeft = 0
     local edgeFadeRight = 0
@@ -44,16 +44,6 @@ function addonTable.Display.ScrollingMessagesMixin:MyOnLoad()
       self:ScrollByAmount(1 * multiplier)
     else
       self:ScrollByAmount(-1 * multiplier)
-    end
-  end)
-
-  addonTable.CallbackRegistry:RegisterCallback("MessageDisplayChanged", function()
-    self:Render()
-  end)
-
-  addonTable.CallbackRegistry:RegisterCallback("RefreshStateChange", function(_, refreshState)
-    if refreshState[addonTable.Constants.RefreshReason.MessageWidget] then
-      self:Render()
     end
   end)
 
@@ -99,6 +89,10 @@ function addonTable.Display.ScrollingMessagesMixin:SetOnScrollChangedCallback(ca
 end
 
 function addonTable.Display.ScrollingMessagesMixin:Clear()
+  for _, fs in ipairs(self.visibleLines) do
+    fs.timestamp = nil
+    fs.bar = nil
+  end
   self.visibleLines = {}
   self.pool:ReleaseAll()
   self.barPool:ReleaseAll()
@@ -221,8 +215,10 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
     local start = math.min(#messages, self.scrollIndex)
     while #self.visibleLines > 0 and #self.visibleLines >= lines - math.min(lines, #messages) do
       local fs = table.remove(self.visibleLines)
-      self.pool:Release(fs.timestamp)
-      fs.timestamp = nil
+      if fs.timestamp then
+        self.pool:Release(fs.timestamp)
+        fs.timestamp = nil
+      end
       if fs.bar then
         self.barPool:Release(fs.bar)
         fs.bar = nil
@@ -242,6 +238,7 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
         fs:SetText(m.text)
         fs:SetTextColor(m.color.r, m.color.g, m.color.b)
         fs:SetTextScale(addonTable.Messages.scalingFactor)
+        fs:SetNonSpaceWrap(true)
         fs:SetAlpha(1)
         fs.animationTime = nil
         fs.animationStart = nil

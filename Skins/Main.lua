@@ -99,7 +99,7 @@ end
 
 function addonTable.Skins.IsAddOnLoading(name)
   local character = UnitName("player")
-  if C_AddOns.GetAddOnEnableState(name, character) ~= Enum.AddOnEnableState.All then
+  if C_AddOns.GetAddOnEnableState(name, character) ~= Enum.AddOnEnableState.All or not C_AddOns.IsAddOnLoadable(name) then
     return false
   end
   for _, dep in ipairs({C_AddOns.GetAddOnDependencies(name)}) do

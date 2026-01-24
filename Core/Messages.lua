@@ -1194,7 +1194,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
         end
       end
 
-      if channeLength > 0 then
+      if channelLength > 0 then
         self:AddMessage(string.format(globalstring, arg8, (ChatFrame_ResolvePrefixedChannelName or ChatFrameUtil.ResolvePrefixedChannelName)(arg4)), info.r, info.g, info.b, info.id, accessID, typeID);
       end
     end

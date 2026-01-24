@@ -1194,7 +1194,9 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
         end
       end
 
-      self:AddMessage(string.format(globalstring, arg8, (ChatFrame_ResolvePrefixedChannelName or ChatFrameUtil.ResolvePrefixedChannelName)(arg4)), info.r, info.g, info.b, info.id, accessID, typeID);
+      if channeLength > 0 then
+        self:AddMessage(string.format(globalstring, arg8, (ChatFrame_ResolvePrefixedChannelName or ChatFrameUtil.ResolvePrefixedChannelName)(arg4)), info.r, info.g, info.b, info.id, accessID, typeID);
+      end
     end
   elseif ( type == "BN_INLINE_TOAST_ALERT" ) then
     if isSecret then

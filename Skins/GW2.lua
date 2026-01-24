@@ -203,7 +203,7 @@ local skinners = {
   end,
   ChatFrame = function(frame)
     frame.visuals = CreateFrame("Frame", nil, frame)
-    frame.visuals:SetFrameStrata("LOW")
+    frame.visuals:SetFrameStrata("BACKGROUND")
     frame.visuals:SetFrameLevel(0)
     frame.visuals:SetAllPoints()
     frame.visuals.backgroundTex = frame.visuals:CreateTexture(nil, "BACKGROUND")

@@ -502,24 +502,49 @@ addonTable.CallbackRegistry:RegisterCallback("Render", function(_, newMessages)
       local m = addonTable.Messages:GetMessageRaw(i)
       if m.typeInfo.type == "WHISPER" or m.typeInfo.type == "BN_WHISPER" then
         local window = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[targetWindow]
-        local any = false
-        for _, tab in ipairs(window.tabs) do
-          if tab.whispersTemp[m.typeInfo.player.name] then
-            any = true
-            break
+        if m.typeInfo.player then
+          local any = false
+          for _, tab in ipairs(window.tabs) do
+            if tab.whispersTemp[m.typeInfo.player.name] then
+              any = true
+              break
+            end
           end
-        end
-        if not any then
-          local tabConfig = addonTable.Config.GetEmptyTabConfig(Ambiguate(m.typeInfo.player.name, "all"))
-          local c = ChatTypeInfo[m.typeInfo.type]
-          tabConfig.tabColor = CreateColor(c.r, c.g, c.b):GenerateHexColorNoAlpha()
-          tabConfig.whispersTemp[m.typeInfo.player.name] = true
-          tabConfig.isTemporary = true
-          table.insert(window.tabs, tabConfig)
-          C_Timer.After(0, function()
-            addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
-            addonTable.allChatFrames[targetWindow].TabsBar.Tabs[#window.tabs]:SetFlashing(true)
-          end)
+          if not any then
+            local tabConfig = addonTable.Config.GetEmptyTabConfig(Ambiguate(m.typeInfo.player.name, "all"))
+            local c = ChatTypeInfo[m.typeInfo.type]
+            tabConfig.tabColor = CreateColor(c.r, c.g, c.b):GenerateHexColorNoAlpha()
+            tabConfig.whispersTemp[m.typeInfo.player.name] = true
+            tabConfig.isTemporary = true
+            table.insert(window.tabs, tabConfig)
+            C_Timer.After(0, function()
+              addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+              addonTable.allChatFrames[targetWindow].TabsBar.Tabs[#window.tabs]:SetFlashing(true)
+            end)
+          end
+        else
+          local groups = {[m.typeInfo.type] = true}
+          local channels = {}
+          local addons = {}
+          for _, tab in ipairs(window.tabs) do
+            if tab.name == "WHISPER" or tCompare(tab.groups, groups) and tCompare(tab.channels, channels) and tCompare(tab.addons, addons) and not tab.invert then
+              any = true
+              break
+            end
+          end
+          if not any then
+            print("adding")
+            local tabConfig = addonTable.Config.GetEmptyTabConfig("WHISPER")
+            local c = ChatTypeInfo[m.typeInfo.type]
+            tabConfig.tabColor = CreateColor(c.r, c.g, c.b):GenerateHexColorNoAlpha()
+            tabConfig.groups = groups
+            tabConfig.isTemporary = true
+            table.insert(window.tabs, tabConfig)
+            C_Timer.After(0, function()
+              addonTable.CallbackRegistry:TriggerEvent("RefreshStateChange", {[addonTable.Constants.RefreshReason.Tabs] = true})
+              addonTable.allChatFrames[targetWindow].TabsBar.Tabs[#window.tabs]:SetFlashing(true)
+            end)
+          end
         end
       end
     end

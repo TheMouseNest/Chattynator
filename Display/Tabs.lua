@@ -533,7 +533,6 @@ addonTable.CallbackRegistry:RegisterCallback("Render", function(_, newMessages)
             end
           end
           if not any then
-            print("adding")
             local tabConfig = addonTable.Config.GetEmptyTabConfig("WHISPER")
             local c = ChatTypeInfo[m.typeInfo.type]
             tabConfig.tabColor = CreateColor(c.r, c.g, c.b):GenerateHexColorNoAlpha()

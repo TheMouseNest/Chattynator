@@ -174,6 +174,10 @@ L["SLASH_RESET_HELP"] = "Reset all Chattynator settings, then reload."
 L["SLASH_HELP"] = "Open the Chattynator settings."
 L["SLASH_UNKNOWN_COMMAND"] = "Unknown command '%s'"
 
+L["TT_NO_TARGET"] = "No target selected."
+L["TT_NOT_PLAYER"] = "Target is not a player."
+L["ENABLE_TELL_TARGET"] = "Enable /tt command"
+
 local L = Locales.frFR
 --@localization(locale="frFR", format="lua_additive_table")@
 

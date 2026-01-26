@@ -545,6 +545,13 @@ local function SetupFormatting(parent)
   reduceRedundantText:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
   table.insert(allFrames, reduceRedundantText)
 
+  local enableTellTarget = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.ENABLE_TELL_TARGET, 28, function(state)
+    addonTable.Config.Set(addonTable.Config.Options.ENABLE_TELL_TARGET, state)
+  end)
+  enableTellTarget.option = addonTable.Config.Options.ENABLE_TELL_TARGET
+  enableTellTarget:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
+  table.insert(allFrames, enableTellTarget)
+
   container:SetScript("OnShow", function()
     for _, f in ipairs(allFrames) do
       if f.SetValue then

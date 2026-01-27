@@ -329,6 +329,13 @@ local function SetupLayout(parent)
   end
   table.insert(allFrames, editBoxPositionDropdown)
 
+  local keepEditBoxVisible = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.KEEP_EDIT_BOX_VISIBLE, 28, function(state)
+    addonTable.Config.Set(addonTable.Config.Options.KEEP_EDIT_BOX_VISIBLE, state and 1 or 0)
+  end)
+  keepEditBoxVisible.option = addonTable.Config.Options.KEEP_EDIT_BOX_VISIBLE
+  keepEditBoxVisible:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, 0)
+  table.insert(allFrames, keepEditBoxVisible)
+
   local newWhispersNewTab = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.NEW_WHISPERS_TO_NEW_TAB, 28, function(state)
     addonTable.Config.Set(addonTable.Config.Options.NEW_WHISPER_NEW_TAB, state and 1 or 0)
   end)

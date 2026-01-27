@@ -78,6 +78,7 @@ local settings = {
   },
 
   EDIT_BOX_POSITION = {key = "edit_box_position", default = "bottom"},
+  KEEP_EDIT_BOX_VISIBLE = {key = "keep_edit_box_visible", default = false},
 
   SKINS = {key = "skins", default = {}},
   DISABLED_SKINS = {key = "disabled_skins", default = {}},

@@ -148,19 +148,41 @@ function addonTable.Core.ApplyOverrides()
 
   if ChatFrameUtil and ChatFrameUtil.DeactivateChat then
     hooksecurefunc(ChatFrameUtil, "DeactivateChat", function(editBox)
-      editBox:Hide()
+      if editBox == ChatFrame1EditBox then
+        local visible = addonTable.Config.Get(addonTable.Config.Options.KEEP_EDIT_BOX_VISIBLE)
+        editBox:SetShown(visible)
+        if visible then
+          editBox:SetAlpha(1)
+        end
+      else
+        editBox:Hide()
+      end
     end)
     hooksecurefunc(ChatFrameUtil, "ActivateChat", function(editBox)
       editBox:Show()
     end)
   else
     hooksecurefunc("ChatEdit_DeactivateChat", function(editBox)
-      editBox:Hide()
+      if editBox == ChatFrame1EditBox then
+        local visible = addonTable.Config.Get(addonTable.Config.Options.KEEP_EDIT_BOX_VISIBLE)
+        editBox:SetShown(visible)
+        if visible then
+          editBox:SetAlpha(1)
+        end
+      else
+        editBox:Hide()
+      end
     end)
     hooksecurefunc("ChatEdit_ActivateChat", function(editBox)
       editBox:Show()
     end)
   end
+
+  addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
+    if settingName == addonTable.Config.Options.KEEP_EDIT_BOX_VISIBLE then
+      ChatFrame1EditBox:SetShown(addonTable.Config.Get(addonTable.Config.Options.KEEP_EDIT_BOX_VISIBLE))
+    end
+  end)
 
   local function UpdateHeader(editBox)
     if editBox ~= ChatFrame1EditBox then

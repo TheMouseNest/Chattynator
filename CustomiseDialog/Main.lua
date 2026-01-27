@@ -330,7 +330,7 @@ local function SetupLayout(parent)
   table.insert(allFrames, editBoxPositionDropdown)
 
   local keepEditBoxVisible = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.KEEP_EDIT_BOX_VISIBLE, 28, function(state)
-    addonTable.Config.Set(addonTable.Config.Options.KEEP_EDIT_BOX_VISIBLE, state and 1 or 0)
+    addonTable.Config.Set(addonTable.Config.Options.KEEP_EDIT_BOX_VISIBLE, state)
   end)
   keepEditBoxVisible.option = addonTable.Config.Options.KEEP_EDIT_BOX_VISIBLE
   keepEditBoxVisible:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, 0)

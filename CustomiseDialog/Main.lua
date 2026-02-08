@@ -223,12 +223,28 @@ local function SetupLayout(parent)
   local allFrames = {}
 
   local messageSpacing
-  messageSpacing = addonTable.CustomiseDialog.Components.GetSlider(container, addonTable.Locales.MESSAGE_SPACING, 0, 60, "%spx", function()
+  messageSpacing = addonTable.CustomiseDialog.Components.GetSlider(container, addonTable.Locales.MESSAGE_SPACING, 0, 64, "%spx", function()
     addonTable.Config.Set(addonTable.Config.Options.MESSAGE_SPACING, messageSpacing:GetValue())
   end)
   messageSpacing.option = addonTable.Config.Options.MESSAGE_SPACING
   messageSpacing:SetPoint("TOP")
   table.insert(allFrames, messageSpacing)
+
+  local messagePadding
+  messagePadding = addonTable.CustomiseDialog.Components.GetSlider(container, addonTable.Locales.MESSAGE_PADDING, 0, 64, "%spx", function()
+    addonTable.Config.Set(addonTable.Config.Options.MESSAGE_PADDING, messagePadding:GetValue())
+  end)
+  messagePadding.option = addonTable.Config.Options.MESSAGE_PADDING
+  messagePadding:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, 0)
+  table.insert(allFrames, messagePadding)
+
+  local timestampPadding
+  timestampPadding = addonTable.CustomiseDialog.Components.GetSlider(container, addonTable.Locales.TIMESTAMP_PADDING, 0, 64, "%spx", function()
+    addonTable.Config.Set(addonTable.Config.Options.TIMESTAMP_PADDING, timestampPadding:GetValue())
+  end)
+  timestampPadding.option = addonTable.Config.Options.TIMESTAMP_PADDING
+  timestampPadding:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, 0)
+  table.insert(allFrames, timestampPadding)
 
   --[[local lineSpacing
   lineSpacing = addonTable.CustomiseDialog.Components.GetSlider(container, addonTable.Locales.LINE_SPACING, 0, 60, "%spx", function()
@@ -238,11 +254,18 @@ local function SetupLayout(parent)
   lineSpacing:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, 0)
   table.insert(allFrames, lineSpacing)]]
 
+  local alignLeadingTab = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.ALIGN_LEADING_TAB, 28, function(state)
+    addonTable.Config.Set(addonTable.Config.Options.ALIGN_LEADING_TAB, state)
+  end)
+  alignLeadingTab.option = addonTable.Config.Options.ALIGN_LEADING_TAB
+  alignLeadingTab:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
+  table.insert(allFrames, alignLeadingTab)
+
   local showSeparator = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_VERTICAL_SEPARATOR, 28, function(state)
     addonTable.Config.Set(addonTable.Config.Options.SHOW_TIMESTAMP_SEPARATOR, state)
   end)
   showSeparator.option = addonTable.Config.Options.SHOW_TIMESTAMP_SEPARATOR
-  showSeparator:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
+  showSeparator:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, 0)
   table.insert(allFrames, showSeparator)
 
   local showTabs = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.SHOW_TABS, function(value)

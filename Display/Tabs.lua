@@ -33,6 +33,12 @@ function addonTable.Display.TabsBarMixin:OnLoad()
     self:PositionTabs()
   end)
 
+  addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
+    if settingName == addonTable.Config.Options.ALIGN_LEADING_TAB then
+      self:RefreshTabs()
+    end
+  end, self)
+
   self.active = false
 
   self.fadeInterpolator = CreateInterpolator(InterpolatorUtil.InterpolateEaseIn)
@@ -44,6 +50,10 @@ end
 
 function addonTable.Display.TabsBarMixin:PositionTabs()
   local xOffset = 0
+  if addonTable.Config.Get(addonTable.Config.Options.ALIGN_LEADING_TAB) then
+    xOffset = addonTable.Constants.TabAlignmentX
+  end
+
   for _, tab in ipairs(self.Tabs or {}) do
     tab:SetPoint("BOTTOMLEFT", self, "TOPLEFT", xOffset, -22)
     xOffset = xOffset + tab:GetWidth() + addonTable.Constants.TabSpacing

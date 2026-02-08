@@ -13,6 +13,7 @@ addonTable.Constants = {
   MinTabWidth = 20,
   TabPadding = 30,
   TabSpacing = 10,
+  TabAlignmentX = -4,
 
   ChannelIDs = {
     General = 1,

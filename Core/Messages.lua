@@ -1165,7 +1165,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
       self:AddMessage(CHAT_MSG_BLOCK_CHAT_CHANNEL_INVITE, info.r, info.g, info.b, info.id);
     end
   elseif (type == "CHANNEL_NOTICE") then
-    if isSecret then
+    if isSecret or not tIndexOf(self.zoneChannelList, arg7) then
       return
     end
 

@@ -373,9 +373,9 @@ function addonTable.MessagesMonitorMixin:SetInset()
   else
     error("unknown format")
   end
-  self.inset = self.sizingFontString:GetUnboundedStringWidth() + 10
+  self.inset = self.sizingFontString:GetUnboundedStringWidth() + 8
   if self.timestampFormat == " " then
-    self.inset = 8
+    self.inset = 6
   end
 end
 

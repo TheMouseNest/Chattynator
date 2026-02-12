@@ -750,9 +750,11 @@ function addonTable.MessagesMonitorMixin:UpdateChannels()
       local streamInfo = C_Club.GetStreamInfo(communityIDStr, channelID)
       if clubInfo and streamInfo and ChatFrame_ContainsChannel(ChatFrame1, channelName) then
         local key = clubInfo.name .. " - " .. streamInfo.name
-        self.channelMap[index] = key
-        self.defaultChannels[key] = true
-        self.maxDisplayChannels = math.max(self.maxDisplayChannels, index)
+        if not issecretvalue or not issecretvalue(key) then
+          self.channelMap[index] = key
+          self.defaultChannels[key] = true
+          self.maxDisplayChannels = math.max(self.maxDisplayChannels, index)
+        end
       end
     end
   end
@@ -1303,7 +1305,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
         playerLinkDisplayText = playerWrapper:format(coloredName);
       end
 
-      local isCommunityType = type == "COMMUNITIES_CHANNEL";
+      local isCommunityType = (not issecretvalue or not issecretvalue(type)) and type == "COMMUNITIES_CHANNEL" or issecretvalue(type);
       if ( isCommunityType ) then
         local isBattleNetCommunity = bnetIDAccount ~= nil and bnetIDAccount ~= 0;
         local messageInfo, clubId, streamId, clubType = C_Club.GetInfoFromLastCommunityChatLine();

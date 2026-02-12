@@ -41,6 +41,7 @@ L["LOCK_CHAT"] = "Lock Chat"
 L["COPY_CHAT"] = "Copy Chat"
 L["RENAME_X_MESSAGE"] = "Rename \"%s\" to:"
 L["SEARCH_IN_X_MESSAGE"] = "Search in \"%s\" for:"
+L["ACTION_UNAVAILABLE_DUE_TO_ENCOUNTER_RESTRICTIONS"] = "Action unavailable, due to encounter restrictions"
 
 L["DISABLE_ADDON_X"] = "%s is incompatible with Chattynator and may cause glitches."
 

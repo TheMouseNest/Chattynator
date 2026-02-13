@@ -1305,8 +1305,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
         playerLinkDisplayText = playerWrapper:format(coloredName);
       end
 
-      local isCommunityType = (not issecretvalue or not issecretvalue(type)) and type == "COMMUNITIES_CHANNEL" or (issecretvalue and issecretvalue(type))
-      if ( isCommunityType ) then
+      if type == "COMMUNITIES_CHANNEL" then
         local isBattleNetCommunity = bnetIDAccount ~= nil
         local messageInfo, clubId, streamId, clubType = C_Club.GetInfoFromLastCommunityChatLine();
         if (messageInfo ~= nil) then

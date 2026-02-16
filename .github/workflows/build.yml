@@ -26,4 +26,3 @@ jobs:
         args: -p 1273281 -a 4N2mA4GL
       env:
         CF_API_KEY: ${{ secrets.plusmouse_curseforge }}
-        WAGO_API_TOKEN: ${{ secrets.plusmouse_wago }}

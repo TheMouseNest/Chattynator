@@ -1386,6 +1386,8 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
         if not showLink or (not isSecret) and arg2 == "" then
           if ( type == "TEXT_EMOTE" ) then
             outMsg = message;
+          elseif addonTable.Constants.IsClassic and not isSecret then -- Correct badly formatted message with %o instead of %s
+            outMsg = string.format(GetOutMessageFormatKey(type, isSecret)..message:gsub("%%o", "%%s"), pflag .. arg2, arg2);
           else
             outMsg = string.format(GetOutMessageFormatKey(type, isSecret)..message, pflag .. arg2, arg2);
           end

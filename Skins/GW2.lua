@@ -80,7 +80,7 @@ local skinners = {
       tab:SetText(" ")
     end
     if tab:GetFontString().GwSetFontTemplate then
-      tab:GetFontString():GwSetFontTemplate(DAMAGE_TEXT_FONT, GW.TextSizeType.NORMAL)
+      tab:GetFontString():GwSetFontTemplate(DAMAGE_TEXT_FONT, GW.Enum.TextSizeType.Normal)
     else
       tab:GetFontString():SetFont(DAMAGE_TEXT_FONT, 11, "")
     end

@@ -974,8 +974,46 @@ local function GetOutMessageFormatKey(chatEventSubtype, isSecret)
   return formatKey or "";
 end
 
+local function GetCommunityAndStreamFromChannel(communityChannel)
+	local clubId, streamId = communityChannel:match("(%d+)%:(%d+)");
+	return tonumber(clubId), tonumber(streamId);
+end
+
+local function GetCommunityAndStreamName(clubId, streamId)
+	local streamInfo = C_Club.GetStreamInfo(clubId, streamId);
+
+	if streamInfo and (streamInfo.streamType == Enum.ClubStreamType.Guild or streamInfo.streamType == Enum.ClubStreamType.Officer) then
+		return streamInfo.name;
+	end
+
+	local streamName = streamInfo and streamInfo.name or "";
+
+	local clubInfo = C_Club.GetClubInfo(clubId);
+	if streamInfo and streamInfo.streamType == Enum.ClubStreamType.General then
+		local communityName = clubInfo and (clubInfo.shortName or clubInfo.name) or "";
+		return communityName;
+	else
+		local communityName = clubInfo and (clubInfo.shortName or clubInfo.name) or "";
+		return communityName.." - "..streamName;
+	end
+end
+
+local function ResolveChannelName(communityChannel)
+	local clubId, streamId = GetCommunityAndStreamFromChannel(communityChannel);
+	if not clubId or not streamId then
+		return communityChannel;
+	end
+
+	return GetCommunityAndStreamName(clubId, streamId);
+end
+
+function ResolvePrefixedChannelName(communityChannelArg)
+	local prefix, communityChannel = communityChannelArg:match("(%d+. )(.*)");
+	return prefix..ResolveChannelName(communityChannel);
+end
+
 local function GetChannelDecorated(zoneID, channelID, channelName, isSecret)
-  local decorated = "|Hchannel:channel:"..channelID.."|h[" .. (ChatFrame_ResolvePrefixedChannelName or ChatFrameUtil.ResolvePrefixedChannelName)(channelName) .. "]|h "
+  local decorated = "|Hchannel:channel:"..channelID.."|h[" .. ResolvePrefixedChannelName(channelName) .. "]|h "
 
   if isSecret and addonTable.Modifiers.ShortenPatterns then
     return decorated:gsub(addonTable.Modifiers.ShortenPatterns.channel.p, addonTable.Modifiers.ShortenPatterns.channel.r({typeInfo = {channel = {index = channelID, zoneID = zoneID}}}), 1)

@@ -385,7 +385,8 @@ function addonTable.MessagesMonitorMixin:ShowGMOTD()
     return
   end
   local motd = C_Club.GetClubInfo(guildID).broadcast
-  if motd and (((not issecretvalue or not issecretvalue(motd)) and motd ~= "" and motd ~= self.seenMOTD) or issecretvalue(motd)) then
+  if motd and (issecretvalue and (not issecretvalue(motd) and motd ~= "" and motd ~= self.seenMOTD or issecretvalue(motd)) or
+      not issecretvalue and motd ~= "" and motd ~= self.seenMOTD) then
     self.seenMOTD = (not issecretvalue or not issecretvalue(motd)) and motd or nil
     local info = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS)["GUILD"] or ChatTypeInfo["GUILD"]
     local formatted = string.format(GUILD_MOTD_TEMPLATE, motd)

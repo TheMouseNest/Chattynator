@@ -210,7 +210,7 @@ function addonTable.MessagesMonitorMixin:OnLoad()
 
   hooksecurefunc(DEFAULT_CHAT_FRAME, "AddMessage", function(_, ...)
     local fullTrace = debugstack()
-    if fullTrace:find("ChatFrame_OnEvent") then
+    if fullTrace:find("ChatFrame_OnEvent") or fullTrace:find("Blizzard_Channels") then
       return
     end
     local trace = debugstack(3, 1, 0)

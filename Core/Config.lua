@@ -93,8 +93,13 @@ local settings = {
   LOCKED = {key = "locked", default = false, refresh = {addonTable.Constants.RefreshReason.Tabs, addonTable.Constants.RefreshReason.Locked}},
 
   LINE_SPACING = {key = "line_spacing_2", default = 0},
-  MESSAGE_SPACING = {key = "message_spacing", default = 5},
+  TAB_SPACING = {key = "tab_spacing", default = 8},
+  MESSAGE_SPACING = {key = "message_spacing", default = 4},
+  MESSAGE_PADDING = {key = "message_padding", default = 10},
+  TIMESTAMP_PADDING = {key = "timestamp_padding", default = 12},
   TIMESTAMP_FORMAT = {key = "timestamp_format", default = "%X"},
+  INSET_EDGE_TABS = {key = "inset_edge_tabs", default = false},
+  DYNAMIC_TAB_SIZING = {key = "dynamic_tab_sizing", default = false},
   SHOW_TIMESTAMP_SEPARATOR = {key = "show_timestamp_separator", default = true, refresh = {addonTable.Constants.RefreshReason.MessageWidget}},
 
   MESSAGE_FONT = {key = "message_font", default = "default", refresh = {addonTable.Constants.RefreshReason.MessageFont}},

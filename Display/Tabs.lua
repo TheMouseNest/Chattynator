@@ -33,6 +33,16 @@ function addonTable.Display.TabsBarMixin:OnLoad()
     self:PositionTabs()
   end)
 
+  addonTable.CallbackRegistry:RegisterCallback("SettingChanged", function(_, settingName)
+    if settingName == addonTable.Config.Options.TAB_SPACING then
+      self:RefreshTabs()
+    elseif settingName == addonTable.Config.Options.INSET_EDGE_TABS then
+      self:RefreshTabs()
+    elseif settingName == addonTable.Config.Options.DYNAMIC_TAB_SIZING then
+      self:RefreshTabs()
+    end
+  end, self)
+
   self.active = false
 
   self.fadeInterpolator = CreateInterpolator(InterpolatorUtil.InterpolateEaseIn)
@@ -42,11 +52,40 @@ function addonTable.Display.TabsBarMixin:Reset()
   self.Tabs = {}
 end
 
+-- MARK: Position Tabs
+
 function addonTable.Display.TabsBarMixin:PositionTabs()
-  local xOffset = 0
+  local tabCount = #self.Tabs
+  if tabCount <= 0 then return end
+
+  local tabOffsetX = 0
+  local tabSpacing = addonTable.Config.Get(addonTable.Config.Options.TAB_SPACING)
+  local insetEdgeTabs = addonTable.Config.Get(addonTable.Config.Options.INSET_EDGE_TABS)
+
+  if insetEdgeTabs == false then
+    -- remove intrinsic tab edge inset
+    tabOffsetX = -addonTable.Constants.TabEdgeInset
+  end
+
   for _, tab in ipairs(self.Tabs or {}) do
-    tab:SetPoint("BOTTOMLEFT", self, "TOPLEFT", xOffset, -22)
-    xOffset = xOffset + tab:GetWidth() + addonTable.Constants.TabSpacing
+    local tabWidth = tab:GetWidth()
+    local tabHeight = tab:GetHeight()
+
+    if addonTable.Config.Get(addonTable.Config.Options.DYNAMIC_TAB_SIZING) then
+      local totalSpacing = tabSpacing * (tabCount - 1)
+      local availableWidth = self.chatFrame:GetWidth() - totalSpacing
+
+      if insetEdgeTabs == true then
+        -- remove intrinsic tab edge inset from width calcs
+        availableWidth = availableWidth - (addonTable.Constants.TabEdgeInset * 2)
+      end
+
+      tabWidth = availableWidth / tabCount
+    end
+
+    tab:SetSize(tabWidth, tabHeight)
+    tab:SetPoint("BOTTOMLEFT", self, "TOPLEFT", tabOffsetX, -22)
+    tabOffsetX = tabOffsetX + tabWidth + tabSpacing
   end
 end
 

@@ -1280,7 +1280,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
     end
     self:AddMessage(message, info.r, info.g, info.b, info.id);
   elseif ( type == "BN_INLINE_TOAST_BROADCAST" ) then
-    if ( arg1 ~= "" ) then
+    if isSecret or arg1 ~= "" then
       if C_StringUtil and C_StringUtil.RemoveContiguousSpaces then
         arg1 = C_StringUtil.RemoveContiguousSpaces(arg1, 4)
       else
@@ -1291,7 +1291,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
       self:AddMessage(format(BN_INLINE_TOAST_BROADCAST, playerLink, arg1), info.r, info.g, info.b, info.id);
     end
   elseif ( type == "BN_INLINE_TOAST_BROADCAST_INFORM" ) then
-    if ( arg1 ~= "" ) then
+    if isSecret or arg1 ~= "" then
       if C_StringUtil and C_StringUtil.RemoveContiguousSpaces then
         arg1 = C_StringUtil.RemoveContiguousSpaces(arg1, 4)
       else

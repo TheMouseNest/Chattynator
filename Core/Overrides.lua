@@ -146,6 +146,13 @@ function addonTable.Core.ApplyOverrides()
     end
   end)
 
+  EventUtil.ContinueOnAddOnLoaded("Blizzard_Communities", function()
+    C_Timer.After(0, function()
+      local font, height, flags = _G[addonTable.Messages.font]:GetFont()
+      CommunitiesFrame.Chat.MessageFrame:SetFont(font, height * addonTable.Messages.scalingFactor, flags)
+    end)
+  end)
+
   if ChatFrameUtil and ChatFrameUtil.DeactivateChat then
     hooksecurefunc(ChatFrameUtil, "DeactivateChat", function(editBox)
       if editBox == ChatFrame1EditBox then

@@ -93,7 +93,9 @@ function addonTable.MessagesMonitorMixin:OnLoad()
   self.font = addonTable.Core.GetFontByID(self.fontKey)
   self.scalingFactor = addonTable.Core.GetFontScalingFactor()
 
-  self.inset = 0
+  self.rowPadding = 0
+  self.timestampPadding = 0
+  self.timestampWidth = 0
 
   self.sizingFontString = self:CreateFontString(nil, "BACKGROUND")
 
@@ -263,6 +265,12 @@ function addonTable.MessagesMonitorMixin:OnLoad()
     if settingName == addonTable.Config.Options.MESSAGE_SPACING then
       self.spacing = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_SPACING)
       renderNeeded = true
+    elseif settingName == addonTable.Config.Options.MESSAGE_PADDING then
+      self:SetInset()
+      renderNeeded = true
+    elseif settingName == addonTable.Config.Options.TIMESTAMP_PADDING then
+      self:SetInset()
+      renderNeeded = true
     elseif settingName == addonTable.Config.Options.TIMESTAMP_FORMAT then
       self.timestampFormat = addonTable.Config.Get(addonTable.Config.Options.TIMESTAMP_FORMAT)
       self:SetInset()
@@ -360,6 +368,7 @@ end
 function addonTable.MessagesMonitorMixin:SetInset()
   self.sizingFontString:SetFontObject(self.font)
   self.sizingFontString:SetTextScale(self.scalingFactor)
+
   if self.timestampFormat == "%X" then
     self.sizingFontString:SetText("00:00:00")
   elseif self.timestampFormat == "%H:%M" then
@@ -373,9 +382,14 @@ function addonTable.MessagesMonitorMixin:SetInset()
   else
     error("unknown format")
   end
-  self.inset = self.sizingFontString:GetUnboundedStringWidth() + 8
+
+  self.rowPadding = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_PADDING)
+  self.timestampPadding = addonTable.Config.Get(addonTable.Config.Options.TIMESTAMP_PADDING)
+  self.timestampWidth = self.sizingFontString:GetUnboundedStringWidth()
+
   if self.timestampFormat == " " then
-    self.inset = 6
+    self.timestampPadding = 0
+    self.timestampWidth = 0
   end
 end
 

@@ -222,13 +222,37 @@ local function SetupLayout(parent)
 
   local allFrames = {}
 
+  local tabSpacing
+  tabSpacing = addonTable.CustomiseDialog.Components.GetSlider(container, addonTable.Locales.TAB_SPACING, 0, 32, "%spx", function()
+    addonTable.Config.Set(addonTable.Config.Options.TAB_SPACING, tabSpacing:GetValue())
+  end)
+  tabSpacing.option = addonTable.Config.Options.TAB_SPACING
+  tabSpacing:SetPoint("TOP")
+  table.insert(allFrames, tabSpacing)
+
   local messageSpacing
-  messageSpacing = addonTable.CustomiseDialog.Components.GetSlider(container, addonTable.Locales.MESSAGE_SPACING, 0, 60, "%spx", function()
+  messageSpacing = addonTable.CustomiseDialog.Components.GetSlider(container, addonTable.Locales.MESSAGE_SPACING, 0, 64, "%spx", function()
     addonTable.Config.Set(addonTable.Config.Options.MESSAGE_SPACING, messageSpacing:GetValue())
   end)
   messageSpacing.option = addonTable.Config.Options.MESSAGE_SPACING
-  messageSpacing:SetPoint("TOP")
+  messageSpacing:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, 0)
   table.insert(allFrames, messageSpacing)
+
+  local messagePadding
+  messagePadding = addonTable.CustomiseDialog.Components.GetSlider(container, addonTable.Locales.MESSAGE_PADDING, 0, 64, "%spx", function()
+    addonTable.Config.Set(addonTable.Config.Options.MESSAGE_PADDING, messagePadding:GetValue())
+  end)
+  messagePadding.option = addonTable.Config.Options.MESSAGE_PADDING
+  messagePadding:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, 0)
+  table.insert(allFrames, messagePadding)
+
+  local timestampPadding
+  timestampPadding = addonTable.CustomiseDialog.Components.GetSlider(container, addonTable.Locales.TIMESTAMP_PADDING, 0, 64, "%spx", function()
+    addonTable.Config.Set(addonTable.Config.Options.TIMESTAMP_PADDING, timestampPadding:GetValue())
+  end)
+  timestampPadding.option = addonTable.Config.Options.TIMESTAMP_PADDING
+  timestampPadding:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, 0)
+  table.insert(allFrames, timestampPadding)
 
   --[[local lineSpacing
   lineSpacing = addonTable.CustomiseDialog.Components.GetSlider(container, addonTable.Locales.LINE_SPACING, 0, 60, "%spx", function()
@@ -238,11 +262,25 @@ local function SetupLayout(parent)
   lineSpacing:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, 0)
   table.insert(allFrames, lineSpacing)]]
 
+  local insetEdgeTabs = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.INSET_EDGE_TABS, 28, function(state)
+    addonTable.Config.Set(addonTable.Config.Options.INSET_EDGE_TABS, state)
+  end)
+  insetEdgeTabs.option = addonTable.Config.Options.INSET_EDGE_TABS
+  insetEdgeTabs:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
+  table.insert(allFrames, insetEdgeTabs)
+
+  local dynamicTabSizing = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.DYNAMIC_TAB_SIZING, 28, function(state)
+    addonTable.Config.Set(addonTable.Config.Options.DYNAMIC_TAB_SIZING, state)
+  end)
+  dynamicTabSizing.option = addonTable.Config.Options.DYNAMIC_TAB_SIZING
+  dynamicTabSizing:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, 0)
+  table.insert(allFrames, dynamicTabSizing)
+
   local showSeparator = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_VERTICAL_SEPARATOR, 28, function(state)
     addonTable.Config.Set(addonTable.Config.Options.SHOW_TIMESTAMP_SEPARATOR, state)
   end)
   showSeparator.option = addonTable.Config.Options.SHOW_TIMESTAMP_SEPARATOR
-  showSeparator:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
+  showSeparator:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, 0)
   table.insert(allFrames, showSeparator)
 
   local showTabs = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.SHOW_TABS, function(value)
@@ -292,7 +330,7 @@ local function SetupLayout(parent)
   end, function(value)
     addonTable.Config.Set(addonTable.Config.Options.BUTTON_POSITION, value)
   end)
-  buttonPositionDropdown:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
+  buttonPositionDropdown:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, 0)
   do
     local entries = {
       addonTable.Locales.LEFT_OUTSIDE,
@@ -333,14 +371,14 @@ local function SetupLayout(parent)
     addonTable.Config.Set(addonTable.Config.Options.KEEP_EDIT_BOX_VISIBLE, state)
   end)
   keepEditBoxVisible.option = addonTable.Config.Options.KEEP_EDIT_BOX_VISIBLE
-  keepEditBoxVisible:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, 0)
+  keepEditBoxVisible:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
   table.insert(allFrames, keepEditBoxVisible)
 
   local newWhispersNewTab = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.NEW_WHISPERS_TO_NEW_TAB, 28, function(state)
     addonTable.Config.Set(addonTable.Config.Options.NEW_WHISPER_NEW_TAB, state and 1 or 0)
   end)
   newWhispersNewTab.option = addonTable.Config.Options.NEW_WHISPER_NEW_TAB
-  newWhispersNewTab:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
+  newWhispersNewTab:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, 0)
   table.insert(allFrames, newWhispersNewTab)
 
   local locked = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.LOCK_CHAT, 28, function(state)

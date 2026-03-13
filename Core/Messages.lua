@@ -448,7 +448,7 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
     for index = self.messageCount, self.newMessageStartPoint, -1 do
       local m = self.messages[index]
       local guid = self.formatters[index] and self.formatters[index].playerGUID
-      if guid == reportedGUID then
+      if (not issecretvalue or not issecretvalue(guid)) and guid == reportedGUID then
         removedIDs[m.id] = true
         table.remove(self.messages, index)
         self.messagesProcessed[index] = nil

@@ -56,12 +56,22 @@ function addonTable.SlashCmd.Reset()
   ReloadUI()
 end
 
+function addonTable.SlashCmd.Version()
+  addonTable.Utilities.Message(
+    BLUE_FONT_COLOR:WrapTextInColorCode("Version: ") .. C_AddOns.GetAddOnMetadata("Chattynator", "Version") ..
+    LIGHTGRAY_FONT_COLOR:WrapTextInColorCode(", " .. date() .. ", ") ..
+    BLUE_FONT_COLOR:WrapTextInColorCode("WoW: ") .. select(4, GetBuildInfo())
+  )
+end
+
 function addonTable.SlashCmd.CustomiseUI()
   addonTable.CustomiseDialog.Toggle()
 end
 
 local COMMANDS = {
   [""] = addonTable.SlashCmd.CustomiseUI,
+  ["v"] = addonTable.SlashCmd.Version,
+  ["version"] = addonTable.SlashCmd.Version,
   ["c"] = addonTable.SlashCmd.Config,
   ["config"] = addonTable.SlashCmd.Config,
   ["reset"] = addonTable.SlashCmd.Reset,

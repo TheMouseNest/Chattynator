@@ -57,6 +57,7 @@ Skins/Blizzard.lua
 Skins/Dark.lua
 Skins/ElvUI.lua
 Skins/GW2.lua
+Skins/NDui.lua
 
 CustomiseDialog/Initialize.lua
 CustomiseDialog/Main.lua

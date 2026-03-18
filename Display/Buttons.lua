@@ -73,6 +73,15 @@ function addonTable.Display.ButtonsBarMixin:AddBlizzardButtons()
     ChatFrameChannelButton:ClearAllPoints()
     ChatFrameChannelButton:SetScript("OnMouseDown", nil)
     ChatFrameChannelButton:SetScript("OnMouseUp", nil)
+    if C_ChatInfo.InChatMessagingLockdown then
+      ChatFrameChannelButton:SetScript("OnClick", function()
+        if not InCombatLockdown() and not C_ChatInfo.InChatMessagingLockdown() then
+          ShowUIPanel(ChannelFrame)
+        else
+          addonTable.Utilities.Message(addonTable.Locales.ACTION_UNAVAILABLE_DUE_TO_ENCOUNTER_RESTRICTIONS)
+        end
+      end)
+    end
     addonTable.Skins.AddFrame("ChatButton", ChatFrameChannelButton, {"channels"})
     table.insert(self.buttons, ChatFrameChannelButton)
   end

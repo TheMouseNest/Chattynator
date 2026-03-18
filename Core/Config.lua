@@ -116,6 +116,8 @@ local settings = {
   SHOW_BUTTONS = {key = "show_buttons", default = "unset"},
   SHOW_TABS = {key = "show_tabs_1", default = "always", refresh = {addonTable.Constants.RefreshReason.Tabs}},
 
+  WHISPER_SOUNDS = {key = "whisper_sounds", default = "first"},
+
   COPY_TIMESTAMPS = {key = "copy_timestamps", default = true},
   ENABLE_COMBAT_MESSAGES = {key = "enable_combat_messages", default = false},
   DEBUG = {key = "debug", default = false},

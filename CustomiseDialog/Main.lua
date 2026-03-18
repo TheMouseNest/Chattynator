@@ -718,6 +718,45 @@ local function SetupChatColors(parent)
   return container
 end
 
+local function SetupNotifications(parent)
+  local container = CreateFrame("Frame", nil, parent)
+
+  local allFrames = {}
+
+  local whisperDropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.WHISPER_SOUNDS, function(value)
+    return addonTable.Config.Get(addonTable.Config.Options.WHISPER_SOUNDS) == value
+  end, function(value)
+    addonTable.Config.Set(addonTable.Config.Options.WHISPER_SOUNDS, value)
+  end)
+  whisperDropdown:SetPoint("TOP")
+  do
+    local entries = {
+      addonTable.Locales.FIRST_MESSAGE,
+      addonTable.Locales.ALL_MESSAGES,
+    }
+    local values = {
+      "first",
+      "all"
+    }
+    whisperDropdown:Init(entries, values)
+  end
+  table.insert(allFrames, whisperDropdown)
+
+  container:SetScript("OnShow", function()
+    for _, f in ipairs(allFrames) do
+      if f.SetValue then
+        if f.option then
+          f:SetValue(addonTable.Config.Get(f.option))
+        else
+          f:SetValue()
+        end
+      end
+    end
+  end)
+
+  return container
+end
+
 local TabSetups = {
   {name = GENERAL, callback = SetupGeneral},
   {name = addonTable.Locales.THEME, callback = SetupThemes},
@@ -725,6 +764,7 @@ local TabSetups = {
   {name = addonTable.Locales.DISPLAY, callback = SetupDisplay},
   {name = addonTable.Locales.MESSAGE_COLORS, callback = SetupChatColors},
   {name = addonTable.Locales.FORMATTING, callback = SetupFormatting},
+  {name = addonTable.Locales.NOTIFICATIONS, callback = SetupNotifications},
 }
 
 function addonTable.CustomiseDialog.Toggle()
@@ -738,7 +778,7 @@ function addonTable.CustomiseDialog.Toggle()
   frame:SetToplevel(true)
   customisers[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)] = frame
   table.insert(UISpecialFrames, frame:GetName())
-  frame:SetSize(600, 700)
+  frame:SetSize(700, 700)
   frame:SetPoint("CENTER")
   frame:Raise()
 

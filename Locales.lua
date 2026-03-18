@@ -51,6 +51,7 @@ L["LAYOUT"] = "Layout"
 L["DISPLAY"] = "Display"
 L["FORMATTING"] = "Formatting"
 L["MESSAGE_COLORS"] = "Message Colors"
+L["NOTIFICATIONS"] = "Notifications"
 
 L["CUSTOMISE_CHATTYNATOR"] = "Customise Chattynator"
 L["CUSTOMISE_CHATTYNATOR_TAB"] = "Customise Chattynator Tab"
@@ -96,6 +97,10 @@ L["THICK"] = "Thick"
 L["ALWAYS"] = "Always"
 L["MOUSEOVER"] = "Mouseover"
 L["NEVER"] = "Never"
+
+L["WHISPER_SOUNDS"] = "Whispers sounds"
+L["FIRST_MESSAGE"] = "First message"
+L["ALL_MESSAGES"] = "All messages"
 
 L["NONE"] = "None"
 L["SHORTEN_STYLE_1"] = "Style 1: [1] [|cff00ff00Character|r]:"

@@ -1433,7 +1433,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
       (ChatEdit_SetLastTellTarget or ChatFrameUtil.SetLastTellTarget)(arg2, type);
     end
 
-    if ( not self.tellTimer or (GetTime() > self.tellTimer) ) then
+    if not self.tellTimer or (GetTime() > self.tellTimer) or addonTable.Config.Get(addonTable.Config.Options.WHISPER_SOUNDS) == "all" then
       PlaySound(SOUNDKIT.TELL_MESSAGE);
     end
     self.tellTimer = GetTime() + (CHAT_TELL_ALERT_TIME or ChatFrameConstants.WhisperSoundAlertCooldown);

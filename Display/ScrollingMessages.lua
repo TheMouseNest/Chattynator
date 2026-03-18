@@ -227,12 +227,18 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
     end
     for i = start + math.min(#messages, lines) - 1, start, -1 do
       local m = messages[i]
+      local rowPadding = addonTable.Messages.rowPadding
+      local timestampWidth = addonTable.Messages.timestampWidth
+      local timestampPadding = addonTable.Messages.timestampPadding
+      local messagePosX = rowPadding + timestampWidth + timestampPadding
+      local hasTimestamp = addonTable.Messages.timestampFormat ~= " "
+
       if m then
         local fs = self.pool:Acquire()
         fs:SetFontObject(addonTable.Messages.font)
         fs:SetTextColor(1, 1, 1)
         fs:SetJustifyH("LEFT")
-        fs:SetPoint("LEFT", self, addonTable.Messages.inset + 3, 0)
+        fs:SetPoint("LEFT", self, messagePosX, 0)
         fs:SetPoint("RIGHT", self)
         fs:SetPoint("BOTTOM", self, 0, 2)
         fs:SetText(m.text)
@@ -246,14 +252,16 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
         fs.animationDestination = nil
         fs.animationFinalAlpha = nil
         fs:Show()
+
         if self.visibleLines[1] then
           self.visibleLines[1]:SetPoint("BOTTOM", fs, "TOP", 0, addonTable.Messages.spacing)
         end
+
         local timestamp = self.pool:Acquire()
         timestamp:SetFontObject(addonTable.Messages.font)
         timestamp:SetTextColor(0.6, 0.6, 0.6)
         timestamp:SetJustifyH("LEFT")
-        timestamp:SetPoint("LEFT")
+        timestamp:SetPoint("LEFT", self, rowPadding, 0)
         timestamp:SetPoint("TOP", fs)
         timestamp:SetTextScale(addonTable.Messages.scalingFactor)
         timestamp:Show()
@@ -261,17 +269,19 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
         timestamp:SetAlpha(1)
         fs.timestampValue = m.timestamp
         fs.timestamp = timestamp
-        if addonTable.Config.Get(addonTable.Config.Options.SHOW_TIMESTAMP_SEPARATOR) then
+
+        if hasTimestamp and addonTable.Config.Get(addonTable.Config.Options.SHOW_TIMESTAMP_SEPARATOR) then
           local bar = self.barPool:Acquire()
           bar:Show()
           bar:SetTexture("Interface/AddOns/Chattynator/Assets/Fade.png")
-          bar:SetPoint("RIGHT", fs, "LEFT", -4, 0)
+          bar:SetPoint("RIGHT", fs, "LEFT", -(timestampPadding / 2), 0)
           bar:SetPoint("TOP", fs)
           bar:SetPoint("BOTTOM", fs, 0, 1)
           bar:SetWidth(2)
           bar:SetAlpha(1)
           fs.bar = bar
         end
+
         table.insert(self.visibleLines, 1, fs)
       end
     end

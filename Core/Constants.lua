@@ -12,7 +12,7 @@ addonTable.Constants = {
   NewTabMarkup = CreateTextureMarkup("Interface/AddOns/Chattynator/Assets/NewTab.png", 40, 40, 15, 15, 0, 1, 0, 1),
   MinTabWidth = 20,
   TabPadding = 30,
-  TabSpacing = 10,
+  TabEdgeInset = 4,
 
   ChannelIDs = {
     General = 1,

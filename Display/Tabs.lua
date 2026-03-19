@@ -52,7 +52,7 @@ function addonTable.Display.TabsBarMixin:PositionTabs()
     tab:SetPoint("BOTTOMLEFT", self, "TOPLEFT", xOffset, -22)
     xOffset = xOffset + tab:GetWidth() + addonTable.Constants.TabSpacing
 
-    if xOffset + self.dropdownTabButton:GetWidth() > self.chatFrame:GetWidth() then
+    if xOffset + self.dropdownTabButton:GetWidth() > self.chatFrame:GetWidth() and tab ~= self.dropdownTabButton then
       tab:Hide()
       table.insert(self.dropdownTabs, tab)
       if finalOffset == 0 then
@@ -466,6 +466,8 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
     end)
     self.dropdownTabButton:Show()
     self.dropdownTabButton:SetColor(0.3, 0.3, 0.3)
+
+    table.insert(self.Tabs, self.dropdownTabButton)
   end
 
   for _, tab in ipairs(allTabs) do

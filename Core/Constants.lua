@@ -10,6 +10,7 @@ addonTable.Constants = {
   IsClassic = WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE,
 
   NewTabMarkup = CreateTextureMarkup("Interface/AddOns/Chattynator/Assets/NewTab.png", 40, 40, 15, 15, 0, 1, 0, 1),
+  TabDropdownMarkup = CreateTextureMarkup("Interface/AddOns/Chattynator/Assets/TabDropdown.png", 40, 40, 15, 15, 0, 1, 0, 1),
   MinTabWidth = 20,
   TabPadding = 30,
   TabSpacing = 10,

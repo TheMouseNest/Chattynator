@@ -53,7 +53,7 @@ function addonTable.Display.TabsBarMixin:PositionTabs()
       xOffset = xOffset + tab:GetWidth() + addonTable.Constants.TabSpacing
     end
   end
-  if xOffset > self.chatFrame:GetWidth() then
+  if xOffset - addonTable.Constants.TabSpacing > self.chatFrame:GetWidth() then
     local index = #self.Tabs - 1
     while xOffset + self.dropdownTabButton:GetWidth() > self.chatFrame:GetWidth() do
       local tab = self.Tabs[index]
@@ -449,7 +449,7 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
     self.dropdownTabButton.isDraggable = false
     self.dropdownTabButton:SetText(addonTable.Constants.TabDropdownMarkup)
     self.dropdownTabButton:SetScript("OnClick", function()
-      MenuUtil.CreateContextMenu(self, function(menu, rootDescription)
+      MenuUtil.CreateContextMenu(self, function(_, rootDescription)
         for _, tab in ipairs(self.dropdownTabs) do
           local button = rootDescription:CreateButton(CreateColor(tab:GetColor()):WrapTextInColorCode(tab:GetText()), function(_, details)
             tab:Click(details.buttonName)
@@ -458,6 +458,7 @@ function addonTable.Display.TabsBarMixin:RefreshTabs()
             b:RegisterForClicks("LeftButtonUp", "RightButtonUp", "MiddleButtonUp")
           end)
         end
+        rootDescription:SetScrollMode(20 * 20)
       end)
     end)
     self.dropdownTabButton:Show()

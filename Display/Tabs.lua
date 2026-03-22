@@ -62,8 +62,11 @@ function addonTable.Display.TabsBarMixin:PositionTabs()
       table.insert(self.dropdownTabs, 1, tab)
       index = index - 1
     end
+    self.tabsEnd = #self.Tabs
     self.dropdownTabButton:SetPoint("BOTTOMLEFT", self, "TOPLEFT", xOffset, -22)
     self.dropdownTabButton:Show()
+  else
+    self.tabsEnd = #self.Tabs - 1
   end
 end
 
@@ -72,7 +75,7 @@ function addonTable.Display.TabsBarMixin:StartDragging(index)
   local prevLeft = self.Tabs[index]:GetLeft()
   self.dragIndex = index
   self:RegisterEvent("GLOBAL_MOUSE_UP")
-  local rightLimit = self.Tabs[#self.Tabs]:GetRight()
+  local rightLimit = self.Tabs[self.tabsEnd]:GetRight() + 1
   local leftLimit = self.Tabs[1]:GetLeft()
 
   self:SetScript("OnUpdate", function()

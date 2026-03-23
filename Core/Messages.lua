@@ -1015,7 +1015,7 @@ end
 local function GetChannelDecorated(zoneID, channelID, channelName, isSecret)
   local decorated = "|Hchannel:channel:"..channelID.."|h[" .. ResolvePrefixedChannelName(channelName) .. "]|h "
 
-  if isSecret and addonTable.Modifiers.ShortenPatterns then
+  if isSecret and addonTable.Modifiers.ShortenPatterns and not issecretvalue(decorated) then -- TODO: Only show prefix from ResolvePrefixedChannelName if pattern is set to that
     return decorated:gsub(addonTable.Modifiers.ShortenPatterns.channel.p, addonTable.Modifiers.ShortenPatterns.channel.r({typeInfo = {channel = {index = channelID, zoneID = zoneID}}}), 1)
   end
   return decorated

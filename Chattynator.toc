@@ -40,6 +40,7 @@ Core/Dialogs.lua
 
 API/Main.lua
 API/CustomTab.lua
+API/Modifiers.lua
 
 Display/Main.lua
 Display/Tabs.lua

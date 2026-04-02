@@ -2,10 +2,12 @@
 local addonTable = select(2, ...)
 
 local function Clean(text)
-	return "^" .. text
-		:gsub("([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1")
-		:gsub("%%s", "(.-)")
-		:gsub("%%d", "(.-)")
+  return "^" .. text
+    :gsub("%%s", "\as")
+    :gsub("%%s", "\ad")
+    :gsub("([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1")
+    :gsub("\as", "(.-)")
+    :gsub("\ad", "(.-)")
 end
 
 local lootPatterns = {

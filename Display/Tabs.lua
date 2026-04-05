@@ -53,7 +53,7 @@ function addonTable.Display.TabsBarMixin:PositionTabs()
       xOffset = xOffset + tab:GetWidth() + addonTable.Constants.TabSpacing
     end
   end
-  if xOffset - addonTable.Constants.TabSpacing > self.chatFrame:GetWidth() then
+  if not addonTable.Config.Get(addonTable.Config.Options.FORCE_TAB_OVERFLOW) and xOffset - addonTable.Constants.TabSpacing > self.chatFrame:GetWidth() then
     local index = #self.Tabs - 1
     while xOffset + self.dropdownTabButton:GetWidth() > self.chatFrame:GetWidth() do
       local tab = self.Tabs[index]
@@ -66,6 +66,7 @@ function addonTable.Display.TabsBarMixin:PositionTabs()
     self.dropdownTabButton:SetPoint("BOTTOMLEFT", self, "TOPLEFT", xOffset, -22)
     self.dropdownTabButton:Show()
   else
+    self.dropdownTabButton:Hide()
     self.tabsEnd = #self.Tabs - 1
   end
 end

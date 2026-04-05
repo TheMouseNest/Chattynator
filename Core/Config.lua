@@ -125,7 +125,9 @@ local settings = {
   APPLIED_MESSAGE_IDS = {key = "applied_message_ids", default = false, transfer = true},
   APPLIED_PLAYER_TABLE = {key = "applied_player_table_5", default = false, transfer = true},
 
-  CHAT_COLORS = {key = "chat_colors", default = {}, refresh = {addonTable.Constants.RefreshReason.MessageColor}}
+  CHAT_COLORS = {key = "chat_colors", default = {}, refresh = {addonTable.Constants.RefreshReason.MessageColor}},
+
+  FORCE_TAB_OVERFLOW = {key = "force_tab_overflow", default = false, refresh = {addonTable.Constants.RefreshReason.Tabs}},
 }
 
 addonTable.Config.RefreshType = {}

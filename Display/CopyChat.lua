@@ -116,6 +116,8 @@ function addonTable.Display.CopyChatMixin:LoadMessages(filterFunc, indexOffset)
     index = index + 1
   end
 
+  self.textBox:SetFontObject(addonTable.Messages.font)
+  self.textBox:GetEditBox().fontName = addonTable.Messages.font
   self.textBox:SetText(table.concat(messages, "\n"))
   self.textBox:GetEditBox():HighlightText(0, #self.textBox:GetEditBox():GetText())
   C_Timer.After(0, function()

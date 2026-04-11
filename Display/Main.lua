@@ -217,12 +217,6 @@ function addonTable.Display.ChatFrameMixin:UpdateEditBox()
       r:SetFontObject(font)
     end
   end
-
-  if not self.editBoxHooked then
-    self.editBoxHooked = true
-    ChatFrame1EditBox:HookScript("OnShow", function()
-    end)
-  end
 end
 
 function addonTable.Display.ChatFrameMixin:SetFilter(func)

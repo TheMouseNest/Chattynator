@@ -90,6 +90,7 @@ end
 
 function addonTable.Display.ScrollingMessagesMixin:Clear()
   for _, fs in ipairs(self.visibleLines) do
+    fs.messageInfo = nil
     fs.timestamp = nil
     fs.bar = nil
   end
@@ -215,6 +216,7 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
     local start = math.min(#messages, self.scrollIndex)
     while #self.visibleLines > 0 and #self.visibleLines >= lines - math.min(lines, #messages) do
       local fs = table.remove(self.visibleLines)
+      fs.messageInfo = nil
       if fs.timestamp then
         self.pool:Release(fs.timestamp)
         fs.timestamp = nil
@@ -239,6 +241,9 @@ function addonTable.Display.ScrollingMessagesMixin:Render(newMessages)
         fs:SetTextColor(m.color.r, m.color.g, m.color.b)
         fs:SetTextScale(addonTable.Messages.scalingFactor)
         fs:SetNonSpaceWrap(true)
+        fs.messageInfo = {
+          message = m.text,
+        }
         fs:SetAlpha(1)
         fs.animationTime = nil
         fs.animationStart = nil

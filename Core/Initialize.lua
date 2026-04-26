@@ -126,6 +126,7 @@ function addonTable.Core.Initialize()
     storecategory = false,
     talent = true,
     talentbuild = false,
+    tel = true,
     trade = false,
     transmogappearance = false,
     transmogillusion = false,
@@ -135,17 +136,23 @@ function addonTable.Core.Initialize()
     worldmap = false,
   }
 
-  ChattynatorHyperlinkHandler:SetScript("OnHyperlinkEnter", function(_, hyperlink)
+  ChattynatorHyperlinkHandler:SetScript("OnHyperlinkEnter", function(frame, hyperlink, ...)
     local type = hyperlink:match("^(.-):")
-    if validLinks[type] then
+    if type == "tel" and Emoticons_OnHyperlinkEnter then
+      Emoticons_OnHyperlinkEnter(frame, hyperlink, ...)
+    elseif validLinks[type] then
       GameTooltip:SetOwner(ChattynatorHyperlinkHandler:GetParent(), "ANCHOR_CURSOR_RIGHT")
       GameTooltip:SetHyperlink(hyperlink)
       GameTooltip:Show()
     end
   end)
 
-  ChattynatorHyperlinkHandler:SetScript("OnHyperlinkLeave", function()
-    GameTooltip:Hide()
+  ChattynatorHyperlinkHandler:SetScript("OnHyperlinkLeave", function(frame, ...)
+    if Emoticons_OnHyperlinkLeave then
+      Emoticons_OnHyperlinkLeave(frame, ...)
+    else
+      GameTooltip:Hide()
+    end
   end)
 
   addonTable.Messages = CreateFrame("Frame")

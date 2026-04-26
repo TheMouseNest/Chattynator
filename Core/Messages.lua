@@ -824,8 +824,10 @@ function addonTable.MessagesMonitorMixin:AddMessage(text, r, g, b, _, _, _, _, _
     color = {r = r or 1, g = g or 1, b = b or 1},
     timestamp = time(),
     typeInfo = self.incomingType or {type = "ADDON", event = "NONE"},
+    playerGUID = self.playerGUID,
     recordedBy = addonTable.Data.CharacterName or "",
   }
+  data.typeInfo.playerGUID = self.playerGUID
   if addonTable.Data.CharacterName == nil then
     table.insert(self.awaitingRecorderSet, {data, self.messageCount + 1})
   end

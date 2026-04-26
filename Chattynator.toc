@@ -1,6 +1,6 @@
 ## Interface: 120005, 120001, 50503, 38001, 20505, 11508
 ## Title: Chattynator
-## Version: @project-version@
+## Version: 203
 ## Author: plusmouse
 ## IconTexture: Interface\AddOns\Chattynator\Assets\Logo.png
 ## SavedVariables: CHATTYNATOR_CONFIG, CHATTYNATOR_MESSAGE_LOG
@@ -41,6 +41,7 @@ Core/Dialogs.lua
 API/Main.lua
 API/CustomTab.lua
 API/Modifiers.lua
+API/TwitchEmotes.lua
 
 Display/Main.lua
 Display/Tabs.lua

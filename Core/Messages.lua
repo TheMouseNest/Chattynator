@@ -873,25 +873,12 @@ local function GetDecoratedSenderName(event, ...)
     chatType = "CHANNEL" .. channelIndex;
   end
 
-  local chatTypeInfo = ChatTypeInfo[chatType];
   local decoratedPlayerName = senderName;
 
-  local localizedClass, englishClass, localizedRace, englishRace, sex, firstName
-  if senderGUID then
-    localizedClass, englishClass, localizedRace, englishRace, sex, firstName = GetPlayerInfoByGUID(senderGUID);
-  end
-
-  local removedRealm = false
-  -- Ambiguate guild chat names
-  if Ambiguate and (not issecretvalue or not issecretvalue(senderName)) then
-    removedRealm = true
-    if chatType == "GUILD" then
-      decoratedPlayerName = Ambiguate(decoratedPlayerName, "guild");
-    else
-      decoratedPlayerName = Ambiguate(decoratedPlayerName, "none");
-    end
-  elseif firstName then
-    decoratedPlayerName = firstName
+  if chatType == "GUILD" then
+    decoratedPlayerName = Ambiguate(decoratedPlayerName, "guild");
+  else
+    decoratedPlayerName = Ambiguate(decoratedPlayerName, "none");
   end
 
   -- Add timerunning icon when necessary based on player guid
@@ -899,7 +886,8 @@ local function GetDecoratedSenderName(event, ...)
     decoratedPlayerName = TimerunningUtil.AddSmallIcon(decoratedPlayerName);
   end
 
-  if senderGUID and chatTypeInfo and --[[ChatFrameUtil.ShouldColorChatByClass(chatTypeInfo) and]] GetPlayerInfoByGUID ~= nil then
+  if senderGUID and ChatTypeInfo[chatType] and GetPlayerInfoByGUID ~= nil then
+    local _, englishClass, _, _, _, _ = GetPlayerInfoByGUID(senderGUID);
     if englishClass then
       local classColor
       if C_ClassColor then

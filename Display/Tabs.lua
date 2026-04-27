@@ -552,18 +552,19 @@ addonTable.CallbackRegistry:RegisterCallback("Render", function(_, newMessages)
       if m.typeInfo.type == "WHISPER" or m.typeInfo.type == "BN_WHISPER" then
         local window = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[targetWindow]
         if m.typeInfo.player then
+          local testPlayer = Ambiguate(m.typeInfo.player.name, "none")
           local any = false
           for _, tab in ipairs(window.tabs) do
-            if tab.whispersTemp[m.typeInfo.player.name] then
+            if tab.whispersTemp[testPlayer] then
               any = true
               break
             end
           end
           if not any then
-            local tabConfig = addonTable.Config.GetEmptyTabConfig(Ambiguate(m.typeInfo.player.name, "all"))
-            local c = ChatTypeInfo[m.typeInfo.type]
+            local tabConfig = addonTable.Config.GetEmptyTabConfig(Ambiguate(m.typeInfo.player.name, "short"))
+            local c = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS)[m.typeInfo.type]
             tabConfig.tabColor = CreateColor(c.r, c.g, c.b):GenerateHexColorNoAlpha()
-            tabConfig.whispersTemp[m.typeInfo.player.name] = true
+            tabConfig.whispersTemp[testPlayer] = true
             tabConfig.isTemporary = true
             table.insert(window.tabs, tabConfig)
             C_Timer.After(0, function()
@@ -584,7 +585,7 @@ addonTable.CallbackRegistry:RegisterCallback("Render", function(_, newMessages)
           end
           if not any then
             local tabConfig = addonTable.Config.GetEmptyTabConfig("WHISPER")
-            local c = ChatTypeInfo[m.typeInfo.type]
+            local c = addonTable.Config.Get(addonTable.Config.Options.CHAT_COLORS)[m.typeInfo.type]
             tabConfig.tabColor = CreateColor(c.r, c.g, c.b):GenerateHexColorNoAlpha()
             tabConfig.groups = groups
             tabConfig.isTemporary = true

@@ -552,7 +552,7 @@ addonTable.CallbackRegistry:RegisterCallback("Render", function(_, newMessages)
       if m.typeInfo.type == "WHISPER" or m.typeInfo.type == "BN_WHISPER" then
         local window = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[targetWindow]
         if m.typeInfo.player then
-          local testPlayer = Ambiguate(m.typeInfo.player.name, "none")
+          local testPlayer = m.typeInfo.player.name
           local any = false
           for _, tab in ipairs(window.tabs) do
             if tab.whispersTemp[testPlayer] then

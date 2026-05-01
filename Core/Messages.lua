@@ -514,7 +514,7 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
     self:SetIncomingType({
       type = ChatTypeGroupInverted[eventName] or "NONE",
       event = eventName,
-      player = playerArg and {name = playerArg, class = playerClass, race = playerRace, sex = playerSex},
+      player = playerArg and {name = Ambiguate(playerArg, "none"), class = playerClass, race = playerRace, sex = playerSex},
       channel = channelName and {name = channelName, index = channelIndex, isDefault = self.defaultChannels[channelName], zoneID = channelID} or nil,
     })
     self.lineID = lineID

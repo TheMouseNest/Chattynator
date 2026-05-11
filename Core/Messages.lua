@@ -612,6 +612,9 @@ function addonTable.MessagesMonitorMixin:CleanStore(store, index)
     if data.text:find("reportcensoredmessage:") then
       data.text = data.text:gsub("|Hreportcensoredmessage:.-|h.-|h", "[???]")
     end
+    if data.text == nil then
+      data.text = "???"
+    end
   end
   return #store
 end
@@ -625,6 +628,9 @@ function addonTable.MessagesMonitorMixin:GetMessageProcessed(reverseIndex)
     return self.messagesProcessed[index]
   end
   local new = CopyTable(self.messages[index])
+  if new.text == nil then
+    new.text = "???"
+  end
   if not issecretvalue or not issecretvalue(new.text) then
     for _, func in ipairs(self.liveModifiers) do
       func(new)

@@ -1306,9 +1306,9 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
         return;
       end
 
-      local showLink = 1;
+      local showLink = true;
       if ( strsub(type, 1, 7) == "MONSTER" or strsub(type, 1, 9) == "RAID_BOSS") then
-        showLink = nil;
+        showLink = false;
       elseif C_StringUtil and C_StringUtil.EscapeLuaFormatString then
         msg = C_StringUtil.EscapeLuaFormatString(msg)
       else

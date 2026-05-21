@@ -42,6 +42,9 @@ function addonTable.Core.InitializeChatCommandLogging()
 
   ChatFrame1EditBox:SetAltArrowKeyMode(false)
   hooksecurefunc(ChatFrame1EditBox, "AddHistoryLine", function(_, text)
+    if issecretvalue and issecretvalue(text) then
+      return
+    end
     local chatRaw = GetCurrent(ChatFrame1EditBox)
     local command = text:match("(/[^ ]+)")
     if command and IsSecureCmd(command) then

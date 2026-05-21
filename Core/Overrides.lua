@@ -102,14 +102,22 @@ function addonTable.Core.ApplyOverrides()
     oldSetScript(GeneralDockManager, "OnUpdate", nil)
   end)
 
+  local allowedEventsFrameAll = {
+    "UPDATE_CHAT_COLOR",
+  }
+  local allowedEventsFrame1 = {
+    "CHAT_MSG_WHISPER",
+    "CHAT_MSG_BN_WHISPER",
+    "CAUTIONARY_CHAT_MESSAGE",
+  }
 
   -- We delay unregistering so that the chat frame colours get applied properly,
   -- and then ensure that chat colour events get processed, both to avoid errors
   local frame = CreateFrame("Frame")
   frame:RegisterEvent("PLAYER_ENTERING_WORLD")
+  frame:RegisterEvent("VARIABLES_LOADED")
   frame:SetScript("OnEvent", function(_, event)
     if event == "PLAYER_ENTERING_WORLD" then
-      frame:RegisterEvent("UPDATE_CHAT_WINDOWS")
       frame:UnregisterEvent("PLAYER_ENTERING_WORLD")
       C_Timer.After(0, function()
         for _, tabName in pairs(CHAT_FRAMES) do
@@ -122,13 +130,17 @@ function addonTable.Core.ApplyOverrides()
             tab:RegisterEvent("UPDATE_CHAT_COLOR") -- Needed to prevent errors in OnUpdate from UIParent
             -- Workaround for addons trying to prevent messages showing in chat frame by unregistering and reregistering events
             hooksecurefunc(tab, "RegisterEvent", function(_, name)
-              if name ~= "UPDATE_CHAT_COLOR" then
+              if tabName == "ChatFrame1" and tIndexOf(allowedEventsFrame1, name) == nil or tabName ~= "ChatFrame1" and tIndexOf(allowedEventsFrameAll, name) == nil then
                 tab:UnregisterEvent(name)
               end
             end)
           end
-          if tabName == "ChatFrame1" and C_EventUtils.IsEventValid("CAUTIONARY_CHAT_MESSAGE") then
-            ChatFrame1:RegisterEvent("CAUTIONARY_CHAT_MESSAGE")
+          if tabName == "ChatFrame1" then
+            for _, e in ipairs(allowedEventsFrame1) do
+              if C_EventUtils.IsEventValid(e) then
+                tab:RegisterEvent(e)
+              end
+            end
           end
           tab:HookScript("OnEvent", function(_, e)
             if e == "UPDATE_CHAT_WINDOWS" then
@@ -143,6 +155,8 @@ function addonTable.Core.ApplyOverrides()
         end
         _G["ChatFrame1Tab"].IsVisible = function() return true end -- Workaround for TSM assuming chat tabs are always visible
       end)
+    elseif event == "VARIABLES_LOADED" then
+      C_CVar.SetCVar("whisperMode", "inline")
     end
   end)
 

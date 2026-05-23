@@ -222,35 +222,12 @@ local function SetupLayout(parent)
 
   local allFrames = {}
 
-  local messageSpacing
-  messageSpacing = addonTable.CustomiseDialog.Components.GetSlider(container, addonTable.Locales.MESSAGE_SPACING, 0, 60, "%spx", function()
-    addonTable.Config.Set(addonTable.Config.Options.MESSAGE_SPACING, messageSpacing:GetValue())
-  end)
-  messageSpacing.option = addonTable.Config.Options.MESSAGE_SPACING
-  messageSpacing:SetPoint("TOP")
-  table.insert(allFrames, messageSpacing)
-
-  --[[local lineSpacing
-  lineSpacing = addonTable.CustomiseDialog.Components.GetSlider(container, addonTable.Locales.LINE_SPACING, 0, 60, "%spx", function()
-    addonTable.Config.Set(addonTable.Config.Options.LINE_SPACING, lineSpacing:GetValue())
-  end)
-  lineSpacing.option = addonTable.Config.Options.LINE_SPACING
-  lineSpacing:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, 0)
-  table.insert(allFrames, lineSpacing)]]
-
-  local showSeparator = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_VERTICAL_SEPARATOR, 28, function(state)
-    addonTable.Config.Set(addonTable.Config.Options.SHOW_TIMESTAMP_SEPARATOR, state)
-  end)
-  showSeparator.option = addonTable.Config.Options.SHOW_TIMESTAMP_SEPARATOR
-  showSeparator:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
-  table.insert(allFrames, showSeparator)
-
   local showTabs = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.SHOW_TABS, function(value)
     return addonTable.Config.Get(addonTable.Config.Options.SHOW_TABS) == value
   end, function(value)
     addonTable.Config.Set(addonTable.Config.Options.SHOW_TABS, value)
   end)
-  showTabs:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
+  showTabs:SetPoint("TOP")
   do
     local entries = {
       addonTable.Locales.ALWAYS,
@@ -336,13 +313,6 @@ local function SetupLayout(parent)
   keepEditBoxVisible:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, 0)
   table.insert(allFrames, keepEditBoxVisible)
 
-  local newWhispersNewTab = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.NEW_WHISPERS_TO_NEW_TAB, 28, function(state)
-    addonTable.Config.Set(addonTable.Config.Options.NEW_WHISPER_NEW_TAB, state and 1 or 0)
-  end)
-  newWhispersNewTab.option = addonTable.Config.Options.NEW_WHISPER_NEW_TAB
-  newWhispersNewTab:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
-  table.insert(allFrames, newWhispersNewTab)
-
   local locked = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.LOCK_CHAT, 28, function(state)
     addonTable.Config.Set(addonTable.Config.Options.LOCKED, state)
   end)
@@ -367,7 +337,7 @@ local function SetupLayout(parent)
   return container
 end
 
-local function SetupDisplay(parent)
+local function SetupMessages(parent)
   local container = CreateFrame("Frame", nil, parent)
 
   local allFrames = {}
@@ -381,8 +351,16 @@ local function SetupDisplay(parent)
     addonTable.Config.Set(addonTable.Config.Options.MESSAGE_FONT_SIZE, fontSize:GetValue())
   end)
   fontSize.option = addonTable.Config.Options.MESSAGE_FONT_SIZE
-  fontSize:SetPoint("TOP", fontDropdown, "BOTTOM")
+  fontSize:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
   table.insert(allFrames, fontSize)
+
+  local messageSpacing
+  messageSpacing = addonTable.CustomiseDialog.Components.GetSlider(container, addonTable.Locales.MESSAGE_SPACING, 0, 60, "%spx", function()
+    addonTable.Config.Set(addonTable.Config.Options.MESSAGE_SPACING, messageSpacing:GetValue())
+  end)
+  messageSpacing.option = addonTable.Config.Options.MESSAGE_SPACING
+  messageSpacing:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
+  table.insert(allFrames, messageSpacing)
 
   local messageOutline = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.MESSAGE_FONT_OUTLINE, function(value)
     return addonTable.Config.Get(addonTable.Config.Options.MESSAGE_FONT_OUTLINE) == value
@@ -426,27 +404,6 @@ local function SetupDisplay(parent)
   messageFadeTimer.option = addonTable.Config.Options.MESSAGE_FADE_TIME
   messageFadeTimer:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
   table.insert(allFrames, messageFadeTimer)
-
-  local flashOnDropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.FLASH_TABS_ON, function(value)
-    return addonTable.Config.Get(addonTable.Config.Options.TAB_FLASH_ON) == value
-  end, function(value)
-    addonTable.Config.Set(addonTable.Config.Options.TAB_FLASH_ON, value)
-  end)
-  flashOnDropdown:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
-  do
-    local entries = {
-      addonTable.Locales.NEVER,
-      addonTable.Locales.ALL_MESSAGES,
-      addonTable.Locales.WHISPERS_ONLY,
-    }
-    local values = {
-      "never",
-      "all",
-      "whispers"
-    }
-    flashOnDropdown:Init(entries, values)
-  end
-  table.insert(allFrames, flashOnDropdown)
 
   container:SetScript("OnShow", function()
     local LibSharedMedia = LibStub and LibStub:GetLibrary("LibSharedMedia-3.0", true)
@@ -517,19 +474,19 @@ local function SetupFormatting(parent)
   end
   table.insert(allFrames, timestampDropdown)
 
-  local useClassColors = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.USE_CLASS_COLORS, 28, function(state)
-    addonTable.Config.Set(addonTable.Config.Options.CLASS_COLORS, state)
+  local showSeparator = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.SHOW_VERTICAL_SEPARATOR, 28, function(state)
+    addonTable.Config.Set(addonTable.Config.Options.SHOW_TIMESTAMP_SEPARATOR, state)
   end)
-  useClassColors.option = addonTable.Config.Options.CLASS_COLORS
-  useClassColors:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
-  table.insert(allFrames, useClassColors)
+  showSeparator.option = addonTable.Config.Options.SHOW_TIMESTAMP_SEPARATOR
+  showSeparator:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
+  table.insert(allFrames, showSeparator)
 
   local shorteningDropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.SHORTEN_CHANNELS, function(value)
     return addonTable.Config.Get(addonTable.Config.Options.SHORTEN_FORMAT) == value
   end, function(value)
     addonTable.Config.Set(addonTable.Config.Options.SHORTEN_FORMAT, value)
   end)
-  shorteningDropdown:SetPoint("TOP", useClassColors, "BOTTOM")
+  shorteningDropdown:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
   do
     local entries = {
       addonTable.Locales.NONE,
@@ -551,6 +508,13 @@ local function SetupFormatting(parent)
   reduceRedundantText.option = addonTable.Config.Options.REDUCE_REDUNDANT_TEXT
   reduceRedundantText:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
   table.insert(allFrames, reduceRedundantText)
+
+  local useClassColors = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.USE_CLASS_COLORS, 28, function(state)
+    addonTable.Config.Set(addonTable.Config.Options.CLASS_COLORS, state)
+  end)
+  useClassColors.option = addonTable.Config.Options.CLASS_COLORS
+  useClassColors:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
+  table.insert(allFrames, useClassColors)
 
   container:SetScript("OnShow", function()
     for _, f in ipairs(allFrames) do
@@ -723,7 +687,7 @@ local function SetupNotifications(parent)
 
   local allFrames = {}
 
-  local whisperDropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.WHISPER_SOUNDS, function(value)
+  --[[local whisperDropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.WHISPER_SOUNDS, function(value)
     return addonTable.Config.Get(addonTable.Config.Options.WHISPER_SOUNDS) == value
   end, function(value)
     addonTable.Config.Set(addonTable.Config.Options.WHISPER_SOUNDS, value)
@@ -740,7 +704,35 @@ local function SetupNotifications(parent)
     }
     whisperDropdown:Init(entries, values)
   end
-  table.insert(allFrames, whisperDropdown)
+  table.insert(allFrames, whisperDropdown)]]
+
+  local flashOnDropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.FLASH_TABS_ON, function(value)
+    return addonTable.Config.Get(addonTable.Config.Options.TAB_FLASH_ON) == value
+  end, function(value)
+    addonTable.Config.Set(addonTable.Config.Options.TAB_FLASH_ON, value)
+  end)
+  flashOnDropdown:SetPoint("TOP")
+  do
+    local entries = {
+      addonTable.Locales.NEVER,
+      addonTable.Locales.ALL_MESSAGES,
+      addonTable.Locales.WHISPERS_ONLY,
+    }
+    local values = {
+      "never",
+      "all",
+      "whispers"
+    }
+    flashOnDropdown:Init(entries, values)
+  end
+  table.insert(allFrames, flashOnDropdown)
+
+  local newWhispersNewTab = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.NEW_WHISPERS_TO_NEW_TAB, 28, function(state)
+    addonTable.Config.Set(addonTable.Config.Options.NEW_WHISPER_NEW_TAB, state and 1 or 0)
+  end)
+  newWhispersNewTab.option = addonTable.Config.Options.NEW_WHISPER_NEW_TAB
+  newWhispersNewTab:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
+  table.insert(allFrames, newWhispersNewTab)
 
   container:SetScript("OnShow", function()
     for _, f in ipairs(allFrames) do
@@ -761,8 +753,8 @@ local TabSetups = {
   {name = GENERAL, callback = SetupGeneral},
   {name = addonTable.Locales.THEME, callback = SetupThemes},
   {name = addonTable.Locales.LAYOUT, callback = SetupLayout},
-  {name = addonTable.Locales.DISPLAY, callback = SetupDisplay},
-  {name = addonTable.Locales.MESSAGE_COLORS, callback = SetupChatColors},
+  {name = addonTable.Locales.MESSAGES, callback = SetupMessages},
+  {name = addonTable.Locales.COLORS, callback = SetupChatColors},
   {name = addonTable.Locales.FORMATTING, callback = SetupFormatting},
   {name = addonTable.Locales.NOTIFICATIONS, callback = SetupNotifications},
 }
@@ -778,7 +770,7 @@ function addonTable.CustomiseDialog.Toggle()
   frame:SetToplevel(true)
   customisers[addonTable.Config.Get(addonTable.Config.Options.CURRENT_SKIN)] = frame
   table.insert(UISpecialFrames, frame:GetName())
-  frame:SetSize(700, 700)
+  frame:SetSize(600, 700)
   frame:SetPoint("CENTER")
   frame:Raise()
 

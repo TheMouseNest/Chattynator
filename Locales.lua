@@ -48,9 +48,9 @@ L["DISABLE_ADDON_X"] = "%s is incompatible with Chattynator and may cause glitch
 L["CANT_POPOUT_THIS_CHANNEL"] = "Can't popout this channel"
 
 L["LAYOUT"] = "Layout"
-L["DISPLAY"] = "Display"
+L["MESSAGES"] = "Messages"
 L["FORMATTING"] = "Formatting"
-L["MESSAGE_COLORS"] = "Message Colors"
+L["COLORS"] = "Colors"
 L["NOTIFICATIONS"] = "Notifications"
 
 L["CUSTOMISE_CHATTYNATOR"] = "Customise Chattynator"

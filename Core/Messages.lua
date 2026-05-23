@@ -968,41 +968,44 @@ local function GetOutMessageFormatKey(chatEventSubtype, isSecret)
 end
 
 local function GetCommunityAndStreamFromChannel(communityChannel)
-	local clubId, streamId = communityChannel:match("(%d+)%:(%d+)");
-	return tonumber(clubId), tonumber(streamId);
+  if not communityChannel then
+    return nil, nil
+  end
+  local clubId, streamId = communityChannel:match("(%d+)%:(%d+)");
+  return tonumber(clubId), tonumber(streamId);
 end
 
 local function GetCommunityAndStreamName(clubId, streamId)
-	local streamInfo = C_Club.GetStreamInfo(clubId, streamId);
+  local streamInfo = C_Club.GetStreamInfo(clubId, streamId);
 
-	if streamInfo and (streamInfo.streamType == Enum.ClubStreamType.Guild or streamInfo.streamType == Enum.ClubStreamType.Officer) then
-		return streamInfo.name;
-	end
+  if streamInfo and (streamInfo.streamType == Enum.ClubStreamType.Guild or streamInfo.streamType == Enum.ClubStreamType.Officer) then
+    return streamInfo.name;
+  end
 
-	local streamName = streamInfo and streamInfo.name or "";
+  local streamName = streamInfo and streamInfo.name or "";
 
-	local clubInfo = C_Club.GetClubInfo(clubId);
-	if streamInfo and streamInfo.streamType == Enum.ClubStreamType.General then
-		local communityName = clubInfo and (clubInfo.shortName or clubInfo.name) or "";
-		return communityName;
-	else
-		local communityName = clubInfo and (clubInfo.shortName or clubInfo.name) or "";
-		return communityName.." - "..streamName;
-	end
+  local clubInfo = C_Club.GetClubInfo(clubId);
+  if streamInfo and streamInfo.streamType == Enum.ClubStreamType.General then
+    local communityName = clubInfo and (clubInfo.shortName or clubInfo.name) or "";
+    return communityName;
+  else
+    local communityName = clubInfo and (clubInfo.shortName or clubInfo.name) or "";
+    return communityName.." - "..streamName;
+  end
 end
 
 local function ResolveChannelName(communityChannel)
-	local clubId, streamId = GetCommunityAndStreamFromChannel(communityChannel);
-	if not clubId or not streamId then
-		return communityChannel;
-	end
+  local clubId, streamId = GetCommunityAndStreamFromChannel(communityChannel);
+  if not clubId or not streamId then
+    return communityChannel;
+  end
 
-	return GetCommunityAndStreamName(clubId, streamId);
+  return GetCommunityAndStreamName(clubId, streamId);
 end
 
 function ResolvePrefixedChannelName(communityChannelArg)
-	local prefix, communityChannel = communityChannelArg:match("(%d+. )(.*)");
-	return prefix..ResolveChannelName(communityChannel);
+  local prefix, communityChannel = communityChannelArg:match("(%d+. )(.*)");
+  return prefix..ResolveChannelName(communityChannel);
 end
 
 local function GetChannelDecorated(zoneID, channelID, channelName, isSecret)
@@ -1229,7 +1232,7 @@ function addonTable.MessagesMonitorMixin:MessageEventHandler(event, ...)
       end
 
       if channelLength > 0 then
-        self:AddMessage(string.format(globalstring, arg8, (ChatFrame_ResolvePrefixedChannelName or ChatFrameUtil.ResolvePrefixedChannelName)(arg4)), info.r, info.g, info.b, info.id, accessID, typeID);
+        self:AddMessage(string.format(globalstring, arg8, ResolvePrefixedChannelName(arg4)), info.r, info.g, info.b, info.id, accessID, typeID);
       end
     end
   elseif ( type == "BN_INLINE_TOAST_ALERT" ) then

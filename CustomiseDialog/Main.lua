@@ -516,6 +516,13 @@ local function SetupFormatting(parent)
   useClassColors:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -30)
   table.insert(allFrames, useClassColors)
 
+  local removeRealmNames = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.REMOVE_REALM_NAMES, 28, function(state)
+    addonTable.Config.Set(addonTable.Config.Options.REMOVE_REALM_NAMES, state)
+  end)
+  removeRealmNames.option = addonTable.Config.Options.REMOVE_REALM_NAMES
+  removeRealmNames:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
+  table.insert(allFrames, removeRealmNames)
+
   container:SetScript("OnShow", function()
     for _, f in ipairs(allFrames) do
       if f.SetValue then

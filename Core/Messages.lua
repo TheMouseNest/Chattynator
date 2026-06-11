@@ -263,7 +263,7 @@ function addonTable.MessagesMonitorMixin:OnLoad()
     if settingName == addonTable.Config.Options.MESSAGE_SPACING then
       self.spacing = addonTable.Config.Get(addonTable.Config.Options.MESSAGE_SPACING)
       renderNeeded = true
-    elseif settingName == addonTable.Config.Options.TIMESTAMP_FORMAT then
+    elseif settingName == addonTable.Config.Options.TIMESTAMP_FORMAT or settingName == addonTable.Config.Options.TIMESTAMP_SPACING then
       self.timestampFormat = addonTable.Config.Get(addonTable.Config.Options.TIMESTAMP_FORMAT)
       self:SetInset()
       renderNeeded = true
@@ -377,6 +377,7 @@ function addonTable.MessagesMonitorMixin:SetInset()
   if self.timestampFormat == " " then
     self.inset = 6
   end
+  self.inset = self.inset * addonTable.Config.Get(addonTable.Config.Options.TIMESTAMP_SPACING)
 end
 
 function addonTable.MessagesMonitorMixin:ShowGMOTD()

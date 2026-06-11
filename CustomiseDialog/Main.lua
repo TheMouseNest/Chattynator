@@ -481,6 +481,13 @@ local function SetupFormatting(parent)
   showSeparator:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
   table.insert(allFrames, showSeparator)
 
+  local timestampSpacing
+  timestampSpacing = addonTable.CustomiseDialog.Components.GetSlider(container, addonTable.Locales.TIMESTAMP_SPACING, 0, 200, "%s%%", function()
+    addonTable.Config.Set(addonTable.Config.Options.TIMESTAMP_SPACING, timestampSpacing:GetValue() / 100)
+  end)
+  timestampSpacing:SetPoint("TOP", allFrames[#allFrames], "BOTTOM")
+  table.insert(allFrames, timestampSpacing)
+
   local shorteningDropdown = addonTable.CustomiseDialog.Components.GetBasicDropdown(container, addonTable.Locales.SHORTEN_CHANNELS, function(value)
     return addonTable.Config.Get(addonTable.Config.Options.SHORTEN_FORMAT) == value
   end, function(value)
@@ -517,11 +524,12 @@ local function SetupFormatting(parent)
   table.insert(allFrames, useClassColors)
 
   container:SetScript("OnShow", function()
+    timestampSpacing:SetValue(addonTable.Config.Get(addonTable.Config.Options.TIMESTAMP_SPACING) * 100)
     for _, f in ipairs(allFrames) do
       if f.SetValue then
         if f.option then
           f:SetValue(addonTable.Config.Get(f.option))
-        else
+        elseif f.DropDown then
           f:SetValue()
         end
       end

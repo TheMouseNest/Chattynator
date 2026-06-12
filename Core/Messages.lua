@@ -514,7 +514,7 @@ function addonTable.MessagesMonitorMixin:OnEvent(eventName, ...)
     self:SetIncomingType({
       type = ChatTypeGroupInverted[eventName] or "NONE",
       event = eventName,
-      player = playerArg and {name = Ambiguate(playerArg, "none"), class = playerClass, race = playerRace, sex = playerSex},
+      player = playerArg and {name = Ambiguate(playerArg, addonTable.Config.Get(addonTable.Config.Options.REMOVE_REALM_NAMES) and "short" or "none"), class = playerClass, race = playerRace, sex = playerSex},
       channel = channelName and {name = channelName, index = channelIndex, isDefault = self.defaultChannels[channelName], zoneID = channelID} or nil,
     })
     self.lineID = lineID
@@ -882,9 +882,9 @@ local function GetDecoratedSenderName(event, ...)
   local decoratedPlayerName = senderName;
 
   if chatType == "GUILD" then
-    decoratedPlayerName = Ambiguate(decoratedPlayerName, "guild");
+    decoratedPlayerName = Ambiguate(decoratedPlayerName, addonTable.Config.Get(addonTable.Config.Options.REMOVE_REALM_NAMES) and "short" or "guild");
   else
-    decoratedPlayerName = Ambiguate(decoratedPlayerName, "none");
+    decoratedPlayerName = Ambiguate(decoratedPlayerName, addonTable.Config.Get(addonTable.Config.Options.REMOVE_REALM_NAMES) and "short" or "none");
   end
 
   -- Add timerunning icon when necessary based on player guid

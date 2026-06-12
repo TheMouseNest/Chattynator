@@ -108,6 +108,7 @@ local settings = {
   SHOW_FONT_SHADOW = {key = "show_font_shadow", default = false, refresh = {addonTable.Constants.RefreshReason.MessageFont}},
 
   SHORTEN_FORMAT = {key = "shorten_format", default = "none", refresh = {addonTable.Constants.RefreshReason.MessageModifier}},
+  REMOVE_REALM_NAMES = {key = "remove_realm_names", default = false, refresh = {addonTable.Constants.RefreshReason.MessageModifier}},
   CLASS_COLORS = {key = "class_colors", default = true, refresh = {addonTable.Constants.RefreshReason.MessageModifier}},
   LINK_URLS = {key = "link_urls", default = true, refresh = {addonTable.Constants.RefreshReason.MessageModifier}},
   REDUCE_REDUNDANT_TEXT = {key = "reduce_redundant_text", default = false, refresh = {addonTable.Constants.RefreshReason.MessageModifier}},

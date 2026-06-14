@@ -1004,13 +1004,20 @@ local function ResolveChannelName(communityChannel)
   return GetCommunityAndStreamName(clubId, streamId);
 end
 
-function ResolvePrefixedChannelName(communityChannelArg)
+local function ResolvePrefixedChannelName(communityChannelArg)
   local prefix, communityChannel = communityChannelArg:match("(%d+. )(.*)");
+  if not prefix then
+    return nil
+  end
   return prefix..ResolveChannelName(communityChannel);
 end
 
 local function GetChannelDecorated(zoneID, channelID, channelName, isSecret)
-  local decorated = "|Hchannel:channel:"..channelID.."|h[" .. ResolvePrefixedChannelName(channelName) .. "]|h "
+  local resolved = ResolvePrefixedChannelName(channelName)
+  if not resolved then
+    resolved = channelID .. ". " .. channelName
+  end
+  local decorated = "|Hchannel:channel:"..channelID.."|h[" .. resolved .. "]|h "
 
   if isSecret and addonTable.Modifiers.ShortenPatterns and not issecretvalue(decorated) then -- TODO: Only show prefix from ResolvePrefixedChannelName if pattern is set to that
     return decorated:gsub(addonTable.Modifiers.ShortenPatterns.channel.p, addonTable.Modifiers.ShortenPatterns.channel.r({typeInfo = {channel = {index = channelID, zoneID = zoneID}}}), 1)

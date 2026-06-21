@@ -127,6 +127,33 @@ local function SetupGeneral(parent)
   end
   table.insert(allFrames, profileDropdown)
 
+  -- Export / Import profile buttons
+  local profileButtonsRow = CreateFrame("Frame", nil, container)
+  profileButtonsRow:SetPoint("TOP", allFrames[#allFrames], "BOTTOM", 0, -5)
+  profileButtonsRow:SetPoint("LEFT", 20, 0)
+  profileButtonsRow:SetPoint("RIGHT", -20, 0)
+  profileButtonsRow:SetHeight(30)
+
+  local exportBtn = CreateFrame("Button", nil, profileButtonsRow, "UIPanelDynamicResizeButtonTemplate")
+  exportBtn:SetText(addonTable.Locales.EXPORT or "Export")
+  DynamicResizeButton_Resize(exportBtn)
+  exportBtn:SetPoint("RIGHT", profileButtonsRow, "CENTER", -4, 0)
+  exportBtn:SetScript("OnClick", function()
+    addonTable.ProfileExport.ShowExport()
+  end)
+  addonTable.Skins.AddFrame("Button", exportBtn)
+
+  local importBtn = CreateFrame("Button", nil, profileButtonsRow, "UIPanelDynamicResizeButtonTemplate")
+  importBtn:SetText(addonTable.Locales.IMPORT or "Import")
+  DynamicResizeButton_Resize(importBtn)
+  importBtn:SetPoint("LEFT", profileButtonsRow, "CENTER", 4, 0)
+  importBtn:SetScript("OnClick", function()
+    addonTable.ProfileExport.ShowImport()
+  end)
+  addonTable.Skins.AddFrame("Button", importBtn)
+
+  table.insert(allFrames, profileButtonsRow)
+
   local storeMessages = addonTable.CustomiseDialog.Components.GetCheckbox(container, addonTable.Locales.STORE_MESSAGES, 28, function(state)
     addonTable.Config.Set(addonTable.Config.Options.STORE_MESSAGES, state)
   end)

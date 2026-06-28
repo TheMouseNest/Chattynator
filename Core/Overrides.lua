@@ -43,25 +43,6 @@ function addonTable.Core.ApplyOverrides()
         end
       end
     end)
-    function FCF_OpenTemporaryWindow(chatType, chatTarget, _, _)
-      if not debugstack():find("UnitPopupShared") or chatType ~= "WHISPER" and chatType ~= "BN_WHISPER" then
-        return
-      end
-      if not actualChatFrame then
-        return
-      end
-      local config = addonTable.Config.Get(addonTable.Config.Options.WINDOWS)[actualChatFrame:GetID()]
-      local tabConfig = addonTable.Config.GetEmptyTabConfig(Ambiguate(chatTarget, "all"))
-      tabConfig.whispersTemp[chatTarget] = true
-      tabConfig.isTemporary = true
-      local c = ChatTypeInfo[chatType]
-      tabConfig.tabColor = CreateColor(c.r, c.g, c.b):GenerateHexColorNoAlpha()
-      table.insert(config.tabs, tabConfig)
-      config.tabs[actualChatFrame.tabIndex].whispersTemp[chatTarget] = false
-      actualChatFrame.TabsBar:RefreshTabs()
-      actualChatFrame.TabsBar.Tabs[#config.tabs]:Click()
-      actualChatFrame = nil
-    end
   end
 
   if ChatFrameUtil and ChatFrameUtil.ChatPageUp then
